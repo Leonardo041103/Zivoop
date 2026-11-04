@@ -1,0 +1,26 @@
+{
+  "name": "Pet Amigo — Banho & Tosa",
+  "short_name": "Pet Amigo — Ba",
+  "description": "Agende o banho e a tosa do seu pet pela internet. Escolha o serviço, o porte, a data e o horário — rapidinho.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3E86C9",
+  "theme_color": "#3E86C9",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

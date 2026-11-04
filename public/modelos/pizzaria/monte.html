@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#140E0B">
+<title>Monte sua Pizza</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Palco escuro de forno a lenha: a pizza no centro sob um foco de luz, ingredientes numa bandeja embaixo, preço vivo no topo. */
+:root{
+  --stage:#140E0B; --stage-2:#1F1612; --ember:#FF6A2B; --ember-2:#FFB25B; --tomato:#C2321C; --cream:#F6EBDD;
+  --ink:#F6EBDD; --ink-soft:#BBA898; --line:rgba(246,235,221,.14); --chip:rgba(246,235,221,.07);
+  --fd:'Young Serif',Georgia,serif; --fb:'Hanken Grotesk',system-ui,sans-serif; --fm:'IBM Plex Mono',ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--stage);color:var(--ink);font-family:var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--ember-2);outline-offset:3px;border-radius:12px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.app{min-height:100%;display:grid;grid-template-rows:auto 1fr auto;max-width:1100px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-block:20px 0}
+.brand small{display:block;color:var(--ink-soft);font-size:14px;letter-spacing:.01em}
+.brand h1{font-family:var(--fd);font-weight:400;font-size:clamp(30px,7vw,48px);line-height:1;margin:6px 0 0;text-wrap:balance}
+.price{text-align:right;flex:none}
+.price small{display:block;color:var(--ink-soft);font-size:13px}
+.price b{font-family:var(--fm);font-weight:600;font-size:clamp(24px,6vw,34px);font-variant-numeric:tabular-nums;display:inline-block;transition:transform .18s}
+.price b.bump{transform:scale(1.12);color:var(--ember-2)}
+
+.stage{position:relative;display:grid;grid-template-columns:1fr;align-items:center;justify-items:center;gap:16px;padding-block:8px}
+@media (min-width:900px){.stage{grid-template-columns:1.2fr 1fr;gap:40px}}
+.pizzawrap{position:relative;width:min(92vw,560px);aspect-ratio:1;display:grid;place-items:center}
+.pizzawrap::before{content:"";position:absolute;inset:-12%;background:radial-gradient(closest-side,rgba(255,170,90,.22),rgba(255,120,50,.08) 55%,transparent 72%);pointer-events:none}
+.board{position:absolute;inset:4%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7A4E2E,#4E301B 60%,#3A2414);box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 0 0 6px rgba(0,0,0,.18)}
+.board::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,rgba(0,0,0,.05) 0 3px,transparent 3px 9px)}
+svg.pizza{position:relative;width:100%;height:100%;overflow:visible;transition:transform .45s cubic-bezier(.3,1.4,.5,1),filter .6s}
+.pizzawrap.drop svg.pizza{filter:drop-shadow(0 0 0 rgba(255,140,60,0))}
+.pizzawrap.over .board{box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 4px var(--ember-2)}
+.piece{transform-box:fill-box;transform-origin:center;animation:land .42s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes land{from{transform:translateY(-30px) scale(1.7);opacity:0}to{transform:none;opacity:1}}
+.piece.out{animation:fly .3s ease-in both}
+@keyframes fly{to{transform:translateY(-40px) scale(.2);opacity:0}}
+.hint{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);font-size:14px;color:var(--ink-soft);white-space:nowrap}
+
+.panel{width:100%;display:flex;flex-direction:column;gap:18px;min-width:0}
+.group h2{font-size:15px;font-weight:600;margin:0 0 10px;color:var(--ink-soft)}
+.sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.size{min-height:64px;border-radius:16px;background:var(--chip);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:background .15s}
+.size b{font-size:15px}.size small{font-family:var(--fm);font-size:12px;color:var(--ink-soft)}
+.size[aria-pressed="true"]{background:var(--cream);color:#1a120d;border-color:var(--cream)}
+.size[aria-pressed="true"] small{color:#5a4a3e}
+.tray{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (min-width:520px){.tray{grid-template-columns:repeat(5,1fr)}}
+.ing{position:relative;min-height:92px;border-radius:18px;background:var(--chip);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 4px;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .12s,background .15s}
+.ing:active{transform:scale(.96)}
+.ing svg{width:40px;height:40px}
+.ing b{font-size:13px;font-weight:600;line-height:1.15;text-align:center}
+.ing small{font-family:var(--fm);font-size:11.5px;color:var(--ink-soft)}
+.ing[aria-pressed="true"]{background:rgba(255,106,43,.16);border-color:var(--ember)}
+.ing[aria-pressed="true"]::after{content:"";position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--ember) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4L18 8' stroke='%23fff' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.ghost{position:fixed;z-index:50;width:64px;height:64px;pointer-events:none;transform:translate(-50%,-50%) scale(1.1);filter:drop-shadow(0 10px 16px rgba(0,0,0,.5))}
+.crusts{display:flex;gap:8px;flex-wrap:wrap}
+.crust{min-height:44px;padding:0 16px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:14px;font-weight:500}
+.crust[aria-pressed="true"]{background:var(--cream);color:#1a120d}
+
+footer{position:sticky;bottom:0;padding-block:12px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--stage) 30%)}
+.fire{width:100%;min-height:62px;border-radius:999px;background:linear-gradient(90deg,var(--tomato),var(--ember));color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;box-shadow:0 12px 34px rgba(255,90,30,.35)}
+.fire span:last-child{font-family:var(--fm)}
+.fire:disabled{opacity:.5;box-shadow:none}
+
+/* forno */
+.oven{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:radial-gradient(circle at 50% 60%,#5a1d08,#1b0a04 70%);text-align:center;padding:24px}
+.oven.on{display:flex}
+.oven .flame{width:min(70vw,360px);aspect-ratio:1;position:relative}
+.oven .flame svg{width:100%;height:100%;animation:bake 2.4s ease-in-out forwards}
+@keyframes bake{0%{filter:saturate(1) brightness(1)}60%{filter:saturate(1.3) brightness(1.15) sepia(.15)}100%{filter:saturate(1.25) brightness(1.05) sepia(.22)}}
+.oven .glow{position:absolute;inset:-20%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,150,60,.55),transparent);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5;transform:scale(.95)}}
+.oven h2{font-family:var(--fd);font-weight:400;font-size:32px;margin:0}
+.oven p{margin:0;color:var(--ink-soft);font-family:var(--fm)}
+.bar{width:min(80vw,320px);height:6px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ember),var(--ember-2));animation:fill 2.4s linear forwards}
+@keyframes fill{to{width:100%}}
+
+/* comanda final */
+.done{position:fixed;inset:0;z-index:45;background:rgba(10,7,5,.75);display:none;align-items:flex-end;justify-content:center}
+.done.on{display:flex}
+.sheet{width:min(100%,520px);background:var(--stage-2);border-radius:28px 28px 0 0;padding:22px max(20px,env(safe-area-inset-left,0px)) calc(22px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px;animation:up .35s cubic-bezier(.2,1,.3,1)}
+@keyframes up{from{transform:translateY(100%)}}
+.sheet h2{font-family:var(--fd);font-weight:400;font-size:28px;margin:0}
+.receipt{background:#FBF6EF;color:#22180f;border-radius:6px;padding:18px 18px 22px;font-family:var(--fm);font-size:14px;line-height:1.7;
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 7px repeat-x,linear-gradient(#000 0 0) top/100% calc(100% - 7px) no-repeat;
+  mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 7px repeat-x,linear-gradient(#000 0 0) top/100% calc(100% - 7px) no-repeat}
+.receipt .r{display:flex;justify-content:space-between;gap:12px}
+.receipt .t{border-top:1px dashed #b9a99a;margin-top:8px;padding-top:8px;font-weight:600;font-size:17px;color:var(--tomato)}
+.receipt .s{color:#6d5c4e}
+.row{display:flex;gap:10px}
+.btn{flex:1;min-height:54px;border-radius:999px;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.pri{background:linear-gradient(90deg,var(--tomato),var(--ember));color:#fff}
+.btn.sec{background:var(--chip);border:1px solid var(--line)}
+.note{font-size:13px;color:var(--ink-soft);text-align:center}
+</style>
+</head><body>
+
+
+<div class="app">
+  <header>
+    <div class="brand"><small><a href="./" style="color:inherit">Voltar ao cardápio</a></small><h1>Monte sua pizza</h1></div>
+    <div class="price"><small>Sua pizza</small><b id="price">R$ 0,00</b></div>
+  </header>
+
+  <main class="stage">
+    <div class="pizzawrap" id="wrap">
+      <div class="board"></div>
+      <svg class="pizza" id="pizza" viewBox="-200 -200 400 400" role="img" aria-label="Sua pizza"></svg>
+      <div class="hint" id="hint">Arraste os ingredientes para a pizza, ou toque neles</div>
+    </div>
+    <div class="panel">
+      <div class="group"><h2>Tamanho</h2><div class="sizes" id="sizes"></div></div>
+      <div class="group"><h2 id="ingTitle">Ingredientes</h2><div class="tray" id="tray"></div></div>
+      <div class="group"><h2>Borda</h2><div class="crusts" id="crusts"></div></div>
+    </div>
+  </main>
+
+  <footer><button class="fire" id="fire" onclick="assar()"><span>Pôr no forno</span><span id="fireP">R$ 0,00</span></button></footer>
+</div>
+
+<div class="oven" id="oven" role="status" aria-live="polite">
+  <div class="flame"><div class="glow"></div><svg id="ovenPizza" viewBox="-200 -200 400 400" aria-hidden="true"></svg></div>
+  <h2>No forno a lenha</h2><p id="temp">420 °C</p><div class="bar"><span></span></div>
+</div>
+<div class="done" id="done" role="dialog" aria-modal="true" aria-labelledby="doneT">
+  <div class="sheet"><h2 id="doneT">Saiu do forno</h2><div class="receipt" id="receipt"></div>
+    <div class="row"><button class="btn sec" onclick="document.getElementById('done').classList.remove('on')">Mudar algo</button><a class="btn pri" id="send" href="#" target="_blank" rel="noopener">Pedir no WhatsApp</a></div>
+    <p class="note">Na conversa você combina a entrega e o pagamento.</p></div>
+</div>
+
+<script>
+/* ======= dados editáveis pelo dono (preços, tamanhos, ingredientes) ======= */
+const WHATS="SEU_WHATSAPP";
+const SIZES=[{id:"broto",l:"Broto",cm:25,p:29.90,max:3},{id:"media",l:"Média",cm:30,p:39.90,max:4},{id:"grande",l:"Grande",cm:35,p:49.90,max:5},{id:"familia",l:"Família",cm:40,p:59.90,max:6}];
+const ING=[
+  {id:"calabresa",l:"Calabresa",p:6,n:16},{id:"tomate",l:"Tomate",p:4,n:10},{id:"cebola",l:"Cebola roxa",p:3,n:14},{id:"azeitona",l:"Azeitona",p:4,n:16},
+  {id:"manjericao",l:"Manjericão",p:3,n:12},{id:"champ",l:"Champignon",p:7,n:12},{id:"milho",l:"Milho",p:3,n:40},{id:"bacon",l:"Bacon",p:8,n:12},
+  {id:"catupiry",l:"Catupiry",p:7,n:9},{id:"frango",l:"Frango",p:7,n:16}];
+const CRUST=[{id:"trad",l:"Tradicional",p:0},{id:"catupiry",l:"Recheada de catupiry",p:9},{id:"cheddar",l:"Recheada de cheddar",p:9}];
+/* ========================================================================= */
+const S={size:"grande",on:[],crust:"trad"};
+const brl=v=>"R$ "+v.toFixed(2).replace(".",",");
+const NS="http://www.w3.org/2000/svg";
+let seed=1; const rnd=()=>{ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; };
+
+/* desenho de cada ingrediente, centrado em 0,0 */
+const ART={
+  calabresa:'<circle r="15" fill="#A8322A"/><circle r="11" fill="#C4483B"/><circle cx="-4" cy="-3" r="2" fill="#F2C7A5"/><circle cx="5" cy="2" r="1.8" fill="#F2C7A5"/><circle cx="-1" cy="6" r="1.6" fill="#F2C7A5"/>',
+  tomate:'<circle r="17" fill="#D63A26"/><circle r="13" fill="#E9533A"/><path d="M0-10Q4-4 0 0Q-4-4 0-10M0 10Q4 4 0 0Q-4 4 0 10M-10 0Q-4-4 0 0Q-4 4-10 0M10 0Q4-4 0 0Q4 4 10 0" fill="#F7C04A" opacity=".9"/>',
+  cebola:'<circle r="12" fill="none" stroke="#8E2B6B" stroke-width="3.2"/><circle r="7" fill="none" stroke="#B9548F" stroke-width="2.4"/>',
+  azeitona:'<circle r="7" fill="#1E1A17"/><circle r="2.8" fill="#4B3B2E"/>',
+  manjericao:'<path d="M0-13C9-8 9 6 0 13C-9 6-9-8 0-13Z" fill="#2E7D32"/><path d="M0-11V11" stroke="#1B5E20" stroke-width="1.4"/>',
+  champ:'<path d="M-12 2A12 11 0 0 1 12 2Z" fill="#D9C2A3"/><rect x="-4" y="1" width="8" height="10" rx="3" fill="#E8D6BD"/><path d="M-10 1H10" stroke="#B89B78" stroke-width="1.5"/>',
+  milho:'<ellipse rx="4" ry="5" fill="#F4C430"/><ellipse rx="1.6" ry="2.2" cy="-1" fill="#FFE27A"/>',
+  bacon:'<rect x="-14" y="-5" width="28" height="10" rx="4" fill="#B5473A"/><path d="M-12-1H12M-12 2.5H12" stroke="#F3C9B0" stroke-width="1.6"/>',
+  catupiry:'<path d="M-14 0C-14-9-4-12 2-10C11-8 15 0 10 7C5 13-10 11-14 0Z" fill="#FFFDF5"/><path d="M-6-3C-2-6 4-5 6-1" stroke="#EDE3CF" stroke-width="2" fill="none"/>',
+  frango:'<path d="M-10-5L4-9L11-1L6 8L-8 7Z" fill="#E7C08C"/><path d="M-6 0L5-3" stroke="#C89A60" stroke-width="1.6"/>'
+};
+function icon(id){ const k={azeitona:2,milho:2.4,cebola:1.3}[id]||1; return `<svg viewBox="-20 -20 40 40" aria-hidden="true"><g transform="scale(${k})">${ART[id]}</g></svg>`; }
+
+function sizeObj(){ return SIZES.find(s=>s.id===S.size); }
+function price(){ const s=sizeObj(); return s.p+S.on.reduce((t,id)=>t+ING.find(i=>i.id===id).p,0)+CRUST.find(c=>c.id===S.crust).p; }
+
+/* base da pizza */
+function baseSVG(r){
+  const crustCol=S.crust==="trad"?"#E2A55C":S.crust==="catupiry"?"#F1D9A8":"#E9A33C";
+  let cheese=''; seed=7; for(let i=0;i<26;i++){ const a=rnd()*6.283, d=rnd()*(r-34); cheese+=`<ellipse cx="${(Math.cos(a)*d).toFixed(1)}" cy="${(Math.sin(a)*d).toFixed(1)}" rx="${(10+rnd()*16).toFixed(1)}" ry="${(7+rnd()*10).toFixed(1)}" fill="#FCE7B0" opacity=".55"/>`; }
+  let spots=''; for(let i=0;i<18;i++){ const a=rnd()*6.283, d=rnd()*(r-30); spots+=`<circle cx="${(Math.cos(a)*d).toFixed(1)}" cy="${(Math.sin(a)*d).toFixed(1)}" r="${(2+rnd()*3).toFixed(1)}" fill="#D9892F" opacity=".45"/>`; }
+  return `<defs><radialGradient id="cr" r=".55"><stop offset=".86" stop-color="${crustCol}"/><stop offset="1" stop-color="#9C5A22"/></radialGradient>
+    <radialGradient id="sauce" r=".5"><stop offset="0" stop-color="#D2452B"/><stop offset="1" stop-color="#B23620"/></radialGradient></defs>
+    <circle r="${r}" fill="url(#cr)"/>${S.crust!=="trad"?`<circle r="${r-9}" fill="none" stroke="${S.crust==="catupiry"?"#FFF6E2":"#F7B733"}" stroke-width="6" opacity=".7"/>`:""}
+    <circle r="${r-18}" fill="url(#sauce)"/><circle r="${r-24}" fill="#F7D98A"/>${cheese}${spots}<g id="tops"></g>`;
+}
+/* posições estáveis de cada ingrediente para o tamanho atual */
+function piecesFor(id,r){
+  const ing=ING.find(i=>i.id===id), n=Math.round(ing.n*(r/150)**2), out=[];
+  seed=[...id].reduce((s,c)=>s+c.charCodeAt(0)*31,13);
+  for(let i=0;i<n;i++){ const a=rnd()*6.283, d=Math.sqrt(rnd())*(r-34); out.push([Math.cos(a)*d,Math.sin(a)*d,rnd()*360]); }
+  return out;
+}
+function drawTops(svg,r,animId){
+  const g=svg.querySelector("#tops"); g.innerHTML="";
+  S.on.forEach(id=>{ piecesFor(id,r).forEach(([x,y,rot],k)=>{ const p=document.createElementNS(NS,"g");
+    p.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(0)})`);
+    const inner=document.createElementNS(NS,"g"); inner.innerHTML=ART[id]; inner.dataset.ing=id;
+    if(id===animId){ inner.classList.add("piece"); inner.style.animationDelay=(k*22)+"ms"; }
+    p.appendChild(inner); g.appendChild(p); }); });
+}
+function radius(){ return 110+(sizeObj().cm-25)*5.6; }
+function drawPizza(animId){ const svg=document.getElementById("pizza"), r=radius(); svg.innerHTML=baseSVG(r); drawTops(svg,r,animId); }
+
+function renderUI(){
+  const s=sizeObj();
+  document.getElementById("sizes").innerHTML=SIZES.map(z=>`<button class="size" aria-pressed="${S.size===z.id}" onclick="setSize('${z.id}')"><b>${z.l}</b><small>${z.cm} cm, ${brl(z.p)}</small></button>`).join("");
+  document.getElementById("ingTitle").textContent=`Ingredientes, até ${s.max} (${S.on.length} escolhido${S.on.length===1?"":"s"})`;
+  document.getElementById("tray").innerHTML=ING.map(i=>`<button class="ing" data-id="${i.id}" aria-pressed="${S.on.includes(i.id)}" aria-label="${i.l}, mais ${brl(i.p)}">${icon(i.id)}<b>${i.l}</b><small>+${brl(i.p).replace("R$ ","")}</small></button>`).join("");
+  document.getElementById("crusts").innerHTML=CRUST.map(c=>`<button class="crust" aria-pressed="${S.crust===c.id}" onclick="setCrust('${c.id}')">${c.l}${c.p?`, +${brl(c.p).replace("R$ ","")}`:""}</button>`).join("");
+  const v=brl(price()), el=document.getElementById("price"); if(el.textContent!==v){ el.textContent=v; el.classList.add("bump"); setTimeout(()=>el.classList.remove("bump"),180); }
+  document.getElementById("fireP").textContent=v;
+  document.getElementById("hint").style.opacity=S.on.length?0:1;
+  bindTray();
+}
+function setSize(id){ S.size=id; const m=sizeObj().max; if(S.on.length>m) S.on=S.on.slice(0,m); drawPizza(); renderUI(); }
+function setCrust(id){ S.crust=id; drawPizza(); renderUI(); }
+function toggle(id){
+  if(S.on.includes(id)){ document.querySelectorAll(`#pizza [data-ing="${id}"]`).forEach(n=>n.classList.add("out")); S.on=S.on.filter(x=>x!==id); setTimeout(()=>{drawPizza();},280); renderUI(); return; }
+  if(S.on.length>=sizeObj().max){ flash(`A ${sizeObj().l.toLowerCase()} leva até ${sizeObj().max} ingredientes`); return; }
+  S.on.push(id); drawPizza(id); renderUI();
+}
+function flash(t){ const h=document.getElementById("hint"); h.textContent=t; h.style.opacity=1; setTimeout(()=>{h.textContent="Arraste os ingredientes para a pizza, ou toque neles"; h.style.opacity=S.on.length?0:1;},1800); }
+
+/* arrastar da bandeja para a pizza (toque ou mouse); um toque simples também adiciona */
+function bindTray(){
+  document.querySelectorAll(".ing").forEach(b=>{
+    b.onpointerdown=e=>{ const id=b.dataset.id; let moved=false, ghost=null; const sx=e.clientX, sy=e.clientY; b.setPointerCapture(e.pointerId);
+      const wrap=document.getElementById("wrap");
+      const overPizza=(x,y)=>{ const r=wrap.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2; return Math.hypot(x-cx,y-cy)<r.width*.46; };
+      b.onpointermove=m=>{ if(!moved&&Math.hypot(m.clientX-sx,m.clientY-sy)>8){ moved=true; ghost=document.createElement("div"); ghost.className="ghost"; ghost.innerHTML=icon(id); document.body.appendChild(ghost); }
+        if(ghost){ ghost.style.left=m.clientX+"px"; ghost.style.top=m.clientY+"px"; wrap.classList.toggle("over",overPizza(m.clientX,m.clientY)); } };
+      b.onpointerup=u=>{ b.onpointermove=null; b.onpointerup=null; wrap.classList.remove("over");
+        if(ghost){ ghost.remove(); if(overPizza(u.clientX,u.clientY)&&!S.on.includes(id)) toggle(id); } else toggle(id); };
+    };
+  });
+}
+
+function assar(){
+  const o=document.getElementById("oven"), svg=document.getElementById("ovenPizza"), r=radius();
+  svg.innerHTML=baseSVG(r); drawTops(svg,r); svg.style.animation="none"; svg.offsetWidth; svg.style.animation="";
+  o.querySelector(".bar span").style.animation="none"; o.querySelector(".bar span").offsetWidth; o.querySelector(".bar span").style.animation="";
+  o.classList.add("on"); let t=380; const tm=setInterval(()=>{ t+=10; document.getElementById("temp").textContent=Math.min(t,450)+" °C"; },80);
+  setTimeout(()=>{ clearInterval(tm); o.classList.remove("on"); comanda(); },2500);
+}
+function comanda(){
+  const s=sizeObj(), c=CRUST.find(x=>x.id===S.crust), ings=S.on.map(id=>ING.find(i=>i.id===id));
+  const linhas=[[`1x Pizza ${s.l} (${s.cm} cm)`,s.p],...ings.map(i=>[`   + ${i.l}`,i.p]),...(c.p?[[`   borda ${c.l.replace("Recheada de ","")}`,c.p]]:[])];
+  document.getElementById("receipt").innerHTML=`<div class="s" style="text-align:center">Bella Massa Pizzaria</div>`+linhas.map(([a,v])=>`<div class="r"><span>${a}</span><span>${v.toFixed(2).replace(".",",")}</span></div>`).join("")+`<div class="r t"><span>Total</span><span>${brl(price())}</span></div>`;
+  const msg=`*Pedido — Bella Massa Pizzaria*\n\n${linhas.map(([a,v])=>`${a.trim()}: ${brl(v)}`).join("\n")}\n\n*Total:* ${brl(price())}\n\n_Montada no site_`;
+  document.getElementById("send").href="https://wa.me/"+WHATS+"?text="+encodeURIComponent(msg);
+  document.getElementById("done").classList.add("on");
+}
+S.on=["calabresa","cebola"]; drawPizza(); renderUI();
+</script>
+
+<script src="/demo.js"></script>
+</body></html>

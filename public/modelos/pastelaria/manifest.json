@@ -1,0 +1,26 @@
+{
+  "name": "Império do Pastel",
+  "short_name": "Império do Pas",
+  "description": "Pastel de feira feito na hora, crocante e recheado, e caldo de cana geladinho. Peça pela internet e receba em casa.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#C63A2E",
+  "theme_color": "#C63A2E",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

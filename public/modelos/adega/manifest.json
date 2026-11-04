@@ -1,0 +1,26 @@
+{
+  "name": "Adega Noite Boa",
+  "short_name": "Noite Boa",
+  "description": "Cerveja gelada, vinhos, destilados e gelo com entrega até tarde. Só para maiores de 18.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3D1F4F",
+  "theme_color": "#3D1F4F",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

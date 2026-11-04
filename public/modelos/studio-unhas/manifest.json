@@ -1,0 +1,26 @@
+{
+  "name": "Esmalteria Charme",
+  "short_name": "Esmalteria Cha",
+  "description": "Unhas em gel, alongamento, design de sobrancelha e cílios fio a fio. Escolha o serviço, a data e o horário e agende pelo WhatsApp.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#A98BC9",
+  "theme_color": "#A98BC9",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

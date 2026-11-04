@@ -1,0 +1,26 @@
+{
+  "name": "Sorriso Odonto",
+  "short_name": "Sorriso Odonto",
+  "description": "Agende sua consulta pela internet. Limpeza, clareamento, aparelho, implante e mais, com atendimento humano.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2F7DB5",
+  "theme_color": "#2F7DB5",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

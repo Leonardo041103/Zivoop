@@ -1,0 +1,26 @@
+{
+  "name": "Arena Gol de Placa",
+  "short_name": "Arena Gol de P",
+  "description": "Society de grama sintética, quadra de areia e churrasqueira. Reserve seu horário pela internet e confirme no WhatsApp.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2E9E43",
+  "theme_color": "#2E9E43",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

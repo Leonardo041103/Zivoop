@@ -1,0 +1,26 @@
+{
+  "name": "Festa & Alegria Locações",
+  "short_name": "Festa & Alegri",
+  "description": "Pula-pula, piscina de bolinhas, castelo, tendas, pipoqueira e decoração. Monte sua lista, escolha a data e receba o orçamento no WhatsApp.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7B4DB8",
+  "theme_color": "#7B4DB8",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

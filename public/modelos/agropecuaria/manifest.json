@@ -1,0 +1,26 @@
+{
+  "name": "Campo Forte Agropecuária",
+  "short_name": "Campo Forte Ag",
+  "description": "Rações, sementes, adubos e ferramentas. Peça pelo site e receba na cidade ou na zona rural.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2F5D3A",
+  "theme_color": "#2F5D3A",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

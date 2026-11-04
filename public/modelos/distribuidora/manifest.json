@@ -1,0 +1,26 @@
+{
+  "name": "Gelada Express",
+  "short_name": "Gelada Express",
+  "description": "Entrega rápida e gelada. Cerveja em fardo, refrigerante, energético, destilado, gelo e carvão. Peça pela internet.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3FA9F5",
+  "theme_color": "#3FA9F5",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

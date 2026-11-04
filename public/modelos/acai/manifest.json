@@ -1,0 +1,26 @@
+{
+  "name": "Açaí da Ilha",
+  "short_name": "Açaí da Ilha",
+  "description": "Açaí cremoso com os acompanhamentos que você quiser. Entrega rápida.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#5B1F7A",
+  "theme_color": "#5B1F7A",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

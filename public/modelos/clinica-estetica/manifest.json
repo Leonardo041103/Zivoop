@@ -1,0 +1,26 @@
+{
+  "name": "Lumière Estética",
+  "short_name": "Lumière",
+  "description": "Facial, corporal e bem-estar com hora marcada. Agende pelo site.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#9A7B6F",
+  "theme_color": "#9A7B6F",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

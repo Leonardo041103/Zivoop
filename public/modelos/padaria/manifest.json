@@ -1,0 +1,26 @@
+{
+  "name": "Padaria Trigo de Ouro",
+  "short_name": "Trigo de Ouro",
+  "description": "Pães, salgados, doces e bolos de aniversário. Peça pelo site.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#8A5A2B",
+  "theme_color": "#8A5A2B",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

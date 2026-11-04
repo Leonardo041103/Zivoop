@@ -1,0 +1,26 @@
+{
+  "name": "Clínica Veterinária Amigo Fiel",
+  "short_name": "Amigo Fiel",
+  "description": "Consultas, vacinas e exames para cães e gatos. Agende pelo site.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2C7A7B",
+  "theme_color": "#2C7A7B",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "ConstruBem Materiais",
+  "short_name": "ConstruBem Mat",
+  "description": "Cimento, areia, brita, tijolo, tinta e ferragens. Monte o orçamento e receba na obra. Peça pelo WhatsApp, sem app.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E8731C",
+  "theme_color": "#E8731C",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

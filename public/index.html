@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zivoop | Site pronto para o seu negócio vender pelo WhatsApp</title>
+<meta name="description" content="Sites prontos para 38 tipos de negócio: o cliente escolhe, monta o pedido ou marca o horário e manda direto pro seu WhatsApp. Sem app e sem comissão.">
+<meta property="og:title" content="Zivoop: seu negócio vendendo pelo WhatsApp">
+<meta property="og:description" content="Escolha o modelo do seu negócio, teste ao vivo e receba o site pronto com seus produtos, fotos e WhatsApp.">
+<meta property="og:image" content="/og.png"><meta property="og:type" content="website"><meta name="theme-color" content="#14162B">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<style>
+:root{--ink:#14162B;--ink-2:#4A4E6A;--paper:#F5F6FA;--card:#FFFFFF;--cobalt:#2E4BFF;--cobalt-d:#1F36D6;--tang:#FF7A1A;--mint:#19B37A;--line:rgba(20,22,43,.1);
+  --wide:'Archivo',system-ui,sans-serif;--r:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}[hidden]{display:none!important}section[id]{scroll-margin-top:84px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--wide);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--tang);outline-offset:3px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.in{max-width:1180px;margin:0 auto;padding:0 max(18px,env(safe-area-inset-left))}
+h1,h2,h3{font-stretch:125%;font-weight:850;letter-spacing:-.025em;line-height:1;margin:0}
+/* topo */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
+.top.sc{border-color:var(--line)}
+.top .in{display:flex;align-items:center;gap:22px;min-height:68px}
+.logo{font-stretch:125%;font-weight:900;font-size:25px;letter-spacing:-.04em;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo i{width:26px;height:26px;border-radius:8px 8px 8px 2px;background:var(--cobalt);position:relative}
+.logo i::after{content:"";position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:50%;background:var(--tang);border:3px solid var(--paper)}
+.nav{display:flex;gap:4px;margin-left:auto}
+.nav a{text-decoration:none;font-weight:600;font-size:15px;padding:10px 12px;border-radius:999px;color:var(--ink-2)}
+.nav a:hover{background:rgba(20,22,43,.06);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border-radius:999px;border:0;background:var(--cobalt);color:#fff;font-weight:750;font-size:16px;text-decoration:none;cursor:pointer;transition:background .15s,transform .15s}
+.btn:hover{background:var(--cobalt-d)}.btn:active{transform:scale(.98)}
+.btn.sm{min-height:44px;padding:0 18px;font-size:15px}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.ghost:hover{background:rgba(20,22,43,.05)}
+@media (max-width:820px){.nav{display:none}.top .btn.sm{margin-left:auto}}
+/* hero */
+.hero{padding:44px 0 30px;overflow:hidden}
+.hero .in{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+@media (max-width:900px){.hero .in{grid-template-columns:1fr;gap:28px}}
+.hero h1{font-size:clamp(40px,5.4vw,74px)}
+.hero p.lead{font-size:clamp(18px,2.1vw,21px);color:var(--ink-2);max-width:31em;margin:22px 0 28px}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap}
+.proof{display:flex;gap:26px;flex-wrap:wrap;margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+.proof div{font-size:14px;color:var(--ink-2);max-width:13em}
+@media (max-width:560px){.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.proof div{font-size:12.5px}.proof b{font-size:24px}}.proof b{display:block;font-stretch:125%;font-size:30px;color:var(--ink);font-weight:850;letter-spacing:-.02em;line-height:1.1}
+/* celular */
+.stagewrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+.phone{--w:300px;width:var(--w);height:calc(var(--w)*2.06);border-radius:calc(var(--w)*.15);background:#0D0E1A;padding:11px;box-shadow:0 40px 80px -30px rgba(20,22,43,.55),0 0 0 1.5px rgba(255,255,255,.05) inset;position:relative}
+.phone::before{content:"";position:absolute;left:50%;top:18px;width:30%;height:22px;border-radius:999px;background:#0D0E1A;transform:translateX(-50%);z-index:2}
+.screen{width:100%;height:100%;border-radius:calc(var(--w)*.12);overflow:hidden;position:relative;background:#fff}
+.screen iframe{position:absolute;left:0;top:0;width:390px;border:0;transform-origin:0 0}
+.screen .ld{position:absolute;inset:0;display:grid;place-items:center;background:var(--paper);font-size:14px;color:var(--ink-2);transition:opacity .3s}
+.screen .ld.off{opacity:0;pointer-events:none}
+@media (max-width:900px){.phone{--w:min(76vw,300px)}}
+.switch{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:420px}
+.switch button{min-height:40px;padding:0 13px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-size:14px;font-weight:650;cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.now{font-size:14px;color:var(--ink-2);text-align:center}.now a{font-weight:700;color:var(--cobalt)}
+/* seções */
+section.blk{padding:84px 0 20px}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.sh h2{font-size:clamp(34px,5vw,56px);max-width:13em}
+.sh p{margin:0;color:var(--ink-2);max-width:26em}
+/* catálogo */
+.cats{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:18px}.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:transparent;font-weight:650;font-size:15px;cursor:pointer}
+.cats button[aria-pressed="true"]{background:var(--cobalt);color:#fff;border-color:var(--cobalt)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ni{background:var(--card);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;border:1.5px solid transparent;transition:border-color .15s,transform .15s}
+.ni:hover{border-color:var(--line);transform:translateY(-2px)}
+.ni .hd{display:flex;align-items:center;gap:12px}
+.ni .em{width:48px;height:48px;border-radius:14px;background:var(--paper);display:grid;place-items:center;font-size:26px;flex:none}
+.ni h3{font-size:19px;font-stretch:110%;letter-spacing:-.015em;line-height:1.1}
+.ni .md{font-size:13px;font-weight:700;color:var(--cobalt)}
+.ni p{margin:0;font-size:14.5px;color:var(--ink-2);flex:1}
+.ni .ac{display:flex;gap:8px}
+.ni .ac a,.ni .ac button{flex:1;min-height:42px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;border:0}
+.ni .ac .ver{background:var(--paper)}.ni .ac .ver:hover{background:#E9EBF3}
+.ni .ac .qb{background:var(--ink);color:#fff}
+.ni.on{border-color:var(--cobalt)}
+/* como funciona */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:s}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+.step{background:var(--ink);color:#fff;border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:12px;min-height:240px}
+.step::before{counter-increment:s;content:counter(s);font-stretch:125%;font-weight:900;font-size:64px;line-height:.8;color:var(--tang)}
+.step h3{font-size:24px;font-stretch:115%}.step p{margin:0;color:rgba(255,255,255,.72);font-size:15.5px}
+/* recursos */
+.feats{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;background:var(--line);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.ft{background:var(--card);padding:22px;display:flex;flex-direction:column;gap:6px}
+.ft b{font-size:17px}.ft span{font-size:14.5px;color:var(--ink-2)}
+/* planos */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:stretch}
+@media (max-width:900px){.plans{grid-template-columns:1fr}}
+.pl{background:var(--card);border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:14px;border:1.5px solid var(--line)}
+.pl.dest{background:var(--cobalt);color:#fff;border-color:var(--cobalt)}
+.pl .tg{align-self:flex-start;font-size:12.5px;font-weight:800;background:var(--tang);color:#fff;border-radius:999px;padding:5px 11px}
+.pl h3{font-size:24px;font-stretch:115%}
+.pl .pr{font-stretch:125%;font-weight:900;font-size:44px;letter-spacing:-.03em;line-height:1}.pl .pr small{font-size:16px;font-weight:600;font-stretch:100%;opacity:.75;letter-spacing:0}
+.pl ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;flex:1}
+.pl li{display:flex;gap:10px;font-size:15px}.pl li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.pl.dest li::before{background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%232E4BFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.pl .btn{width:100%}.pl.dest .btn{background:#fff;color:var(--cobalt)}
+.nota{font-size:14px;color:var(--ink-2);margin-top:14px}
+/* formulário */
+.qbox{background:var(--ink);color:#fff;border-radius:calc(var(--r) + 8px);padding:clamp(26px,5vw,56px);display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;margin-top:84px}
+@media (max-width:900px){.qbox{grid-template-columns:1fr}}
+.qbox h2{font-size:clamp(34px,5vw,54px)}.qbox>div>p{color:rgba(255,255,255,.7);margin:16px 0 0}
+form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){form.f{grid-template-columns:1fr}}
+.f label{display:grid;gap:6px;font-size:14px;font-weight:600;color:rgba(255,255,255,.8)}
+.f .full{grid-column:1/-1}
+.f input,.f select,.f textarea{min-height:52px;border-radius:14px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;padding:0 14px;font-size:16px}
+.f textarea{padding:12px 14px;min-height:90px;resize:vertical}
+.f select option{color:var(--ink)}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--tang);outline:0}
+.f .btn{background:var(--tang)}.f .btn:hover{background:#ea6a0c}
+.f .msg{font-size:14px;min-height:1.2em;color:#FFB98A}
+.ok{display:none;flex-direction:column;gap:12px;justify-content:center}
+.ok.on{display:flex}.ok h3{font-size:34px}.ok p{color:rgba(255,255,255,.75);margin:0}
+.lgpd{font-size:12.5px;color:rgba(255,255,255,.5)}
+/* perguntas */
+.faq{display:grid;gap:8px;max-width:820px}
+.faq details{background:var(--card);border-radius:18px;padding:0 20px}
+.faq summary{list-style:none;cursor:pointer;padding:18px 0;font-weight:750;font-size:17px;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:24px;line-height:1;color:var(--cobalt)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{margin:0 0 18px;color:var(--ink-2)}
+footer{padding:60px 0 40px;margin-top:84px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header class="top" id="top"><div class="in">
+  <a class="logo" href="/" aria-label="Zivoop, início"><i></i>zivoop</a>
+  <nav class="nav" aria-label="Seções"><a href="#modelos">Modelos</a><a href="#como">Como funciona</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a></nav>
+  <a class="btn sm" href="#quero">Quero meu site</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="in">
+  <div>
+    <h1>Seu negócio recebendo pedidos pelo WhatsApp.</h1>
+    <p class="lead">Sites prontos para 38 tipos de negócio. O cliente escolhe, monta o pedido ou marca o horário, e tudo chega organizado no seu WhatsApp. Sem aplicativo e sem comissão por venda.</p>
+    <div class="ctas"><a class="btn" href="#modelos">Ver os modelos</a><a class="btn ghost" href="#quero">Quero meu site</a></div>
+    <div class="proof"><div><b>38</b>modelos prontos, de pizzaria a pousada</div><div><b>0%</b>de comissão sobre os seus pedidos</div><div><b>Pix</b>com QR code no fim de cada pedido</div></div>
+  </div>
+  <div class="stagewrap">
+    <div class="phone" id="phone"><div class="screen"><div class="ld" id="ld">Abrindo o modelo…</div><iframe id="demo" title="Demonstração do site" loading="lazy"></iframe></div></div>
+    <div class="switch" id="switch" role="group" aria-label="Trocar o modelo no celular"></div>
+    <div class="now" id="now"></div>
+  </div>
+</div></section>
+
+<section class="blk" id="modelos"><div class="in">
+  <div class="sh"><h2>Escolha o seu negócio</h2><p>Todos os modelos funcionam de verdade. Abra, faça um pedido de teste e veja como o cliente compra.</p></div>
+  <div class="cats" id="cats" role="group" aria-label="Filtrar por tipo de negócio"></div>
+  <div class="grid" id="grid"></div>
+</div></section>
+
+<section class="blk" id="como"><div class="in">
+  <div class="sh"><h2>Do modelo ao primeiro pedido</h2><p>Você não precisa entender de site. A gente entrega pronto e você só divulga o link.</p></div>
+  <div class="steps">
+    <div class="step"><h3>Você escolhe o modelo</h3><p>Teste os modelos aqui e diga qual tem a cara do seu negócio.</p></div>
+    <div class="step"><h3>A gente monta com os seus dados</h3><p>Colocamos seus produtos ou serviços, preços, fotos, horários, taxa de entrega, chave Pix e o seu WhatsApp.</p></div>
+    <div class="step"><h3>Você divulga e recebe</h3><p>Coloque o link na bio do Instagram e no status. O pedido chega pronto no seu WhatsApp, com o total e a forma de pagamento.</p></div>
+  </div>
+</div></section>
+
+<section class="blk"><div class="in">
+  <div class="sh"><h2>O que vem em todo site</h2></div>
+  <div class="feats">
+    <div class="ft"><b>Pedido completo no WhatsApp</b><span>Itens, opções, endereço, troco e observações chegam numa mensagem só.</span></div>
+    <div class="ft"><b>Pix com QR code</b><span>Ao final do pedido, o cliente vê o valor e o código Pix da sua chave.</span></div>
+    <div class="ft"><b>Monte do seu jeito</b><span>Pizza, açaí, marmita e burger montados na tela, tirando ou pondo ingredientes.</span></div>
+    <div class="ft"><b>Agenda e reservas</b><span>Horários livres, calendário com preço por dia e sinal para garantir a data.</span></div>
+    <div class="ft"><b>Cartão fidelidade</b><span>A cada pedido, um selo. Na meta, o cliente ganha o prêmio que você escolher.</span></div>
+    <div class="ft"><b>Vira app no celular</b><span>O cliente instala o site na tela inicial e pede de novo com um toque.</span></div>
+    <div class="ft"><b>Entrega por bairro</b><span>Taxa diferente por bairro, pedido mínimo e frete grátis acima de um valor.</span></div>
+    <div class="ft"><b>Seu domínio</b><span>O site fica no seu endereço, com o seu nome, a sua logo e as suas cores.</span></div>
+  </div>
+</div></section>
+
+<section class="blk" id="planos"><div class="in">
+  <div class="sh"><h2>Planos</h2><p>Você escolhe entre pagar uma vez ou ter a gente cuidando do site todo mês.</p></div>
+  <div class="plans" id="plans"></div>
+  <p class="nota" id="planNota"></p>
+</div></section>
+
+<section class="in" id="quero" aria-labelledby="qT"><div class="qbox">
+  <div><h2 id="qT">Quero meu site</h2><p>Mande seus dados e a gente chama no WhatsApp para entender o seu negócio. Sem compromisso.</p></div>
+  <div>
+    <form class="f" id="form" novalidate>
+      <label>Seu nome<input name="nome" required maxlength="80" autocomplete="name"></label>
+      <label>WhatsApp com DDD<input name="whatsapp" required inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(00) 00000-0000"></label>
+      <label>Nome do negócio<input name="negocio" maxlength="80" autocomplete="organization"></label>
+      <label>Cidade<input name="cidade" maxlength="60" autocomplete="address-level2"></label>
+      <label>Tipo de negócio<select name="nicho" id="fNicho"></select></label>
+      <label>Plano<select name="plano" id="fPlano"></select></label>
+      <label class="full">Quer contar algo? <textarea name="mensagem" maxlength="500" placeholder="Ex.: tenho 40 produtos e faço entrega em 3 bairros"></textarea></label>
+      <div class="full"><button class="btn" type="submit" id="fBtn" style="width:100%">Pedir meu site</button></div>
+      <div class="full msg" id="fMsg" role="alert"></div>
+      <div class="full lgpd">Usamos seus dados só para falar com você sobre o site. Pode pedir para apagar quando quiser.</div>
+    </form>
+    <div class="ok" id="ok" role="status"><h3>Recebido!</h3><p id="okP">A gente chama você no WhatsApp em breve.</p><a class="btn ghost" style="color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)" href="#modelos">Ver mais modelos</a></div>
+  </div>
+</div></section>
+
+<section class="blk" id="duvidas"><div class="in">
+  <div class="sh"><h2>Dúvidas</h2></div>
+  <div class="faq">
+    <details><summary>Preciso pagar comissão por pedido?</summary><p>Não. O pedido vai direto para o seu WhatsApp e o pagamento cai na sua conta. A Zivoop não fica com nenhuma parte da venda.</p></details>
+    <details><summary>O cliente precisa baixar algum aplicativo?</summary><p>Não. Ele abre o link no navegador do celular. Se quiser, instala o site na tela inicial como se fosse um app.</p></details>
+    <details><summary>Quem coloca os produtos, preços e fotos?</summary><p>A gente coloca tudo para você na entrega. Depois, as mudanças de preço e produto podem ser feitas pela gente no plano mensal.</p></details>
+    <details><summary>Posso usar o meu próprio domínio?</summary><p>Pode. O site funciona no seu endereço (por exemplo, pizzariadobairro.com.br). O registro do domínio é seu.</p></details>
+    <details><summary>Meu negócio não está na lista. E agora?</summary><p>Mande os seus dados mesmo assim e conte o que você vende. Muitos negócios se encaixam num dos modelos de pedido, agendamento ou reserva.</p></details>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="in"><span><b>zivoop</b>, sites prontos para o comércio local</span><span id="ano"></span></div></footer>
+
+<script>
+/* ===== o que o dono da Zivoop muda aqui ===== */
+const ZIVOOP={
+  whatsapp:"",            /* ex.: "5511999999999". Vazio = esconde o botão de WhatsApp */
+  supabase:{url:"https://phswqjkytnkukqpbtoqd.supabase.co",key:"sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8"},
+  planos:[
+    {id:"unico",nome:"Site pronto",preco:"R$ 997",per:"pagamento único",itens:["Modelo do seu negócio montado com seus dados","Produtos, fotos, horários e Pix configurados","Publicado no seu domínio","30 dias de ajustes inclusos"]},
+    {id:"mensal",nome:"Site + cuidado mensal",preco:"R$ 79",per:"/mês",tag:"Mais escolhido",dest:true,itens:["Tudo do Site pronto, sem pagamento de entrada","Mudanças de preço, produto e foto sempre que precisar","Hospedagem e certificado de segurança inclusos","Suporte pelo WhatsApp"]},
+    {id:"anual",nome:"Anual",preco:"R$ 790",per:"/ano",itens:["Tudo do plano mensal","Dois meses de economia","Revisão do cardápio ou catálogo a cada trimestre"]}],
+  notaPlanos:"Domínio (.com.br) é registrado no seu nome, em registro.br, por cerca de R$ 40 por ano."
+};
+/* ============================================ */
+const NICHOS=[{"s":"mini-mercado","n":"Mini mercado","e":"🛒","c":"lojas","m":"Pedido","ex":"Mercadinho Bom Preço","t":"Mercado do bairro, faça a compra pelo celular e receba em casa"},{"s":"acougue","n":"Açougue","e":"🥩","c":"comida","m":"Pedido","ex":"Casa de Carnes Boi Bravo","t":"Açougue de bairro, corte do jeito que você pedir"},{"s":"padaria","n":"Padaria","e":"🥐","c":"comida","m":"Pedido","ex":"Padaria Trigo de Ouro","t":"Padaria e confeitaria, pão quentinho e encomendas de bolo"},{"s":"gas-agua","n":"Gás e água","e":"🔥","c":"lojas","m":"Pedido","ex":"Gás & Água Chama Azul","t":"Gás de cozinha e água mineral, entrega rápida no bairro"},{"s":"farmacia","n":"Farmácia","e":"💊","c":"saude","m":"Pedido","ex":"Farmácia Vida Mais","t":"Farmácia do bairro, higiene, beleza e medicamentos com orientação"},{"s":"floricultura","n":"Floricultura","e":"💐","c":"lojas","m":"Pedido","ex":"Floricultura Jardim Secreto","t":"Flores, buquês e presentes, entregamos com cartão"},{"s":"adega","n":"Adega","e":"🍷","c":"lojas","m":"Pedido","ex":"Adega Noite Boa","t":"Adega e conveniência, bebida gelada até tarde"},{"s":"acai","n":"Açaí","e":"🍧","c":"comida","m":"Pedido","ex":"Açaí da Ilha","t":"Açaí e sorvetes, monte o seu do seu jeito"},{"s":"autopecas","n":"Autopeças","e":"🔧","c":"servicos","m":"Pedido","ex":"Auto Peças Pistão","t":"Autopeças e acessórios, peça certa pro seu carro"},{"s":"oficina-mecanica","n":"Oficina mecânica","e":"🔧","c":"servicos","m":"Agendamento","ex":"Oficina Torque Certo","t":"Mecânica geral, agende a revisão sem fila"},{"s":"lava-jato","n":"Lava-jato","e":"🚿","c":"servicos","m":"Agendamento","ex":"Brilho Total Estética Automotiva","t":"Lava-jato e estética automotiva, agende e não pegue fila"},{"s":"veterinaria","n":"Veterinária","e":"🐾","c":"saude","m":"Agendamento","ex":"Clínica Veterinária Amigo Fiel","t":"Clínica veterinária, consultas, vacinas e exames"},{"s":"clinica-estetica","n":"Clínica de estética","e":"✨","c":"beleza","m":"Agendamento","ex":"Lumière Estética","t":"Clínica de estética, facial, corporal e bem-estar"},{"s":"academia","n":"Academia","e":"🏋️","c":"saude","m":"Agendamento","ex":"Academia Força Viva","t":"Musculação, funcional e pilates, agende sua aula experimental"},{"s":"escola-aulas","n":"Escola e aulas","e":"📚","c":"servicos","m":"Agendamento","ex":"Ponto de Aula","t":"Idiomas, música e reforço escolar, agende uma aula experimental"},{"s":"tatuagem","n":"Estúdio de tatuagem","e":"🖋️","c":"beleza","m":"Agendamento","ex":"Tinta Negra Tattoo","t":"Tattoo & piercing, conte sua ideia e reserve a sessão"},{"s":"fotografo","n":"Fotógrafo","e":"📷","c":"servicos","m":"Agendamento","ex":"Luz & Momento Fotografia","t":"Ensaios e eventos, reserve sua data"},{"s":"assistencia-celular","n":"Assistência de celular","e":"📱","c":"servicos","m":"Agendamento","ex":"Conserta Já Celulares","t":"Assistência técnica de celular, conserto rápido com garantia"},{"s":"hortifruti","n":"Hortifruti","e":"🥬","c":"comida","m":"Pedido","ex":"Quintal Hortifruti","t":"Frutas, verduras e legumes fresquinhos, entrega no bairro"},{"s":"distribuidora","n":"Distribuidora de bebidas","e":"🍺","c":"lojas","m":"Pedido","ex":"Gelada Express","t":"Distribuidora de bebidas, entrega rápida e gelada"},{"s":"materiais-construcao","n":"Materiais de construção","e":"🧱","c":"lojas","m":"Pedido","ex":"ConstruBem Materiais","t":"Material de construção, direto do depósito"},{"s":"loja-roupa","n":"Loja de roupas","e":"👗","c":"lojas","m":"Pedido","ex":"Boutique Lila","t":"Moda feminina, peças que vestem você"},{"s":"marmitaria","n":"Marmitaria","e":"🥗","c":"comida","m":"Pedido","ex":"Marmita Leve","t":"Comida fitness, congelada e do dia"},{"s":"pastelaria","n":"Pastelaria","e":"🥟","c":"comida","m":"Pedido","ex":"Império do Pastel","t":"Pastel na hora, caldo de cana geladinho"},{"s":"hamburgueria","n":"Hamburgueria","e":"🍔","c":"comida","m":"Pedido","ex":"Bendito Burger","t":"Hamburgueria artesanal, na chapa"},{"s":"pizzaria","n":"Pizzaria","e":"🍕","c":"comida","m":"Pedido","ex":"Bella Massa Pizzaria","t":"Pizzaria artesanal, forno a lenha"},{"s":"agropecuaria","n":"Agropecuária","e":"🌾","c":"lojas","m":"Pedido","ex":"Campo Forte Agropecuária","t":"Rações, sementes, adubos e ferramentas, entrega na cidade e na roça"},{"s":"salao","n":"Salão de beleza","e":"💇‍♀️","c":"beleza","m":"Agendamento","ex":"Studio Bella Hair","t":"Salão de beleza, cabelo, unhas & make"},{"s":"barbearia","n":"Barbearia","e":"💈","c":"beleza","m":"Agendamento","ex":"Barbearia Dom Rocha","t":"Barbearia clássica, hora marcada"},{"s":"studio-unhas","n":"Studio de unhas","e":"💅","c":"beleza","m":"Agendamento","ex":"Esmalteria Charme","t":"Unhas, Sobrancelha, Cílios"},{"s":"dentista","n":"Dentista","e":"🦷","c":"saude","m":"Agendamento","ex":"Sorriso Odonto","t":"Clínica odontológica, com hora marcada pela internet"},{"s":"petshop","n":"Pet shop","e":"🐶","c":"servicos","m":"Agendamento","ex":"Pet Amigo — Banho & Tosa","t":"Banho & Tosa, seu pet nas melhores mãos"},{"s":"personal","n":"Personal trainer","e":"💪","c":"saude","m":"Agendamento","ex":"Corpo em Foco — Personal Training","t":"Personal Training, Nova Aurora"},{"s":"pousada","n":"Pousada","e":"🌿","c":"lazer","m":"Reserva","ex":"Pousada Recanto Verde","t":"Pousada, natureza e sossego na serra"},{"s":"quadra-society","n":"Quadra society","e":"⚽","c":"lazer","m":"Reserva","ex":"Arena Gol de Placa","t":"Society, Areia, Churrasqueira"},{"s":"aluguel-festa","n":"Aluguel para festas","e":"🎉","c":"lazer","m":"Reserva","ex":"Festa & Alegria Locações","t":"Aluguel de brinquedos e equipamentos de festa"},{"s":"chacara","n":"Chácara de eventos","e":"🌞","c":"lazer","m":"Reserva","ex":"Chácara Recanto do Sol","t":"Chácara para lazer e eventos, reserve sua data"},{"s":"cinema","n":"Cinema","e":"🎬","c":"lazer","m":"Ingressos","ex":"Cine Aurora","t":"Escolha sua poltrona vendo a sala em 3D"}];
+const CATS=[["todos","Todos"],["comida","Comida"],["lojas","Lojas e entrega"],["beleza","Beleza"],["saude","Saúde e bem-estar"],["servicos","Serviços"],["lazer","Hospedagem e lazer"]];
+const DESTAQUE=["pizzaria","barbearia","acai","pousada","hamburgueria","cinema"];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const grande=()=>matchMedia("(min-width:901px)").matches;
+let cat="todos", atual="pizzaria";
+function phoneScale(){ const p=document.getElementById("phone"), f=document.getElementById("demo"), w=p.querySelector(".screen").clientWidth, h=p.querySelector(".screen").clientHeight, s=w/390;
+  f.style.transform=`scale(${s})`; f.style.height=(h/s)+"px"; }
+function mostrar(slug,rolar){ atual=slug; const n=NICHOS.find(x=>x.s===slug), f=document.getElementById("demo"), ld=document.getElementById("ld");
+  ld.classList.remove("off"); ld.textContent=`Abrindo ${n.n.toLowerCase()}…`; f.onload=()=>ld.classList.add("off"); f.src=`/modelos/${slug}/?embed=1`;
+  document.getElementById("now").innerHTML=`Você está vendo <b>${esc(n.ex)}</b>, modelo de ${esc(n.n.toLowerCase())}. <a href="/modelos/${slug}/" target="_blank" rel="noopener">Abrir em tela cheia</a>`;
+  document.querySelectorAll("#switch button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===slug));
+  document.querySelectorAll(".ni").forEach(c=>c.classList.toggle("on",c.dataset.s===slug));
+  if(rolar) document.getElementById("phone").scrollIntoView({behavior:"smooth",block:"center"}); }
+function ver(slug){ if(grande()) mostrar(slug,true); else window.open(`/modelos/${slug}/`,"_blank","noopener"); }
+function quero(slug){ document.getElementById("fNicho").value=slug; document.getElementById("quero").scrollIntoView({behavior:"smooth"}); setTimeout(()=>document.querySelector('#form [name="nome"]').focus({preventScroll:true}),500); }
+function renderCats(){ document.getElementById("cats").innerHTML=CATS.map(([k,l])=>`<button aria-pressed="${cat===k}" onclick="cat='${k}';renderCats();renderGrid()">${l}</button>`).join(""); }
+function renderGrid(){ document.getElementById("grid").innerHTML=NICHOS.filter(n=>cat==="todos"||n.c===cat).map(n=>`<article class="ni ${n.s===atual?"on":""}" data-s="${n.s}">
+  <div class="hd"><span class="em" aria-hidden="true">${n.e}</span><div><h3>${esc(n.n)}</h3><span class="md">${esc(n.m)}</span></div></div>
+  <p>${esc(n.t)}</p><div class="ac"><button class="ver" onclick="ver('${n.s}')">Ver ao vivo</button><button class="qb" onclick="quero('${n.s}')">Quero esse</button></div></article>`).join(""); }
+function renderPlans(){ document.getElementById("plans").innerHTML=ZIVOOP.planos.map(p=>`<div class="pl ${p.dest?"dest":""}">${p.tag?`<span class="tg">${esc(p.tag)}</span>`:""}<h3>${esc(p.nome)}</h3><div class="pr">${esc(p.preco)} <small>${esc(p.per)}</small></div><ul>${p.itens.map(i=>`<li>${esc(i)}</li>`).join("")}</ul><a class="btn" href="#quero" onclick="document.getElementById('fPlano').value='${p.id}'">Escolher ${esc(p.nome.toLowerCase())}</a></div>`).join("");
+  document.getElementById("planNota").textContent=ZIVOOP.notaPlanos||""; }
+function renderForm(){ document.getElementById("fNicho").innerHTML=`<option value="">Escolha</option>`+NICHOS.map(n=>`<option value="${n.s}">${esc(n.n)}</option>`).join("")+`<option value="outro">Outro</option>`;
+  document.getElementById("fPlano").innerHTML=`<option value="">Ainda não sei</option>`+ZIVOOP.planos.map(p=>`<option value="${p.id}">${esc(p.nome)}</option>`).join(""); }
+document.getElementById("form").addEventListener("submit",async e=>{ e.preventDefault(); const fd=new FormData(e.target), m=document.getElementById("fMsg"), b=document.getElementById("fBtn");
+  const nome=(fd.get("nome")||"").trim(), w=(fd.get("whatsapp")||"").replace(/\D/g,"");
+  if(nome.length<2){ m.textContent="Escreva seu nome."; e.target.nome.focus(); return; }
+  if(w.length<10||w.length>13){ m.textContent="Confira o WhatsApp: DDD e número, só com números."; e.target.whatsapp.focus(); return; }
+  m.textContent=""; b.disabled=true; b.textContent="Enviando…";
+  const body={p_nome:nome,p_whatsapp:w,p_negocio:fd.get("negocio")||"",p_nicho:fd.get("nicho")||"",p_cidade:fd.get("cidade")||"",p_plano:fd.get("plano")||"",p_mensagem:fd.get("mensagem")||"",p_origem:(document.referrer||"direto").slice(0,120)};
+  try{ const r=await fetch(ZIVOOP.supabase.url+"/rest/v1/rpc/zivoop_novo_lead",{method:"POST",headers:{"Content-Type":"application/json",apikey:ZIVOOP.supabase.key,Authorization:"Bearer "+ZIVOOP.supabase.key},body:JSON.stringify(body)});
+    if(!r.ok) throw new Error(r.status);
+    e.target.hidden=true; const ok=document.getElementById("ok"); ok.classList.add("on"); document.getElementById("okP").textContent=`Obrigado, ${nome.split(" ")[0]}. A gente chama você no WhatsApp (${fd.get("whatsapp")}) em breve.`;
+  }catch(err){ b.disabled=false; b.textContent="Pedir meu site"; m.textContent=ZIVOOP.whatsapp?"Não deu para enviar agora. Tente de novo ou fale direto no WhatsApp.":"Não deu para enviar agora. Confira a internet e tente de novo."; } });
+addEventListener("scroll",()=>document.getElementById("top").classList.toggle("sc",scrollY>8),{passive:true});
+addEventListener("resize",phoneScale);
+document.getElementById("ano").textContent="© "+new Date().getFullYear()+" Zivoop";
+document.getElementById("switch").innerHTML=DESTAQUE.map(s=>{ const n=NICHOS.find(x=>x.s===s); return `<button data-s="${s}" onclick="mostrar('${s}')">${n.e} ${esc(n.n)}</button>`; }).join("");
+renderCats(); renderGrid(); renderPlans(); renderForm(); phoneScale(); mostrar("pizzaria");
+</script>
+</body>
+</html>
