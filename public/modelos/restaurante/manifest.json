@@ -1,0 +1,26 @@
+{
+  "name": "Cantina Bella Vista",
+  "short_name": "Cantina Bella ",
+  "description": "Escolha a mesa no salão em 3D, reserve em segundos e, na mesa, peça pelo QR code, chame o garçom e peça a conta.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#10221B",
+  "theme_color": "#10221B",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

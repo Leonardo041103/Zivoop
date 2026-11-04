@@ -251,12 +251,17 @@ button.scan{border:1px solid rgba(242,181,68,.4)}
 .pd .no{min-height:44px;padding:0 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--ink-soft)}
 @media (max-width:480px){.pd{flex-wrap:wrap}.pd>div{flex-basis:100%}.manual{flex-wrap:wrap}.manual .foto{flex:1}}
 .pix .aviso{color:#4a3a10!important;background:#FFF4DA;border-color:#F2C46B}
+
+/* ônibus: poltronas numeradas */
+.st.num{font-size:10.5px;font-weight:700;color:rgba(255,255,255,.85);font-family:var(--fm)}
+.st.num.tk{color:transparent}
+.st.num.me::before{content:attr(data-n)}
 </style>
 </head>
 <body>
 <header class="in">
   <div class="logo"><i></i><span id="logoNome"></span></div>
-  <nav class="navb" aria-label="Telas"><a href="#" id="nCompra" aria-current="page">Ingressos</a><a href="#meus" id="nMeus">Meus ingressos</a><a href="#leitor" id="nLeitor" class="staff">Portaria</a></nav>
+  <nav class="navb" aria-label="Telas"><a href="#" id="nCompra" aria-current="page" data-t="Ingressos">Ingressos</a><a href="#meus" id="nMeus" data-t="meus">Meus ingressos</a><a href="#leitor" id="nLeitor" class="staff" data-t="portaria">Portaria</a></nav>
 </header>
 
 <div id="vCompra">
@@ -274,16 +279,16 @@ button.scan{border:1px solid rgba(242,181,68,.4)}
       <div class="media"><button id="bSom" hidden onclick="toggleSom()" aria-pressed="false">Ligar som</button></div>
       <div class="live" id="live" role="status" aria-live="polite"></div>
       <div class="ctl"><div class="grp" role="group" aria-label="Câmera">
-        <button id="cWhole" aria-pressed="true" onclick="setView('sala')">Sala inteira</button>
+        <button id="cWhole" aria-pressed="true" onclick="setView('sala')" data-t="verTudo">Sala inteira</button>
         <button id="cSeat" aria-pressed="false" onclick="setView('poltrona')" disabled>Da minha poltrona</button>
-        <button id="cFront" aria-pressed="false" onclick="setView('frente')">Da tela</button></div>
+        <button id="cFront" aria-pressed="false" onclick="setView('frente')" data-t="daFrente">Da tela</button></div>
         <div class="grp zoomg"><button aria-label="Aproximar" onclick="zoom(-2)">+</button><button aria-label="Afastar" onclick="zoom(2)">−</button></div></div>
     </section>
 
     <section class="mapcard" aria-labelledby="mapT">
       <h3 id="mapT">Escolha seus lugares</h3>
-      <p>Toque nas poltronas vermelhas aqui ou na sala em 3D. Depois use “Da minha poltrona” para ver a tela do seu lugar.</p>
-      <div class="screenbar"></div><div class="screenlbl">tela</div>
+      <p data-t="mapaDica">Toque nas poltronas vermelhas aqui ou na sala em 3D.</p>
+      <div class="screenbar"></div><div class="screenlbl" data-t="frente">tela</div>
       <div class="mapscroll"><div class="map" id="map"></div></div>
       <div class="legend"><span><i style="background:var(--velvet)"></i>Livre</span><span><i style="background:var(--taken)"></i>Ocupada</span><span><i style="background:var(--gold)"></i>Sua</span></div>
       <div class="picked" id="picked"></div>
@@ -300,17 +305,17 @@ button.scan{border:1px solid rgba(242,181,68,.4)}
   <main class="in reader">
     <div class="demo" id="demoBox" hidden>Modo demonstração: os ingressos ficam só neste aparelho. Para vender de verdade, preencha <code>supabase</code> no <code>dados.js</code> (veja o LEIA-ME).</div>
     <form class="login" id="login" hidden onsubmit="entrar(event)">
-      <h1>Portaria</h1><p>Entre com a conta da equipe do cinema.</p>
+      <h1 data-t="portaria">Portaria</h1><p data-t="equipe">Entre com a conta da equipe.</p>
       <label>E-mail<input type="email" id="lEmail" autocomplete="username" required></label>
       <label>Senha<input type="password" id="lSenha" autocomplete="current-password" required></label>
       <button class="b pri" type="submit">Entrar</button><span class="lmsg" id="lMsg" role="alert"></span>
     </form>
     <div id="painelR" hidden>
-      <div class="rhead"><h1>Portaria</h1><div class="rbtns"><a class="sair" href="#">Ver o site</a><button class="sair" id="bSair" onclick="sair()">Sair</button></div></div>
+      <div class="rhead"><h1 data-t="portaria">Portaria</h1><div class="rbtns"><a class="sair" href="#">Ver o site</a><button class="sair" id="bSair" onclick="sair()">Sair</button></div></div>
       <div class="rsels"><select class="rsel" id="rData" aria-label="Dia" onchange="fillReaderSess()"></select><select class="rsel" id="rSess" aria-label="Sessão" onchange="watchReader()"></select></div>
       <div class="count"><div><small>Pagos</small><b id="kV">0</b></div><div><small>Já entraram</small><b id="kE">0</b></div><div><small>Faltam</small><b id="kF">0</b></div></div>
       <div class="camwrap" id="camWrap" hidden><video id="camV" playsinline muted></video><span class="frame"></span><button class="camx" onclick="fecharCamera()">Fechar câmera</button></div>
-      <button class="scan" id="scanBtn" onclick="abrirCamera()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>Escanear ingressos<small>A câmera fica aberta e lê um QR atrás do outro</small></button>
+      <button class="scan" id="scanBtn" onclick="abrirCamera()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg><span data-t="escanear">Escanear ingressos</span><small>A câmera fica aberta e lê um QR atrás do outro</small></button>
       <div class="manual"><label class="foto">Foto do QR<input type="file" accept="image/*" capture="environment" id="scanIn" onchange="lerFoto(this.files[0]);this.value=''"></label><input id="codeIn" maxlength="8" placeholder="ou digite o código" autocomplete="off" aria-label="Código do ingresso"><button onclick="validarCodigo(document.getElementById('codeIn').value)">Validar</button></div>
       <div class="result" id="result" role="status" aria-live="assertive"></div>
       <section class="pend" id="pend"></section>
@@ -490,6 +495,17 @@ const SALA=Object.assign({filas:"ABCDEFGHIJK",porFila:12,corredor:6},CONFIG.sala
 const FILAS=String(SALA.filas).split(""), POR_FILA=+SALA.porFila, CORREDOR=+SALA.corredor;
 const RW=Math.max(13.4,POR_FILA*.8+2.4), BZ=FILAS.length*1.08+2.2+1.5;
 const RESERVA_MIN=+CONFIG.reservaMinutos||15;
+/* tipo de lugar: "cinema" (fileiras com letra) ou "onibus" (poltronas numeradas 2+2, corredor no meio) */
+const ONIBUS=CONFIG.tipo==="onibus";
+const SID=(f,fi,n)=>ONIBUS?String(fi*POR_FILA+n):f+n;
+const TIPOS=CONFIG.tipos||[["inteira","Inteira"],["meia","Meia"]];
+const T=Object.assign({ingresso:"ingresso",ingressos:"ingressos",Ingressos:"Ingressos",emCartaz:"Em cartaz no",lugar:"Poltrona",local:"Sala 1",
+  semSessao:"Este filme não tem sessão",verTudo:"Sala inteira",daFrente:"Da tela",frente:"tela",mapaDica:"Toque nas poltronas vermelhas aqui ou na sala em 3D. Depois use “Da minha poltrona” para ver a tela do seu lugar.",
+  portaria:"Portaria",equipe:"Entre com a conta da equipe do cinema.",escanear:"Escanear ingressos",mostreQR:"Mostre o QR na porta, pela tela do celular.",
+  confirma:"Assim que o cinema confirmar o pagamento, os ingressos abaixo ficam liberados. Esta tela atualiza sozinha.",regra:"Cada ingresso tem um QR code único. Ele é lido na porta e vale uma entrada.",
+  sessao:"sessão",pessoas:"pessoas",filmes:"Filmes",negocio:"o cinema",negocioCap:"O cinema",meus:"Meus ingressos"},CONFIG.textos||{});
+const precoT=(t,f=filmeAt(S.filme))=>((f&&f.precos)||PRECO)[t]||0;
+const tipoNome=t=>(TIPOS.find(x=>x[0]===t)||[t,t])[1];
 /* ========================================================================== */
 const pad=n=>String(n).padStart(2,"0");
 const isoDia=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
@@ -504,7 +520,7 @@ function seeded(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++)
 function diaLabel(iso){ const d=new Date(iso+"T12:00"); if(iso===HOJE) return "Hoje"; const am=new Date(); am.setDate(am.getDate()+1); if(iso===isoDia(am)) return "Amanhã"; return DIAS_SEM[d.getDay()]+" "+pad(d.getDate()); }
 function diaLongo(iso){ const d=new Date(iso+"T12:00"); return (iso===HOJE?"hoje, ":"")+d.toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}); }
 /* sessões de um filme num dia; as de hoje que já começaram somem */
-function sessoes(f,iso){ const d=new Date(iso+"T12:00").getDay(); if(f.dias&&!f.dias.includes(d)) return []; if(f.de&&iso<f.de) return []; if(f.ate&&iso>f.ate) return [];
+function sessoes(f,iso){ const d=new Date(iso+"T12:00").getDay(); if(f.datas&&!f.datas.includes(iso)) return []; if(f.dias&&!f.dias.includes(d)) return []; if(f.de&&iso<f.de) return []; if(f.ate&&iso>f.ate) return [];
   const agora=new Date(), min=agora.getHours()*60+agora.getMinutes();
   return (f.sess||[]).filter(([h])=>{ if(iso!==HOJE) return true; const [hh,mm]=h.split(":").map(Number); return hh*60+mm>min-10; }); }
 
@@ -515,10 +531,11 @@ function carregarSupabase(){ return new Promise(ok=>{ if(!REAL) return ok(null);
   const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"; s.onload=()=>ok(sb=window.supabase.createClient(SBC.url,SBC.anonKey)); s.onerror=()=>ok(null); document.head.appendChild(s); }); }
 const CODE_CH="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const novoCodigo=()=>{ const a=new Uint32Array(6); crypto.getRandomValues(a); return [...a].map(v=>CODE_CH[v%CODE_CH.length]).join(""); };
-const DEMO={ k:"cine-demo-ingressos", all(){ try{return JSON.parse(localStorage.getItem(this.k)||"[]");}catch(e){return [];} }, save(a){ try{localStorage.setItem(this.k,JSON.stringify(a));}catch(e){} },
+const PFX=(CONFIG.tipo||"cine")+"-"+String(CONFIG.nome||"").toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,20);
+const DEMO={ k:PFX+"-demo-ingressos", all(){ try{return JSON.parse(localStorage.getItem(this.k)||"[]");}catch(e){return [];} }, save(a){ try{localStorage.setItem(this.k,JSON.stringify(a));}catch(e){} },
   vivo(i){ return i.status==="pago"||(i.status==="reservado"&&Date.now()-i.criado<RESERVA_MIN*60000); } };
 const demoBase={}; function baseDemo(k){ if(REAL) return new Set(); if(demoBase[k]) return demoBase[k]; const r=seeded(k), set=new Set(), lot=.15+r()*.35;
-  FILAS.forEach((f,fi)=>{ for(let n=1;n<=POR_FILA;n++){ const c=1-Math.abs(n-(POR_FILA+1)/2)/((POR_FILA+1)/2), m=1-Math.abs(fi-FILAS.length*.55)/FILAS.length; if(r()<lot*(.5+.6*c*m)) set.add(f+n); } }); return demoBase[k]=set; }
+  FILAS.forEach((f,fi)=>{ for(let n=1;n<=POR_FILA;n++){ const c=1-Math.abs(n-(POR_FILA+1)/2)/((POR_FILA+1)/2), m=1-Math.abs(fi-FILAS.length*.55)/FILAS.length; if(r()<lot*(.5+.6*c*m)) set.add(SID(f,fi,n)); } }); return demoBase[k]=set; }
 const API={
   async ocupadas(sess){ if(REAL){ const {data,error}=await sb.rpc("cine_ocupadas",{p_sessao:sess}); if(error) throw error; return new Set((data||[]).map(x=>typeof x==="string"?x:x.cine_ocupadas)); }
     const s=new Set(baseDemo(sess)); DEMO.all().filter(i=>i.sessao===sess&&DEMO.vivo(i)).forEach(i=>s.add(i.poltrona)); return s; },
@@ -556,44 +573,46 @@ async function atualizarOcupacao(anim){ if(!S.hora) { OCUP=new Set(); renderAll(
 function vigiarSala(){ clearInterval(occTimer); occKey=sk(); OCUP=new Set(); atualizarOcupacao(false); occTimer=setInterval(()=>{ if(!document.hidden&&location.hash!=="#leitor") atualizarOcupacao(true); },12000); }
 
 /* ---------- interface ---------- */
-function renderDays(){ const out=[]; for(let i=0;i<(+CONFIG.diasVenda||7);i++){ const d=new Date(); d.setDate(d.getDate()+i); const iso=isoDia(d), tem=FILMES.some(f=>sessoes(f,iso).length);
+function renderDays(){ if(ONIBUS){ const f=filmeAt(S.filme), ds=(f.datas||[]).filter(d=>d>=HOJE).sort();
+    document.getElementById("days").innerHTML=ds.length?ds.map(iso=>`<button aria-pressed="${S.data===iso}" onclick="pickDay('${iso}')">${diaLabel(iso)}/${iso.slice(5,7)}</button>`).join(""):""; return; }
+  const out=[]; for(let i=0;i<(+CONFIG.diasVenda||7);i++){ const d=new Date(); d.setDate(d.getDate()+i); const iso=isoDia(d), tem=FILMES.some(f=>sessoes(f,iso).length);
     out.push(`<button aria-pressed="${S.data===iso}" ${tem?"":"disabled"} onclick="pickDay('${iso}')">${diaLabel(iso)}</button>`); } document.getElementById("days").innerHTML=out.join(""); }
 function renderFilms(){
-  document.getElementById("films").innerHTML=FILMES.map(f=>{ const n=sessoes(f,S.data).length; return `<button class="film" aria-pressed="${S.filme===f.id}" ${n?"":"data-off"} onclick="pickFilm('${f.id}')"><span class="poster" style="--art:${f.art||"linear-gradient(160deg,#333,#111)"};--cc:${f.cc||"#555"}">${f.cartaz?`<img src="${esc(f.cartaz)}" alt="">`:""}<span class="cl">${esc(f.c||"L")}</span>${f.trailer?'<span class="trl">Trailer</span>':""}${f.cartaz?"":`<span class="tg">${esc(f.tag||"")}</span><b>${esc(f.t)}</b><small>${esc(f.cred||"")}</small>`}</span><span class="nm">${esc(f.t)}</span><span class="gn">${esc(f.g||"")}${n?"":", sem sessão neste dia"}</span></button>`; }).join("");
+  document.getElementById("films").innerHTML=FILMES.map(f=>{ const n=sessoes(f,S.data).length; return `<button class="film" aria-pressed="${S.filme===f.id}" ${n?"":"data-off"} onclick="pickFilm('${f.id}')"><span class="poster" style="--art:${f.art||"linear-gradient(160deg,#333,#111)"};--cc:${f.cc||"#555"}">${f.cartaz?`<img src="${esc(f.cartaz)}" alt="">`:""}<span class="cl">${esc(f.c||"L")}</span>${f.trailer?'<span class="trl">Trailer</span>':""}${f.preco?`<span class="trl">${esc(f.preco)}</span>`:""}${f.cartaz?"":`<span class="tg">${esc(f.tag||"")}</span><b>${esc(f.t)}</b><small>${esc(f.cred||"")}</small>`}</span><span class="nm">${esc(f.t)}</span><span class="gn">${esc(f.g||"")}${n?"":(ONIBUS?"":", sem "+T.sessao+" neste dia")}</span></button>`; }).join("");
   const f=filmeAt(S.filme), total=FILAS.length*POR_FILA, ss=sessoes(f,S.data);
   document.getElementById("sess").innerHTML=ss.length?ss.map(([h,l])=>{ const o=LOT[sk(f.id,S.data,h)]||0, pct=Math.round(o/total*100), lot=total-o<=0;
-    return `<button aria-pressed="${S.hora===h}" ${lot?"disabled":""} onclick="pickSess('${h}')"><b>${h}</b><small>${esc(l||"")}${lot?", esgotada":`, ${total-o} livres`}</small><span class="lot"><i style="width:${pct}%"></i></span></button>`; }).join(""):`<p class="empty">Este filme não tem sessão ${S.data===HOJE?"hoje":"neste dia"}. Escolha outro dia ou outro filme.</p>`;
+    return `<button aria-pressed="${S.hora===h}" ${lot?"disabled":""} onclick="pickSess('${h}')"><b>${h}</b><small>${esc(l||"")}${lot?", esgotada":`, ${total-o} livres`}</small><span class="lot"><i style="width:${pct}%"></i></span></button>`; }).join(""):`<p class="empty">${esc(T.semSessao)} ${S.data===HOJE?"hoje":"neste dia"}. Escolha outro dia.</p>`;
 }
 async function carregarLotacao(){ const ks=[]; FILMES.forEach(f=>sessoes(f,S.data).forEach(([h])=>ks.push(sk(f.id,S.data,h)))); try{ LOT=await API.lotacao(ks); }catch(e){ LOT={}; } renderFilms(); }
 function escolherSessaoPadrao(){ const ss=sessoes(filmeAt(S.filme),S.data); if(!ss.find(([h])=>h===S.hora)) S.hora=ss.length?ss[0][0]:null; }
 function trocar(){ S.sel=[]; S.tipo={}; escolherSessaoPadrao(); renderFilms(); vigiarSala(); carregarLotacao(); if(scene){ setScreen(); applyTrailer(); } }
 function pickDay(iso){ S.data=iso; if(!sessoes(filmeAt(S.filme),iso).length){ const f=FILMES.find(x=>sessoes(x,iso).length); if(f) S.filme=f.id; } renderDays(); trocar(); }
-function pickFilm(id){ S.filme=id; trocar(); }
+function pickFilm(id){ S.filme=id; if(ONIBUS){ const f=filmeAt(id), ds=(f.datas||[]).filter(d=>d>=HOJE).sort(); if(ds.length&&!ds.includes(S.data)) S.data=ds[0]; renderDays(); } trocar(); }
 function pickSess(h){ S.hora=h; S.sel=[]; S.tipo={}; renderFilms(); vigiarSala(); }
 function renderMap(){
-  let h=""; FILAS.forEach(f=>{ h+=`<div class="mrow"><span class="lt">${f}</span>`; for(let n=1;n<=POR_FILA;n++){ const id=f+n, me=S.sel.includes(id), tk=taken(id)||!S.hora;
-      h+=`<button class="st ${me?"me":tk?"tk":""}" data-n="${n}" aria-label="Poltrona ${id}, ${me?"sua":tk?"ocupada":"livre"}" aria-pressed="${me}" ${tk&&!me?"aria-disabled=\"true\"":""} onclick="toggleSeat('${id}')">${id}</button>`; if(n===CORREDOR) h+=`<span class="aisle"></span>`; }
-    h+=`<span class="lt">${f}</span></div>`; });
+  let h=""; FILAS.forEach((f,fi)=>{ h+=`<div class="mrow"><span class="lt">${ONIBUS?"":f}</span>`; for(let n=1;n<=POR_FILA;n++){ const id=SID(f,fi,n), me=S.sel.includes(id), tk=taken(id)||!S.hora;
+      h+=`<button class="st ${me?"me":tk?"tk":""} ${ONIBUS?"num":""}" data-n="${ONIBUS?id:n}" aria-label="${T.lugar} ${id}, ${me?"sua":tk?"ocupada":"livre"}" aria-pressed="${me}" ${tk&&!me?"aria-disabled=\"true\"":""} onclick="toggleSeat('${id}')">${id}</button>`; if(n===CORREDOR) h+=`<span class="aisle"></span>`; }
+    h+=`<span class="lt">${ONIBUS?"":f}</span></div>`; });
   document.getElementById("map").innerHTML=h; }
-const totalSel=()=>S.sel.reduce((t,s)=>t+PRECO[S.tipo[s]||"inteira"],0);
+const totalSel=()=>S.sel.reduce((t,s)=>t+precoT(S.tipo[s]||TIPOS[0][0]),0);
 function renderPicked(){
-  document.getElementById("picked").innerHTML=S.sel.length?S.sel.map(s=>`<div class="tkt"><b>${s}</b><div class="types" role="group" aria-label="Tipo de ingresso da ${s}">${["inteira","meia"].map(t=>`<button aria-pressed="${(S.tipo[s]||"inteira")===t}" onclick="S.tipo['${s}']='${t}';renderPicked()">${t==="inteira"?"Inteira":"Meia"} ${brl(PRECO[t]).replace(",00","")}</button>`).join("")}</div><button class="x" aria-label="Tirar ${s}" onclick="toggleSeat('${s}')">×</button></div>`).join(""):`<p class="empty">Nenhuma poltrona escolhida.</p>`;
+  document.getElementById("picked").innerHTML=S.sel.length?S.sel.map(s=>`<div class="tkt"><b>${s}</b><div class="types" role="group" aria-label="Tipo de ingresso da ${s}">${TIPOS.map(([t,l])=>`<button aria-pressed="${(S.tipo[s]||TIPOS[0][0])===t}" onclick="S.tipo['${s}']='${t}';renderPicked()">${esc(l)} ${brl(precoT(t)).replace(",00","")}</button>`).join("")}</div><button class="x" aria-label="Tirar ${s}" onclick="toggleSeat('${s}')">×</button></div>`).join(""):`<p class="empty">Nenhuma poltrona escolhida.</p>`;
   document.getElementById("buy").disabled=!S.sel.length;
-  document.getElementById("buyL").textContent=S.sel.length?`Comprar ${S.sel.length} ingresso${S.sel.length>1?"s":""}`:"Escolha suas poltronas";
+  document.getElementById("buyL").textContent=S.sel.length?`Comprar ${S.sel.length} ${S.sel.length>1?T.ingressos:T.ingresso}`:"Escolha suas poltronas";
   document.getElementById("buyP").textContent=S.sel.length?brl(totalSel()):"";
   document.getElementById("cSeat").disabled=!S.sel.length;
   const total=FILAS.length*POR_FILA, oc=OCUP.size;
-  document.getElementById("badge3d").innerHTML=S.hora?`<b>${oc}</b> pessoas, ${total-oc} livres`:"Sem sessão";
+  document.getElementById("badge3d").innerHTML=S.hora?`<b>${oc}</b> ${T.pessoas}, ${total-oc} livres`:"Sem sessão";
 }
 function renderAll(rebuild=true){ renderMap(); renderPicked(); if(window.THREE&&scene){ if(rebuild) rebuildPeople(); else paintSeats(); } }
 function toggleSeat(id){
   if(!S.hora) return live("Escolha uma sessão");
   if(S.sel.includes(id)){ S.sel=S.sel.filter(x=>x!==id); removeMe(id); }
-  else{ if(taken(id)){ live(`A <b>${id}</b> já está ocupada`); return; } if(S.sel.length>=8){ live("Até 8 ingressos por compra"); return; } S.sel.push(id); if(scene){ sitDown(id,false,true); focusSeat(id); } }
+  else{ if(taken(id)){ live(`A <b>${id}</b> já está ocupada`); return; } if(S.sel.length>=8){ live("Até 8 "+T.ingressos+" por compra"); return; } S.sel.push(id); if(scene){ sitDown(id,false,true); focusSeat(id); } }
   renderMap(); renderPicked(); if(scene) paintSeats(); if(!S.sel.length&&S.view==="poltrona") setView("sala");
 }
 let liveT; function live(h){ const l=document.getElementById("live"); l.innerHTML=h; l.classList.add("on"); clearTimeout(liveT); liveT=setTimeout(()=>l.classList.remove("on"),2800); }
-function renderInfo(){ const c=CONFIG; document.getElementById("info").innerHTML=`<div><h2>Ingressos</h2><p>Inteira ${brl(PRECO.inteira)}, meia ${brl(PRECO.meia)}. ${esc(c.regraMeia||"")}</p><p>Cada ingresso tem um QR code único. Ele é lido na porta e vale uma entrada.</p></div><div><h2>Onde fica</h2><p>${esc(c.endereco||"")}</p>${c.maps?`<p><a href="${esc(c.maps)}" target="_blank" rel="noopener">Ver no mapa</a></p>`:""}${c.whatsapp&&!/SEU/.test(c.whatsapp)?`<p><a href="https://wa.me/${esc(c.whatsapp)}" target="_blank" rel="noopener">Falar no WhatsApp</a></p>`:""}<p class="staffl"><a href="#leitor">Portaria (equipe)</a></p></div>`; }
+function renderInfo(){ const c=CONFIG; document.getElementById("info").innerHTML=`<div><h2>${esc(T.Ingressos)}</h2><p>${TIPOS.map(([t,l])=>esc(l)+" "+brl(precoT(t))).join(", ")}. ${esc(c.regraMeia||"")}</p><p>${esc(T.regra)}</p></div><div><h2>Onde fica</h2><p>${esc(c.endereco||"")}</p>${c.maps?`<p><a href="${esc(c.maps)}" target="_blank" rel="noopener">Ver no mapa</a></p>`:""}${c.whatsapp&&!/SEU/.test(c.whatsapp)?`<p><a href="https://wa.me/${esc(c.whatsapp)}" target="_blank" rel="noopener">Falar no WhatsApp</a></p>`:""}<p class="staffl"><a href="#leitor">Portaria (equipe)</a></p></div>`; }
 
 /* ---------- seu boneco (estilo avatar do WhatsApp), guardado só neste aparelho ---------- */
 const AV_OPC={pele:["#F6D3B3","#E8B48C","#C98E65","#9C6644","#6B4128"],cabelo:[["curto","Curto"],["longo","Longo"],["cacheado","Cacheado"],["coque","Coque"],["bone","Boné"],["careca","Careca"]],
@@ -614,7 +633,9 @@ const C=window.THREE?{free:col("#7A1526"),taken:col("#34343F"),mine:col("#F2B544
 const SHIRTS=["#2D4C7C","#3F6B4F","#7B3F7B","#B0712E","#2E7B7B","#5A5A66","#A23B3B","#3B4BA0","#C9C2B0","#2B2B33","#D9762B","#4F7FBF"],
   PANTS=["#23262F","#2C3A55","#3B3330","#4A4A52","#1E2B3A"], SKIN=["#F6D3B3","#E8B48C","#C98E65","#9C6644","#6B4128"], HAIRC=["#1C1612","#1C1612","#4A2E1E","#8A5A33","#D9B77A","#9AA0A8"], HAIRS=["curto","curto","longo","cacheado","coque","bone","careca","longo","cacheado"];
 const MC={}; function mat(hex,o={}){ const k=hex+JSON.stringify(o); return MC[k]||(MC[k]=new THREE.MeshStandardMaterial({color:col(hex),roughness:.75,...o})); }
-function seatPos(fi,n){ const x=(n-(POR_FILA+1)/2)*.8+(n>CORREDOR?.35:-.35); return new THREE.Vector3(x, fi*.34, fi*1.08+2.2); }
+function seatPos(fi,n){ if(ONIBUS){ const xs=[-1.07,-.47,.47,1.07]; return new THREE.Vector3(xs[n-1]||0,0,fi*.95+1.25); }
+  const x=(n-(POR_FILA+1)/2)*.8+(n>CORREDOR?.35:-.35); return new THREE.Vector3(x, fi*.34, fi*1.08+2.2); }
+const BUSL=FILAS.length*.95+2.6; /* comprimento do salão do ônibus */
 function rounded(w,h,r){ const s=new THREE.Shape(); s.moveTo(-w/2+r,-h/2); s.lineTo(w/2-r,-h/2); s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r); s.lineTo(w/2,h/2-r); s.quadraticCurveTo(w/2,h/2,w/2-r,h/2); s.lineTo(-w/2+r,h/2); s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r); s.lineTo(-w/2,-h/2+r); s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2); return s; }
 const FCOL={neon:["#ff2e88","#2a0a55","#ff4fa0"],mare:["#7ec8e3","#0f4c75","#7ec8e3"],vovo:["#ffd36b","#e25822","#ffb347"],eco:["#c8ffe6","#0b2027","#7ff0c0"]};
 function setScreen(){ if(!screenCtx) return; const f=FILMES.find(x=>x.id===S.filme), x=screenCtx, W=1024,H=430, cols=f.tela||FCOL[f.id]||["#888","#222","#fff"]; const g=x.createLinearGradient(0,0,W,H);
@@ -634,13 +655,14 @@ function init3D(){
   renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.outputEncoding=THREE.sRGBEncoding; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
   const desk=matchMedia("(min-width:980px)").matches; renderer.shadowMap.enabled=desk; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   st.prepend(renderer.domElement); makeGeoms();
-  scene=new THREE.Scene(); scene.background=new THREE.Color("#0b0a12"); scene.fog=new THREE.Fog(0x0b0a12,24,44);
+  scene=new THREE.Scene(); scene.background=new THREE.Color(ONIBUS?"#BCD7EE":"#0b0a12"); scene.fog=ONIBUS?new THREE.Fog(0xBCD7EE,30,70):new THREE.Fog(0x0b0a12,24,44);
   camera=new THREE.PerspectiveCamera(48,1,.05,120);
-  scene.add(new THREE.HemisphereLight(0x9a94c8,0x120e18,.42));
+  scene.add(ONIBUS?new THREE.HemisphereLight(0xffffff,0x6b7a5a,.95):new THREE.HemisphereLight(0x9a94c8,0x120e18,.42));
   const key=new THREE.SpotLight(0xffe3b8,1.5,45,Math.PI/4,.6,1.2); key.position.set(0,12,15); key.target.position.set(0,0,7); key.castShadow=desk; key.shadow.mapSize.set(1024,1024); scene.add(key,key.target);
   const cv=document.createElement("canvas"); cv.width=1024; cv.height=430; screenCtx=cv.getContext("2d"); screenTex=new THREE.CanvasTexture(cv); screenTex.encoding=THREE.sRGBEncoding;
-  const sl=new THREE.PointLight(0xb9a6ff,1.4,24,1.5); sl.position.set(0,3.8,.2); scene.add(sl); window.SL=sl;
-  const scr=new THREE.Mesh(new THREE.PlaneGeometry(11,4.6),new THREE.MeshBasicMaterial({map:screenTex,toneMapped:false})); scr.position.set(0,3.9,-2.4); scene.add(scr); screenMesh=scr; setScreen();
+  const sl=new THREE.PointLight(0xb9a6ff,ONIBUS?.5:1.4,24,1.5); sl.position.set(0,ONIBUS?2.2:3.8,.2); scene.add(sl); window.SL=sl;
+  if(ONIBUS){ montarOnibus(); }
+  else { const scr=new THREE.Mesh(new THREE.PlaneGeometry(11,4.6),new THREE.MeshBasicMaterial({map:screenTex,toneMapped:false})); scr.position.set(0,3.9,-2.4); scene.add(scr); screenMesh=scr; setScreen();
   videoMesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xffffff,toneMapped:false})); videoMesh.position.set(0,3.9,-2.39); videoMesh.visible=false; scene.add(videoMesh); applyTrailer();
   const frame=new THREE.Mesh(new THREE.BoxGeometry(11.5,5.1,.1),mat("#050507",{roughness:1})); frame.position.set(0,3.9,-2.47); scene.add(frame);
   const stepM=mat("#1c1726",{roughness:.95}), carpet=mat("#2a1420",{roughness:1});
@@ -652,15 +674,42 @@ function init3D(){
   [-RW/2-.3,RW/2+.3].forEach(x=>{ const w=new THREE.Mesh(new THREE.BoxGeometry(.2,9,BZ+2.6),wallM); w.position.set(x,3,(BZ-2.6)/2); scene.add(w);
     for(let z=-1;z<BZ-.6;z+=2.2){ const p=new THREE.Mesh(new THREE.BoxGeometry(.08,3.2,1.8),panM); p.position.set(x-Math.sign(x)*.12,3.4,z); scene.add(p);
       const lamp=new THREE.Mesh(new THREE.BoxGeometry(.05,.5,.18),new THREE.MeshBasicMaterial({color:col(0xffcf8a)})); lamp.position.set(x-Math.sign(x)*.16,5.3,z); scene.add(lamp); } });
-  const backW=new THREE.Mesh(new THREE.BoxGeometry(RW+.8,9,.2),wallM); backW.position.set(0,3,BZ); scene.add(backW);
+  const backW=new THREE.Mesh(new THREE.BoxGeometry(RW+.8,9,.2),wallM); backW.position.set(0,3,BZ); scene.add(backW); }
   const armM=mat("#2a2733",{roughness:.5,metalness:.3});
-  FILAS.forEach((f,fi)=>{ for(let n=1;n<=POR_FILA;n++){ const id=f+n, g=new THREE.Group(), m=new THREE.MeshStandardMaterial({color:C.free.clone(),roughness:.85,emissive:new THREE.Color(0)});
+  FILAS.forEach((f,fi)=>{ for(let n=1;n<=POR_FILA;n++){ const id=SID(f,fi,n), g=new THREE.Group(), m=new THREE.MeshStandardMaterial({color:C.free.clone(),roughness:.85,emissive:new THREE.Color(0)});
     const cu=new THREE.Mesh(G.cush,m), bk=new THREE.Mesh(G.back,m); cu.castShadow=bk.castShadow=desk; cu.receiveShadow=true; cu.userData.id=bk.userData.id=id;
     const a1=new THREE.Mesh(G.arm,armM); a1.position.set(-.34,.44,.02); const a2=a1.clone(); a2.position.x=.34; g.add(cu,bk,a1,a2);
+    if(ONIBUS){ bk.scale.set(1,1.35,1); const enc=new THREE.Mesh(G.box,mat("#E8E4DA",{roughness:.9})); enc.scale.set(.42,.16,.05); enc.position.set(0,1.12,.33); g.add(enc); if(n===2||n===3){ a1.visible=n===3; a2.visible=n===2; } }
     g.position.copy(seatPos(fi,n)); g.userData={id,mat:m}; scene.add(g); seats[id]=g; } });
   ray=new THREE.Raycaster(); ptr=new THREE.Vector2();
   resize(); addEventListener("resize",resize); bindPointer(); rebuildPeople(); document.getElementById("loading").remove(); requestAnimationFrame(loop);
 }
+/* ônibus em corte (sem teto): piso, laterais com janelas, motorista, para-brisa com o destino, rodas e estrada */
+function montarOnibus(){ const L=BUSL, W=3.1, cor=CONFIG.corOnibus||"#1F4FA8";
+  const road=new THREE.Mesh(new THREE.PlaneGeometry(60,90),mat("#5B6168",{roughness:1})); road.rotation.x=-Math.PI/2; road.position.set(0,-.62,L/2); road.receiveShadow=true; scene.add(road);
+  for(let z=-30;z<L+30;z+=4){ const fx=new THREE.Mesh(new THREE.PlaneGeometry(.18,2),new THREE.MeshBasicMaterial({color:0xF2E6B8})); fx.rotation.x=-Math.PI/2; fx.position.set(3.4,-.61,z); scene.add(fx); }
+  const grass=new THREE.Mesh(new THREE.PlaneGeometry(30,90),mat("#7FA65A",{roughness:1})); grass.rotation.x=-Math.PI/2; grass.position.set(-19,-.615,L/2); scene.add(grass);
+  const piso=new THREE.Mesh(new THREE.BoxGeometry(W,.12,L+1.6),mat("#3B3F4A",{roughness:.9})); piso.position.set(0,-.06,L/2-.3); piso.receiveShadow=true; scene.add(piso);
+  const corr=new THREE.Mesh(new THREE.BoxGeometry(.52,.125,L),mat("#5A2B36",{roughness:1})); corr.position.set(0,-.055,L/2+.2); scene.add(corr);
+  const casco=mat(cor,{roughness:.45,metalness:.25}), saia=mat("#E9ECF2",{roughness:.5});
+  [-1,1].forEach(sd=>{ const x=sd*(W/2+.05);
+    const baixo=new THREE.Mesh(new THREE.BoxGeometry(.1,.95,L+1.6),casco); baixo.position.set(x,.38,L/2-.3); scene.add(baixo);
+    const faixa=new THREE.Mesh(new THREE.BoxGeometry(.11,.12,L+1.6),saia); faixa.position.set(x,.72,L/2-.3); scene.add(faixa);
+    const sub=new THREE.Mesh(new THREE.BoxGeometry(.14,.5,L+1.6),casco); sub.position.set(x,-.32,L/2-.3); scene.add(sub);
+    for(let i=0;i<FILAS.length;i+=2){ const z=i*.95+1.7, vid=new THREE.Mesh(new THREE.BoxGeometry(.04,.75,1.75),new THREE.MeshStandardMaterial({color:col("#9CC7E8"),transparent:true,opacity:.28,roughness:.05,metalness:.2})); vid.position.set(x,1.25,z); scene.add(vid);
+      const col2=new THREE.Mesh(new THREE.BoxGeometry(.09,.85,.08),casco); col2.position.set(x,1.25,z+.92); scene.add(col2); }
+    [1.1,L-1.2].forEach(z=>{ const roda=new THREE.Mesh(new THREE.CylinderGeometry(.48,.48,.32,24),mat("#1B1C20",{roughness:.8})); roda.rotation.z=Math.PI/2; roda.position.set(sd*(W/2+.12),-.14,z); scene.add(roda);
+      const cubo=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.34,16),mat("#B8BCC4",{metalness:.7,roughness:.3})); cubo.rotation.z=Math.PI/2; cubo.position.copy(roda.position); scene.add(cubo); }); });
+  const tras=new THREE.Mesh(new THREE.BoxGeometry(W+.2,1.6,.12),casco); tras.position.set(0,.2,L+.5); scene.add(tras);
+  const frente=new THREE.Mesh(new THREE.BoxGeometry(W+.2,.95,.12),casco); frente.position.set(0,.2,-1.1); scene.add(frente);
+  const painel=new THREE.Mesh(new THREE.BoxGeometry(W-.2,.3,.5),mat("#22252D",{roughness:.6})); painel.position.set(0,.75,-.82); scene.add(painel);
+  const cv=screenCtx.canvas; screenMesh=new THREE.Mesh(new THREE.PlaneGeometry(W,1.25),new THREE.MeshBasicMaterial({map:screenTex,toneMapped:false,transparent:true,opacity:.92})); screenMesh.position.set(0,1.55,-1.12); screenMesh.rotation.x=-.12; scene.add(screenMesh); setScreen();
+  videoMesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xffffff})); videoMesh.visible=false; scene.add(videoMesh);
+  const volante=new THREE.Mesh(new THREE.TorusGeometry(.2,.03,8,24),mat("#15161A")); volante.position.set(-1.0,.98,-.55); volante.rotation.x=-1.1; scene.add(volante);
+  const banco=new THREE.Group(); banco.add(new THREE.Mesh(G.cush,mat("#2A2D35")),new THREE.Mesh(G.back,mat("#2A2D35"))); banco.children[1].scale.set(1,1.35,1); banco.position.set(-1.0,0,-.15); scene.add(banco);
+  const mot=makePerson("motorista",false,{pele:"#C98E65",cabelo:"curto",corCabelo:"#1C1612",roupa:"#E9ECF2",calca:"#23262F",oculos:false,pipoca:false,ph:1}); mot.position.copy(banco.position); scene.add(mot); MOT=mot;
+  const porta=new THREE.Mesh(new THREE.BoxGeometry(.05,1.6,.9),new THREE.MeshStandardMaterial({color:col("#9CC7E8"),transparent:true,opacity:.35})); porta.position.set(W/2+.06,.6,-.45); scene.add(porta); }
+let MOT=null;
 function resize(){ const st=document.getElementById("stage"), w=st.clientWidth, h=st.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<600?58:46; camera.updateProjectionMatrix(); }
 
 /* ---------- bonecos: cabeça grande, olhos, sorriso, cabelo, braços no apoio, pernas dobradas ---------- */
@@ -723,10 +772,13 @@ function buildPreview(){ const cv=document.getElementById("avPrev"); if(!window.
 /* ---------- câmera: girar, inclinar, zoom com inércia; da poltrona, olhar em volta ---------- */
 const isPhone=()=>matchMedia("(max-width:600px)").matches;
 function setView(v){ const turns=Math.round(cam.th/(2*Math.PI))*2*Math.PI; S.view=v; ["cWhole","cSeat","cFront"].forEach((b,i)=>document.getElementById(b).setAttribute("aria-pressed",["sala","poltrona","frente"][i]===v));
-  cam.tyaw=0; cam.tpitch=0; if(v==="sala"){ cam.tx=0;cam.ty=1.2;cam.tz=7;cam.tr=isPhone()?17.5:16;cam.tth=turns;cam.tph=.62; }
+  cam.tyaw=0; cam.tpitch=0;
+  if(ONIBUS){ if(v==="sala"){ cam.tx=0;cam.ty=.4;cam.tz=BUSL/2;cam.tr=isPhone()?15:12.5;cam.tth=turns+.5;cam.tph=.95; }
+    if(v==="frente"){ S.view="frente"; cam.tx=0;cam.ty=.9;cam.tz=2;cam.tr=isPhone()?7.5:6.5;cam.tth=turns+Math.PI;cam.tph=.42; } return; }
+  if(v==="sala"){ cam.tx=0;cam.ty=1.2;cam.tz=7;cam.tr=isPhone()?17.5:16;cam.tth=turns;cam.tph=.62; }
   if(v==="frente"){ S.view="frente"; cam.tx=0;cam.ty=1.4;cam.tz=6.5;cam.tr=isPhone()?12:11;cam.tth=turns+Math.PI;cam.tph=.38; } }
 /* a câmera nunca sai da sala: se a órbita passaria da parede ou da tela, encurta a distância */
-function insideRoom(tg,ps){ const B={x:[-RW/2+.4,RW/2-.4],y:[.6,8.2],z:[-1.9,BZ-.4]}; let f=1;
+function insideRoom(tg,ps){ const B=ONIBUS?{x:[-30,30],y:[.6,30],z:[-30,BUSL+30]}:{x:[-RW/2+.4,RW/2-.4],y:[.6,8.2],z:[-1.9,BZ-.4]}; let f=1;
   for(const a of ["x","y","z"]){ const d=ps[a]-tg[a]; if(ps[a]>B[a][1]&&d>0) f=Math.min(f,(B[a][1]-tg[a])/d); if(ps[a]<B[a][0]&&d<0) f=Math.min(f,(B[a][0]-tg[a])/d); }
   if(f<1) ps.sub(tg).multiplyScalar(Math.max(.05,f)).add(tg); }
 function markSala(){ S.view="sala"; ["cWhole","cSeat","cFront"].forEach((b,i)=>document.getElementById(b).setAttribute("aria-pressed",i===0)); }
@@ -765,7 +817,7 @@ function loop(t){ requestAnimationFrame(loop); t=t||0;
   if(!cam.drag){ cam.tth=cam.tth+cam.vth; cam.tph=Math.max(.12,Math.min(1.25,cam.tph+cam.vph)); cam.vth*=.9; cam.vph*=.85; if(Math.abs(cam.vth)<1e-4) cam.vth=0; if(Math.abs(cam.vph)<1e-4) cam.vph=0; }
   const k=.12; for(const [a,b] of [["th","tth"],["ph","tph"],["r","tr"],["cx","tx"],["cy","ty"],["cz","tz"],["yaw","tyaw"],["pitch","tpitch"]]) cam[a]+=(cam[b]-cam[a])*k;
   const inSeat=S.view==="poltrona"&&S.sel.length;
-  if(inSeat){ const p=seats[S.sel.at(-1)].position; _pos.set(p.x,p.y+1.18,p.z+.02); _tgt.set(p.x*.3,3.6,-2.4).sub(_pos).normalize().applyAxisAngle(UP,cam.yaw); _tgt.y+=Math.sin(cam.pitch); _tgt.multiplyScalar(10).add(_pos); }
+  if(inSeat){ const p=seats[S.sel.at(-1)].position; _pos.set(p.x,p.y+1.18,p.z+.02); (ONIBUS?_tgt.set(p.x*.5+(p.x<0?-.9:.9),1.2,-1.6):_tgt.set(p.x*.3,3.6,-2.4)).sub(_pos).normalize().applyAxisAngle(UP,cam.yaw); _tgt.y+=Math.sin(cam.pitch); _tgt.multiplyScalar(10).add(_pos); }
   else { _tgt.set(cam.cx,cam.cy,cam.cz); _pos.set(_tgt.x+Math.sin(cam.th)*cam.r*Math.cos(cam.ph), _tgt.y+Math.sin(cam.ph)*cam.r, _tgt.z+Math.cos(cam.th)*cam.r*Math.cos(cam.ph)); }
   if(!inSeat) insideRoom(_tgt,_pos);
   camera.position.lerp(_pos,inSeat?.14:.1); look.lerp(_tgt,inSeat?.14:.1); camera.lookAt(look);
@@ -807,9 +859,9 @@ function copiar(t,msg){ (navigator.clipboard?navigator.clipboard.writeText(t):Pr
 let toastT; function toast(t){ let el=document.getElementById("toast"); if(!el){ el=document.createElement("div"); el.id="toast"; el.className="toast"; el.setAttribute("role","status"); document.body.appendChild(el); } el.textContent=t; el.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("on"),2200); }
 
 /* ---------- meus ingressos (guardados neste aparelho) ---------- */
-const MEUS={ k:"cine-meus", all(){ try{return JSON.parse(localStorage.getItem(this.k)||"[]");}catch(e){return [];} }, save(a){ try{localStorage.setItem(this.k,JSON.stringify(a.slice(-60)));}catch(e){} } };
+const MEUS={ k:PFX+"-meus", all(){ try{return JSON.parse(localStorage.getItem(this.k)||"[]");}catch(e){return [];} }, save(a){ try{localStorage.setItem(this.k,JSON.stringify(a.slice(-60)));}catch(e){} } };
 function ticketHTML(t,i){ const st=t.status||"reservado", ativo=st==="pago"&&!t.usado_em;
-  return `<div class="ticket ${ativo?"":"off"}" style="animation-delay:${(i||0)*90}ms"><div class="t"><small>${esc(t.titulo)}</small><b>${esc(diaLabel(t.data))}, ${esc(t.hora)}</b><span>${esc(CONFIG.salaNome||"Sala 1")}, ${esc(t.tipo)}</span><span class="seat">${esc(t.poltrona)}</span></div><div class="q">${qrSVG("ZVCINE|"+t.codigo)}<code>${esc(t.codigo)}</code></div>${st==="reservado"?'<span class="tag">Aguardando o Pix</span>':st==="cancelado"?'<span class="tag bad">Reserva expirada</span>':t.usado_em?'<span class="tag">Já usado</span>':""}</div>`; }
+  return `<div class="ticket ${ativo?"":"off"}" style="animation-delay:${(i||0)*90}ms"><div class="t"><small>${esc(t.titulo)}</small><b>${esc(diaLabel(t.data))}, ${esc(t.hora)}</b><span>${esc(CONFIG.salaNome||T.local)}, ${esc(tipoNome(t.tipo))}</span><span class="seat">${esc(t.poltrona)}</span></div><div class="q">${qrSVG("ZVCINE|"+t.codigo)}<code>${esc(t.codigo)}</code></div>${st==="reservado"?'<span class="tag">Aguardando o Pix</span>':st==="cancelado"?'<span class="tag bad">Reserva expirada</span>':t.usado_em?'<span class="tag">Já usado</span>':""}</div>`; }
 
 /* ---------- compra: seus dados → Pix → ingressos ---------- */
 let compra=null, statusTimer=null, contTimer=null;
@@ -819,7 +871,7 @@ function abrirCompra(){ if(!S.sel.length) return; const f=filmeAt(S.filme), ss=s
   let dados={}; try{ dados=JSON.parse(localStorage.getItem("cine-cliente")||"{}"); }catch(e){}
   abrirSheet(`<button class="shx" onclick="fecharSheet()" aria-label="Fechar">×</button><h2 id="shT">Finalizar compra</h2>
     <div class="resumo"><b>${esc(f.t)}</b><span>${esc(diaLongo(S.data))}, ${esc(S.hora)}${ss[1]?", "+esc(ss[1].toLowerCase()):""}</span>
-    ${S.sel.map(s=>`<div class="ln"><span>Poltrona ${s}, ${S.tipo[s]||"inteira"}</span><span>${brl(PRECO[S.tipo[s]||"inteira"])}</span></div>`).join("")}<div class="ln tot"><span>Total</span><span>${brl(totalSel())}</span></div></div>
+    ${S.sel.map(s=>`<div class="ln"><span>${T.lugar} ${s}, ${esc(tipoNome(S.tipo[s]||TIPOS[0][0]).toLowerCase())}</span><span>${brl(precoT(S.tipo[s]||TIPOS[0][0]))}</span></div>`).join("")}<div class="ln tot"><span>Total</span><span>${brl(totalSel())}</span></div></div>
     <form class="fdados" onsubmit="reservar(event)"><label>Seu nome<input id="fNome" required maxlength="80" autocomplete="name" value="${esc(dados.nome||"")}"></label>
     <label>WhatsApp<input id="fWhats" required inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(00) 00000-0000" value="${esc(dados.whats||"")}"></label>
     ${S.sel.some(s=>S.tipo[s]==="meia")?`<p class="aviso">Meia-entrada: leve o documento. Ele é conferido na porta.</p>`:""}
@@ -828,37 +880,37 @@ async function reservar(ev){ ev.preventDefault(); const nome=document.getElement
   if(whats.length<10) return toast("Confira o WhatsApp com DDD");
   try{ localStorage.setItem("cine-cliente",JSON.stringify({nome,whats})); }catch(e){}
   const b=document.getElementById("bRes"); b.disabled=true; b.textContent="Reservando…";
-  const f=filmeAt(S.filme), itens=S.sel.map(p=>({poltrona:p,tipo:S.tipo[p]||"inteira",valor:PRECO[S.tipo[p]||"inteira"]}));
+  const f=filmeAt(S.filme), itens=S.sel.map(p=>({poltrona:p,tipo:S.tipo[p]||TIPOS[0][0],valor:precoT(S.tipo[p]||TIPOS[0][0])}));
   try{ const r=await API.reservar({sessao:sk(),data:S.data,filme:f.id,titulo:f.t,hora:S.hora,itens,nome,whats});
     const tks=r.map(x=>({codigo:x.codigo,pedido:x.pedido,poltrona:x.poltrona,tipo:itens.find(i=>i.poltrona===x.poltrona).tipo,valor:+x.valor,titulo:f.t,data:S.data,hora:S.hora,sessao:sk(),status:"reservado",criado:Date.now()}));
     MEUS.save([...MEUS.all(),...tks]); compra={tks,total:tks.reduce((t,x)=>t+x.valor,0),pedido:tks[0].pedido,nome};
     S.sel.forEach(p=>OCUP.add(p)); S.sel=[]; S.tipo={}; renderAll(true); carregarLotacao(); telaPix();
   }catch(e){ if(e&&e.ocupadas){ live(`Alguém comprou ${e.ocupadas.join(", ")} antes. Escolha outra.`); fecharSheet(); atualizarOcupacao(false); return; }
     b.disabled=false; b.textContent="Reservar e pagar com Pix"; toast("Não deu para reservar agora. Confira a internet e tente de novo."); } }
-function waMsg(c){ return `*Ingressos ${CONFIG.nome}*\nPedido ${String(c.pedido).slice(0,8).toUpperCase()}, ${c.nome}\n${c.tks[0].titulo}, ${diaLabel(c.tks[0].data)} às ${c.tks[0].hora}\n${c.tks.map(t=>`Poltrona ${t.poltrona} (${t.tipo}): ${t.codigo}`).join("\n")}\n*Total:* ${brl(c.total)}`; }
+function waMsg(c){ return `*Ingressos ${CONFIG.nome}*\nPedido ${String(c.pedido).slice(0,8).toUpperCase()}, ${c.nome}\n${c.tks[0].titulo}, ${diaLabel(c.tks[0].data)} às ${c.tks[0].hora}\n${c.tks.map(t=>`${T.lugar} ${t.poltrona} (${tipoNome(t.tipo).toLowerCase()}): ${t.codigo}`).join("\n")}\n*Total:* ${brl(c.total)}`; }
 function telaPix(){ const c=compra, fim=Date.now()+RESERVA_MIN*60000, px=pixOk()?pixPayload(CONFIG.pix.chave,CONFIG.pix.nome||CONFIG.nome,CONFIG.pix.cidade||"",c.total,"CINE"+String(c.pedido).replace(/-/g,"").slice(0,12)):"";
   const wa=CONFIG.whatsapp&&!/SEU/.test(CONFIG.whatsapp)?`https://wa.me/${CONFIG.whatsapp}?text=`+encodeURIComponent(waMsg(c)+"\n\nJá fiz o Pix."):"";
-  abrirSheet(`<button class="shx" onclick="fecharSheet()" aria-label="Fechar">×</button><h2 id="shT">Pague com Pix</h2><p id="shP">Assim que o cinema confirmar o pagamento, os ingressos abaixo ficam liberados. Esta tela atualiza sozinha.</p>
-    <div class="pix"><div class="pv"><small>Valor</small><b>${brl(c.total)}</b><span id="cont"></span></div>${px?`<div class="pq">${qrSVG(px,"M")}</div><button class="b pri" onclick="copiar('${px}','Código Pix copiado')">Copiar código Pix</button>`:`<p class="aviso">O cinema ainda não cadastrou a chave Pix. Pague na bilheteria ou fale com o cinema.</p>`}</div>
-    ${wa?`<a class="b sec" href="${wa}" target="_blank" rel="noopener">Já paguei: avisar o cinema</a>`:""}
-    <div id="tickets" class="tks">${c.tks.map(ticketHTML).join("")}</div><p class="note">Os ingressos também ficam em “Meus ingressos”, neste aparelho.</p>`);
+  abrirSheet(`<button class="shx" onclick="fecharSheet()" aria-label="Fechar">×</button><h2 id="shT">Pague com Pix</h2><p id="shP">${esc(T.confirma)}</p>
+    <div class="pix"><div class="pv"><small>Valor</small><b>${brl(c.total)}</b><span id="cont"></span></div>${px?`<div class="pq">${qrSVG(px,"M")}</div><button class="b pri" onclick="copiar('${px}','Código Pix copiado')">Copiar código Pix</button>`:`<p class="aviso">${esc(T.negocioCap)} ainda não cadastrou a chave Pix. Fale pelo WhatsApp para pagar.</p>`}</div>
+    ${wa?`<a class="b sec" href="${wa}" target="_blank" rel="noopener">Já paguei: avisar ${esc(T.negocio)}</a>`:""}
+    <div id="tickets" class="tks">${c.tks.map(ticketHTML).join("")}</div><p class="note">Também ficam em “${esc(T.meus)}”, neste aparelho.</p>`);
   const tick=()=>{ const s=Math.max(0,fim-Date.now()); const el=document.getElementById("cont"); if(el) el.textContent=s?`Poltronas guardadas por ${Math.floor(s/60000)}:${pad(Math.floor(s/1000)%60)}`:"Tempo esgotado"; };
   tick(); clearInterval(contTimer); contTimer=setInterval(tick,1000); clearInterval(statusTimer); statusTimer=setInterval(checarCompra,8000); }
 async function checarCompra(){ if(!compra) return; let st; try{ st=await API.status(compra.tks.map(t=>t.codigo)); }catch(e){ return; } const m={}; st.forEach(x=>m[x.codigo]=x);
   compra.tks.forEach(t=>{ if(m[t.codigo]){ t.status=m[t.codigo].status; t.usado_em=m[t.codigo].usado_em; } }); salvarStatus(compra.tks);
   const el=document.getElementById("tickets"); if(el) el.innerHTML=compra.tks.map(ticketHTML).join("");
-  if(compra.tks.every(t=>t.status==="pago")){ clearInterval(statusTimer); clearInterval(contTimer); const h=document.getElementById("shT"); if(h) h.textContent="Ingressos confirmados"; const p=document.getElementById("shP"); if(p) p.textContent="Pagamento recebido. Mostre o QR de cada ingresso na porta, pela tela do celular."; const pix=document.querySelector(".pix"); if(pix) pix.remove(); }
-  else if(compra.tks.every(t=>t.status==="cancelado")){ clearInterval(statusTimer); const p=document.getElementById("shP"); if(p) p.textContent="O tempo para pagar acabou e as poltronas foram liberadas. Se você já pagou, fale com o cinema pelo WhatsApp."; } }
+  if(compra.tks.every(t=>t.status==="pago")){ clearInterval(statusTimer); clearInterval(contTimer); const h=document.getElementById("shT"); if(h) h.textContent=T.Ingressos+" confirmados"; const p=document.getElementById("shP"); if(p) p.textContent="Pagamento recebido. "+T.mostreQR+""; const pix=document.querySelector(".pix"); if(pix) pix.remove(); }
+  else if(compra.tks.every(t=>t.status==="cancelado")){ clearInterval(statusTimer); const p=document.getElementById("shP"); if(p) p.textContent="O tempo para pagar acabou e as poltronas foram liberadas. Se você já pagou, fale com "+T.negocio+" pelo WhatsApp."; } }
 function salvarStatus(tks){ const a=MEUS.all(); tks.forEach(t=>{ const x=a.find(y=>y.codigo===t.codigo); if(x){ x.status=t.status; x.usado_em=t.usado_em; } }); MEUS.save(a); }
 async function abrirMeus(){ let a=MEUS.all().filter(t=>t.data>=HOJE); if(a.length){ try{ const st=await API.status(a.map(t=>t.codigo)); a.forEach(t=>{ const x=st.find(y=>y.codigo===t.codigo); if(x){ t.status=x.status; t.usado_em=x.usado_em; } }); salvarStatus(a); }catch(e){} }
   a=a.filter(t=>t.status!=="cancelado").sort((x,y)=>(x.data+x.hora).localeCompare(y.data+y.hora));
-  abrirSheet(`<button class="shx" onclick="fecharSheet()" aria-label="Fechar">×</button><h2 id="shT">Meus ingressos</h2><p>${a.length?"Mostre o QR na porta. Ingressos guardados neste aparelho.":"Nenhum ingresso para os próximos dias neste aparelho."}</p><div class="tks">${a.map(ticketHTML).join("")}</div>${a.length?"":`<button class="b pri" onclick="fecharSheet()">Escolher um filme</button>`}`); }
+  abrirSheet(`<button class="shx" onclick="fecharSheet()" aria-label="Fechar">×</button><h2 id="shT">${esc(T.meus)}</h2><p>${a.length?esc(T.mostreQR)+" Ficam guardados neste aparelho.":"Nada para os próximos dias neste aparelho."}</p><div class="tks">${a.map(ticketHTML).join("")}</div>${a.length?"":`<button class="b pri" onclick="fecharSheet()">Escolher um filme</button>`}`); }
 
 /* ---------- portaria ---------- */
 let rTimer=null, LOG=[], camStream=null, camLoop=0, ultimoCod="", ultimoT=0, logado=false;
 async function initReader(){ document.getElementById("demoBox").hidden=REAL;
   if(REAL){ if(!sb) await carregarSupabase(); const {data}=await sb.auth.getSession(); logado=!!(data&&data.session);
-    if(logado){ const {data:eq}=await sb.rpc("cine_e_equipe"); if(!eq){ await sb.auth.signOut(); logado=false; document.getElementById("lMsg").textContent="Esta conta não está na equipe do cinema."; } } }
+    if(logado){ const {data:eq}=await sb.rpc("cine_e_equipe"); if(!eq){ await sb.auth.signOut(); logado=false; document.getElementById("lMsg").textContent="Esta conta não está na equipe."; } } }
   else logado=true;
   document.getElementById("login").hidden=logado; document.getElementById("painelR").hidden=!logado; document.getElementById("bSair").hidden=!REAL;
   if(logado) prepararPainel(); }
@@ -883,7 +935,7 @@ async function atualizarReader(){ const s=sessR(); if(!s) return; let docs; try{
   LOG=pagos.filter(d=>d.usado_em).sort((a,b)=>String(b.usado_em).localeCompare(String(a.usado_em))).slice(0,8);
   document.getElementById("log").innerHTML=LOG.length?`<h3>Últimas entradas</h3>`+LOG.map(d=>`<div><span>Poltrona <b>${esc(d.poltrona)}</b>, ${esc(d.tipo)}${d.nome?", "+esc(d.nome):""}</span><span>${hhmm(d.usado_em)}</span></div>`).join(""):""; }
 const hhmm=t=>{ const d=new Date(t); return isNaN(d)?"":pad(d.getHours())+":"+pad(d.getMinutes()); };
-async function marcar(pedido,st){ try{ await API.marcarPedido(pedido,st); toast(st==="pago"?"Pagamento confirmado. Os ingressos estão liberados.":"Reserva cancelada. As poltronas voltaram a ficar livres."); }catch(e){ toast("Não deu para salvar. Tente de novo."); } atualizarReader(); }
+async function marcar(pedido,st){ try{ await API.marcarPedido(pedido,st); toast(st==="pago"?"Pagamento confirmado. Já estão liberados.":"Reserva cancelada. As poltronas voltaram a ficar livres."); }catch(e){ toast("Não deu para salvar. Tente de novo."); } atualizarReader(); }
 function mostra(cls,h,seat,p){ const r=document.getElementById("result"); r.className="result on "+cls; r.innerHTML=`<span class="h">${h}</span>${seat?`<span class="seat">${esc(seat)}</span>`:""}<p>${p}</p>`; if(navigator.vibrate) navigator.vibrate(cls==="ok"?60:[80,60,80]); bip(cls==="ok"); }
 let actx=null; function bip(ok){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const o=actx.createOscillator(), g=actx.createGain(); o.frequency.value=ok?880:220; g.gain.value=.08; o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+(ok?.12:.35)); }catch(e){} }
 async function validarCodigo(raw){ const code=String(raw||"").trim().toUpperCase(); if(code.length<6) return mostra("warn","Código incompleto","","O código tem 6 letras e números, embaixo do QR.");
@@ -891,13 +943,13 @@ async function validarCodigo(raw){ const code=String(raw||"").trim().toUpperCase
   let r; try{ r=await API.validar(code,s); }catch(e){ return mostra("warn","Sem conexão","","Não deu para conferir agora. Confira a internet e tente de novo."); }
   document.getElementById("codeIn").value="";
   if(r.r==="ok") mostra("ok","Entrada liberada",r.poltrona,`${esc(r.titulo)}, ${esc(r.hora)}, ${esc(r.tipo)}${r.nome?", "+esc(r.nome):""}${r.tipo==="meia"?". Confira o documento de meia-entrada.":"."}`);
-  else if(r.r==="usado") mostra("bad","Já foi usado",r.poltrona,`Entrou às ${hhmm(r.usado_em)}. Cada ingresso vale uma entrada.`);
+  else if(r.r==="usado") mostra("bad","Já foi usado",r.poltrona,`Entrou às ${hhmm(r.usado_em)}. Cada código vale uma vez.`);
   else if(r.r==="nao_pago") mostra("warn","Pix não confirmado",r.poltrona,`Falta confirmar ${brl(r.valor)}. Confira o Pix e toque em “Pix recebido” na lista abaixo.`);
-  else if(r.r==="outra_sessao") mostra("warn","Outra sessão",r.poltrona,`Esse ingresso é para ${esc(r.titulo)}, ${esc(diaLabel(r.data))} às ${esc(r.hora)}.`);
+  else if(r.r==="outra_sessao") mostra("warn","Outra sessão",r.poltrona,`Esse código é para ${esc(r.titulo)}, ${esc(diaLabel(r.data))} às ${esc(r.hora)}.`);
   else if(r.r==="cancelado") mostra("bad","Reserva expirada",r.poltrona||"","O Pix não foi pago a tempo e a poltrona foi liberada.");
-  else mostra("bad","Ingresso não encontrado","","Esse código não é de um ingresso vendido pelo site.");
+  else mostra("bad","Ingresso não encontrado","","Esse código não foi vendido pelo site.");
   atualizarReader(); }
-function lidoQR(txt){ const m=/^ZVCINE\|([A-Z0-9]{6,8})$/.exec(String(txt).trim()); if(!m) return mostra("bad","QR desconhecido","","Esse QR não é um ingresso do cinema."); const now=Date.now(); if(m[1]===ultimoCod&&now-ultimoT<4000) return; ultimoCod=m[1]; ultimoT=now; validarCodigo(m[1]); }
+function lidoQR(txt){ const m=/^ZVCINE\|([A-Z0-9]{6,8})$/.exec(String(txt).trim()); if(!m) return mostra("bad","QR desconhecido","","Esse QR não foi gerado por este site."); const now=Date.now(); if(m[1]===ultimoCod&&now-ultimoT<4000) return; ultimoCod=m[1]; ultimoT=now; validarCodigo(m[1]); }
 async function abrirCamera(){ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return mostra("warn","Câmera indisponível","","Use “Foto do QR” ou digite o código.");
   try{ camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280},height:{ideal:720}},audio:false}); }catch(e){ return mostra("warn","Sem acesso à câmera","","Libere a câmera para este site nas configurações do navegador, ou use “Foto do QR”."); }
   const v=document.getElementById("camV"); v.srcObject=camStream; await v.play().catch(()=>{}); document.getElementById("camWrap").hidden=false; document.getElementById("scanBtn").hidden=true;
@@ -922,8 +974,9 @@ function route(){ const h=location.hash, leitor=h==="#leitor";
 addEventListener("hashchange",route);
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("sheet").classList.contains("on")) fecharSheet(); });
 (async()=>{
-  document.title=CONFIG.nome+" | Ingressos"; document.getElementById("logoNome").textContent=CONFIG.nome; document.getElementById("hTit").textContent="Em cartaz no "+CONFIG.nome;
+  document.title=CONFIG.nome+" | "+T.Ingressos; document.querySelectorAll("[data-t]").forEach(el=>{ if(T[el.dataset.t]!=null) el.textContent=T[el.dataset.t]; }); document.getElementById("logoNome").textContent=CONFIG.nome; document.getElementById("hTit").textContent=T.emCartaz+" "+CONFIG.nome;
   if(REAL) await carregarSupabase();
+  if(ONIBUS){ const prox=f=>(f.datas||[]).filter(d=>d>=HOJE).sort()[0]; const f0=FILMES.find(prox); if(f0){ S.filme=f0.id; S.data=prox(f0); } const dy=document.getElementById("days"), fl=document.getElementById("films"); fl.after(dy); }
   escolherSessaoPadrao(); if(!S.hora){ const f=FILMES.find(x=>sessoes(x,S.data).length); if(f){ S.filme=f.id; escolherSessaoPadrao(); } }
   renderAvatarUI(); document.getElementById("hint3d").textContent=matchMedia("(pointer:coarse)").matches?"Arraste para o lado para girar, use dois dedos para zoom":"Arraste para girar, role para zoom, toque numa poltrona";
   renderDays(); renderFilms(); renderInfo(); renderMap(); renderPicked();
