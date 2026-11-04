@@ -1,0 +1,1090 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Arena Vale do Sol | Ingressos com o estádio em 3D</title>
+<meta name="description" content="Escolha o setor vendo o estádio em 3D, veja o campo do seu lugar, pague com Pix e entre com o QR code.">
+<meta property="og:title" content="Arena Vale do Sol: escolha seu lugar vendo o estádio em 3D"><meta property="og:description" content="Escolha o setor vendo o estádio em 3D, veja o campo do seu lugar, pague com Pix e entre com o QR code."><meta property="og:image" content="og.jpg"><meta property="og:type" content="website">
+<meta name="theme-color" content="#0D1424">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "StadiumOrArena", "name": "Arena Vale do Sol", "description": "Escolha o setor vendo o estádio em 3D, veja o campo do seu lugar, pague com Pix e entre com o QR code.", "url": "https://zivoop.com/modelos/arena/", "address": {"@type": "PostalAddress", "streetAddress": "Av. dos Esportes, 1000, Vila Nova", "addressCountry": "BR"}}</script>
+<style>
+/* Estádio à noite: azul de refletor, amarelo de placar. Telas: site (ingressos), meus ingressos e portaria. */
+:root{
+  --bg:#0D1424; --bg2:#141E33; --bg3:#1C2843; --oil:#FFCC33; --oil2:#FFE07A; --tomato:#FF5A4E; --wood:#FFCC33;
+  --free:#4C8DFF; --busy:#3A4357; --ink:#EEF2FA; --soft:#A9B4CB; --line:rgba(238,242,250,.12); --chip:rgba(238,242,250,.06);
+  --ok:#3DDC84; --bad:#FF6B5E; --warn:#FFB547;
+  --fd:'Archivo',system-ui,sans-serif; --fb:'Archivo',system-ui,sans-serif; --fm:ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--oil);outline-offset:3px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.in{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--oil2)}
+
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 6px}
+.logo{font-family:var(--fd);font-weight:800;font-stretch:118%;font-size:21px;letter-spacing:-.01em;line-height:1.1;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:10px}
+.logo i{width:32px;height:32px;border-radius:10px;background:radial-gradient(ellipse 40% 26% at 50% 50%,#2BB36A 0 96%,transparent 100%),radial-gradient(ellipse 50% 38% at 50% 50%,var(--oil) 0 96%,transparent 100%),var(--bg3);display:inline-block;flex:none}
+.navb{display:flex;gap:6px}
+.navb a{white-space:nowrap;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);display:inline-flex;align-items:center;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none}
+.navb a:hover{border-color:rgba(245,239,227,.3)}
+@media (max-width:560px){.navb a.nm{display:none}}
+
+.hero{padding-block:18px 8px}
+.hero h1{font-family:var(--fd);font-weight:800;font-stretch:125%;font-size:clamp(30px,6vw,54px);line-height:1;letter-spacing:-.02em;margin:0 0 8px;max-width:16ch}
+.hero p{margin:0;color:var(--soft);max-width:56ch}
+
+/* barra de escolha: dia, pessoas, horário */
+.pick{display:grid;gap:14px;margin-top:22px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px}
+.pick .lab{font-size:13px;font-weight:600;color:var(--soft);margin:0 0 8px}
+.row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.row::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--chip);font-weight:600;font-size:15px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
+.chip small{font-weight:500;font-size:12px;color:var(--soft)}
+.chip[aria-pressed="true"]{background:var(--oil);border-color:var(--oil);color:#1a1503}
+.chip[aria-pressed="true"] small{color:#3a2c08}
+.chip.dia{min-width:62px;padding:6px 10px}
+.pp{display:flex;align-items:center;gap:12px}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.step button{width:44px;height:44px;font-size:22px;font-weight:600}
+.step button:hover{background:var(--chip)}
+.step output{min-width:44px;text-align:center;font-weight:700;font-size:18px}
+.pp span{color:var(--soft);font-size:14px}
+@media (min-width:860px){.pick{grid-template-columns:auto auto;align-items:end}.pick .horas{grid-column:1/-1}}
+.vazio{color:var(--soft);font-size:14px;padding:10px 0}
+
+/* salão: 3D + planta */
+.room{display:grid;gap:14px;margin-top:14px}
+@media (min-width:980px){.room{grid-template-columns:1.3fr 1fr;align-items:start}}
+.stage{position:relative;border-radius:20px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,#1d2c52,#070b14);min-height:340px;aspect-ratio:16/11;border:1px solid var(--line);touch-action:none}
+@media (max-width:600px){.stage{aspect-ratio:auto;height:62vh;max-height:520px}}
+.stage canvas{display:block;width:100%;height:100%}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--soft)}
+.ctl{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.grp{display:flex;background:rgba(8,12,24,.8);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:3px;pointer-events:auto}
+.grp button{min-height:38px;padding:0 11px;border-radius:9px;font-size:13px;font-weight:600;white-space:nowrap}
+.grp button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.zoomg button{width:38px;padding:0;font-size:19px}
+.hint3d{position:absolute;top:10px;left:12px;right:12px;font-size:12.5px;color:var(--soft);pointer-events:none;text-shadow:0 1px 6px #000}
+
+.plan{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.plan h2{font-family:var(--fd);font-weight:800;font-stretch:115%;font-size:22px;margin:0}
+.plan svg{width:100%;height:auto;display:block}
+.mesa2d{cursor:pointer}
+.mesa2d .tb{stroke:rgba(0,0,0,.35);stroke-width:1.5}
+.mesa2d .ch{fill:rgba(245,239,227,.22)}
+.mesa2d text{font:700 13px var(--fb);fill:#10221B;pointer-events:none}
+.mesa2d[data-st="livre"] .tb{fill:var(--free)}
+.mesa2d[data-st="sua"] .tb{fill:var(--oil);stroke:#fff;stroke-width:2.5}
+.mesa2d[data-st="ocupada"] .tb{fill:var(--busy)}
+.mesa2d[data-st="ocupada"] text,.mesa2d[data-st="chegada"] text,.mesa2d[data-st="pequena"] text,.mesa2d[data-st="grande"] text{fill:#E8EEE9}
+.mesa2d[data-st="chegada"] .tb{fill:#3A4F45;stroke-dasharray:4 3;stroke:rgba(245,239,227,.5)}
+.mesa2d[data-st="pequena"] .tb,.mesa2d[data-st="grande"] .tb{fill:#2E463B}
+.mesa2d[data-st="livre"]:hover .tb{fill:#A6E6BF}
+.mesa2d:focus-visible{outline:none}
+.mesa2d:focus-visible .tb{stroke:var(--oil2);stroke-width:3.5}
+/* painel: estados ao vivo */
+.mesa2d[data-st="s-livre"] .tb{fill:var(--free)}
+.mesa2d[data-st="s-ocupada"] .tb{fill:var(--oil)}
+.mesa2d[data-st="s-reservada"] .tb{fill:#8DB3E8}
+.mesa2d[data-chama="1"] .tb{fill:var(--tomato);animation:pisca 1s infinite alternate}
+.mesa2d[data-chama="1"] text{fill:#fff}
+@keyframes pisca{to{opacity:.55}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--soft);margin:0;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{width:13px;height:13px;border-radius:4px;display:inline-block}
+.sel{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.sel p{margin:0;color:var(--soft);font-size:14.5px}
+.sel b{color:var(--ink)}
+.linkb{color:var(--oil2);font-weight:600;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;padding:4px 0}
+
+.b{min-height:50px;padding:0 20px;border-radius:14px;font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;text-align:center}
+.b.pri{background:var(--oil);color:#1d1606}
+.b.pri:hover:not(:disabled){background:var(--oil2)}
+.b.sec{border:1px solid var(--line);color:var(--ink);background:var(--chip)}
+.b.wide{width:100%}
+.dock{position:sticky;bottom:0;z-index:5;padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 35%);display:none}
+.dock .b{width:100%;justify-content:space-between}
+@media (max-width:979px){.dock.on{display:block}.sel .b.pri{display:none}}
+
+/* cardápio */
+section.cardapio,section.info{padding-block:40px 10px}
+h2.sec{font-family:var(--fd);font-weight:800;font-stretch:115%;font-size:clamp(26px,4.4vw,34px);margin:0 0 6px}
+.cats{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:14px 0 6px;position:sticky;top:0;background:var(--bg);padding-block:8px;z-index:3}
+.cats::-webkit-scrollbar{display:none}
+.cats a{flex:none;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);display:inline-flex;align-items:center;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink)}
+.cat h3{font-family:var(--fd);font-weight:800;font-stretch:115%;font-size:21px;margin:22px 0 4px;color:var(--oil2)}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:13px 0;border-bottom:1px solid var(--line);align-items:center}
+.item b{font-size:16.5px}
+.item .tag{font-size:12px;font-weight:700;color:#1d1606;background:var(--oil);border-radius:6px;padding:1px 7px;margin-left:8px;vertical-align:2px}
+.item p{margin:0;color:var(--soft);font-size:14px;grid-column:1}
+.item .pr{font-weight:700;white-space:nowrap;grid-row:1;grid-column:2}
+.item .qty{grid-row:1/3;grid-column:2;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.add{min-height:40px;padding:0 14px;border-radius:11px;background:var(--chip);border:1px solid var(--line);font-weight:700}
+.add:hover{border-color:var(--oil)}
+.step.sm button{width:38px;height:38px;font-size:19px}
+.step.sm output{min-width:30px;font-size:16px}
+@media (min-width:900px){.menu-cols{columns:2;column-gap:48px}.cat{break-inside:avoid}}
+.info .grid{display:grid;gap:14px;margin-top:14px}
+@media (min-width:760px){.info .grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px}
+.card h3{margin:0 0 6px;font-size:15px;color:var(--soft);font-weight:600}
+.card p{margin:0}
+footer{padding-block:40px calc(30px + env(safe-area-inset-bottom,0px));color:var(--soft);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
+footer a{color:var(--soft)}
+
+/* folha (dialog) */
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(4,10,7,.6);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+.sheet .wrap{background:var(--bg2);border:1px solid var(--line);width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));animation:sobe .25s ease-out}
+@media (min-width:640px){.sheet{align-items:center}.sheet .wrap{border-radius:22px}}
+@keyframes sobe{from{transform:translateY(30px);opacity:0}}
+.sheet h2{font-family:var(--fd);font-weight:800;font-stretch:115%;font-size:25px;margin:0 0 4px}
+.sheet .sub{color:var(--soft);margin:0 0 14px;font-size:14.5px}
+.x{position:sticky;float:right;top:0;width:40px;height:40px;border-radius:50%;background:var(--chip);font-size:20px}
+form.f{display:flex;flex-direction:column;gap:12px}
+.f label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600;color:var(--soft)}
+.f input,.f textarea,.f select{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;color:var(--ink);font-weight:500}
+.f textarea{min-height:76px;resize:vertical}
+.f input:focus,.f textarea:focus{border-color:var(--oil);outline:none}
+.err{color:var(--bad);font-size:14px;min-height:1em;margin:0}
+.resumo{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:15px}
+.resumo dt{color:var(--soft)}
+.resumo dd{margin:0;font-weight:600}
+.ticket{background:var(--ink);color:var(--bg);border-radius:18px;padding:18px;text-align:center;margin:6px 0 14px}
+.ticket small{display:block;font-weight:600;color:#4a5b52}
+.ticket .cod{font:700 34px/1.1 ui-monospace,Menlo,monospace;letter-spacing:.14em;margin:4px 0 10px}
+.ticket .l{font-family:var(--fd);font-size:22px}
+.acts{display:flex;flex-direction:column;gap:10px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.minha{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.minha p{margin:0;font-size:14px;color:var(--soft)}
+.pill{display:inline-block;font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--chip);color:var(--soft);white-space:nowrap}
+.pill.ok{background:rgba(127,211,160,.15);color:var(--ok)}
+.pill.no{background:rgba(255,122,97,.14);color:var(--bad)}
+.pill.oil{background:rgba(233,185,73,.16);color:var(--oil2)}
+.pill.tom{background:var(--tomato);color:#fff}
+
+
+.room>*{min-width:0}
+/* eventos */
+.evs{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 0 6px;margin-top:22px}
+.evs::-webkit-scrollbar{display:none}
+.ev{flex:none;width:min(300px,78vw);text-align:left;border-radius:18px;border:1px solid var(--line);background:var(--bg2);padding:14px;display:grid;grid-template-columns:58px 1fr;gap:4px 12px;align-items:start}
+.ev[aria-pressed="true"]{border-color:var(--oil);box-shadow:inset 0 0 0 1px var(--oil)}
+.ev .dt{grid-row:1/4;border-radius:12px;background:var(--bg3);text-align:center;padding:8px 0;line-height:1.05}
+.ev .dt b{display:block;font-size:24px;font-weight:800;font-stretch:115%}
+.ev .dt small{font-size:12px;color:var(--soft);font-weight:600}
+.ev[aria-pressed="true"] .dt{background:var(--oil);color:#1a1503}.ev[aria-pressed="true"] .dt small{color:#3d3108}
+.ev strong{font-size:16px;line-height:1.2}
+.ev span{font-size:13px;color:var(--soft)}
+.ev em{font-style:normal;font-size:12.5px;font-weight:700;color:var(--oil2)}
+/* setores e lugares */
+.side{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.side h2{font-family:var(--fd);font-weight:800;font-stretch:115%;font-size:20px;margin:0}
+.sets{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.set{width:100%;display:grid;grid-template-columns:12px 1fr auto;gap:2px 10px;align-items:center;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--chip)}
+.set i{width:12px;height:12px;border-radius:4px;grid-row:1/3}
+.set b{font-size:15px}.set small{color:var(--soft);font-size:12.5px;grid-column:2}
+.set .pr{grid-row:1/3;grid-column:3;text-align:right;font-weight:700;font-size:15px;line-height:1.2}
+.set .pr small{display:block;font-weight:500}
+.set[aria-pressed="true"]{border-color:var(--oil);background:rgba(255,204,51,.08)}
+.set:disabled{opacity:.4}
+.det{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.det p{margin:0;font-size:14px;color:var(--soft)}
+.mapscroll{overflow:auto;max-height:340px;border-radius:12px;background:var(--bg);padding:10px;border:1px solid var(--line)}
+.campo{font-size:11px;color:var(--soft);text-align:center;border-top:3px solid #2BB36A;padding-top:3px;margin-bottom:8px;position:sticky;left:0}
+.fila{display:flex;gap:3px;align-items:center;margin-bottom:3px;width:max-content}
+.fila>span{width:18px;font-size:11px;color:var(--soft);font-weight:700;flex:none}
+.lg{width:15px;height:15px;border-radius:4px 4px 2px 2px;background:var(--c,#4C8DFF);flex:none;padding:0}
+.lg:disabled{background:var(--busy);opacity:1;cursor:not-allowed}
+.lg[aria-pressed="true"]{background:var(--oil);box-shadow:0 0 0 2px #fff}
+.lg.gap{margin-left:9px}
+.tks{display:grid;gap:8px}
+.tk{display:grid;grid-template-columns:1fr auto auto;gap:6px 8px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px}
+.tk b{font-size:14.5px}.tk small{display:block;color:var(--soft);font-size:12.5px}
+.tg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.tg button{min-height:34px;padding:0 9px;font-size:12.5px;font-weight:700}
+.tg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.rm{width:34px;height:34px;border-radius:9px;font-size:18px;color:var(--soft)}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:18px;padding-top:4px}
+/* pix e ingressos */
+.pix{background:#fff;color:#0D1424;border-radius:20px;padding:16px;display:grid;gap:10px;justify-items:center;text-align:center}
+.pix small{color:#55607a}.pix .v{font-size:32px;font-weight:800;font-stretch:115%}.pix .cont{font-size:13px;color:#a3261b;font-weight:700}
+.pix .pq svg{width:210px;height:210px}
+.pix .cc{width:100%;font:12px var(--fm);background:#eef1f6;border-radius:10px;padding:10px;word-break:break-all;max-height:74px;overflow:auto;text-align:left}
+.ing{background:var(--ink);color:var(--bg);border-radius:18px;padding:16px;display:grid;grid-template-columns:1fr 112px;gap:6px 14px;margin-bottom:10px;position:relative}
+.ing::before,.ing::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:var(--bg2);top:50%;margin-top:-10px}
+.ing::before{left:-10px}.ing::after{right:-10px}
+.ing .q svg{width:112px;height:112px;display:block}
+.ing .q{grid-row:1/4;grid-column:2}
+.ing small{color:#55607a;display:block;font-size:12px}
+.ing b{font-size:20px;font-weight:800;font-stretch:115%;line-height:1.1}
+.ing .cd{font:700 15px var(--fm);letter-spacing:.12em}
+.ing .pt{grid-column:1/-1;border-top:1px dashed #b9c1d1;padding-top:8px;font-size:13px;font-weight:600}
+.espera{display:flex;align-items:center;gap:10px;color:var(--soft);font-size:14px}
+.espera i{width:10px;height:10px;border-radius:50%;background:var(--warn);animation:pisca .9s infinite alternate}
+@keyframes pisca{to{opacity:.3}}
+/* portaria */
+.reader{max-width:640px;padding-block:16px 60px}
+.rhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.rhead h1{font-family:var(--fd);font-weight:800;font-stretch:118%;font-size:30px;margin:0}
+.rsels{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.rsel{min-height:46px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);padding:0 10px;font-size:15px;color:var(--ink)}
+.count{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.count div{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:12px}
+.count small{display:block;color:var(--soft);font-size:13px}
+.count b{font-size:28px;font-weight:800;font-stretch:115%}
+.scan{width:100%;min-height:140px;border-radius:24px;background:radial-gradient(120% 120% at 50% 0%,#2b2a12,#121424);border:1px solid rgba(255,204,51,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:20px;font-stretch:112%}
+.scan svg{width:50px;height:50px;color:var(--oil)}
+.scan small{font-weight:500;font-size:14px;color:var(--soft);font-stretch:100%}
+.camwrap{position:relative;border-radius:24px;overflow:hidden;background:#000;aspect-ratio:4/3;margin-bottom:10px}
+.camwrap video{width:100%;height:100%;object-fit:cover;display:block}
+.camwrap .frame{position:absolute;inset:18% 22%;border:3px solid var(--oil);border-radius:20px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}
+.camx{position:absolute;right:10px;bottom:10px;min-height:42px;padding:0 14px;border-radius:12px;background:rgba(0,0,0,.65);font-weight:700}
+.manual{display:flex;gap:8px;margin-top:10px}
+.manual input{flex:1;min-width:0;min-height:52px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);padding:0 14px;font:600 17px var(--fm);letter-spacing:.1em;text-transform:uppercase}
+.manual input::placeholder{text-transform:none;letter-spacing:0;font-family:var(--fb);font-weight:500}
+.manual button{min-height:52px;padding:0 18px;border-radius:14px;background:var(--ink);color:var(--bg);font-weight:700}
+.manual .foto{min-height:52px;padding:0 14px;border-radius:14px;border:1px solid var(--line);display:inline-flex;align-items:center;font-size:14px;font-weight:600;position:relative;white-space:nowrap;cursor:pointer}
+.manual .foto input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.result{margin-top:14px;border-radius:24px;padding:20px;display:none;flex-direction:column;gap:6px}
+.result.on{display:flex}
+.result.ok{background:rgba(61,220,132,.12);border:1px solid var(--ok)}
+.result.bad{background:rgba(255,107,94,.12);border:1px solid var(--bad)}
+.result.warn{background:rgba(255,181,71,.12);border:1px solid var(--warn)}
+.result .h{font-weight:800;font-stretch:118%;font-size:30px;line-height:1.05}
+.result.ok .h{color:var(--ok)}.result.bad .h{color:var(--bad)}.result.warn .h{color:var(--warn)}
+.result .seat{font-weight:800;font-stretch:118%;font-size:40px;line-height:1.05}
+.result p{margin:0;color:var(--soft)}
+.pend{margin-top:18px}
+.pend h3,.log h3{font-size:15px;color:var(--soft);margin:0 0 8px;font-weight:600}
+.pend .pp{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.pend .pp p{margin:0;font-size:13px;color:var(--soft)}
+.log{margin-top:18px;display:grid;gap:6px}
+.log div{display:flex;justify-content:space-between;gap:10px;background:var(--bg2);border-radius:12px;padding:10px 12px;font-size:14px}
+.demo{background:rgba(255,204,51,.08);border:1px solid rgba(255,204,51,.35);border-radius:14px;padding:12px 14px;font-size:14px;margin:12px 0}
+.login{max-width:400px;margin:40px auto}
+.sb{min-height:40px;padding:0 14px;border-radius:11px;border:1px solid var(--line);font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;background:var(--chip)}
+</style>
+</head>
+<body>
+<!-- site: eventos, estádio em 3D, setores e lugares -->
+<div id="vSite">
+<header class="in top">
+  <a class="logo" href="./"><i></i><span id="logoNome"></span></a>
+  <nav class="navb" aria-label="Seções"><a href="#ingressos" class="nm">Ingressos</a><a href="#meus" id="nMeus">Meus ingressos</a></nav>
+</header>
+<main>
+  <section class="in hero" id="ingressos">
+    <h1>Escolha seu lugar vendo o estádio</h1>
+    <p>Toque num setor no 3D ou na lista, veja o campo do seu lugar e pague com Pix. O QR do ingresso chega na hora.</p>
+    <div class="evs" id="evs" role="group" aria-label="Eventos"></div>
+    <div class="room">
+      <section class="stage" id="stage" aria-label="Estádio em 3D. A torcida aparece onde os ingressos já foram vendidos.">
+        <div class="loading" id="loading">Acendendo os refletores…</div>
+        <span class="hint3d" id="hint3d">Arraste para girar. Toque num setor para escolher.</span>
+        <div class="ctl"><div class="grp" role="group" aria-label="Câmera">
+          <button id="cTudo" aria-pressed="true" onclick="setView('tudo')">Estádio</button>
+          <button id="cSetor" aria-pressed="false" onclick="setView('setor')" disabled>Setor</button>
+          <button id="cLugar" aria-pressed="false" onclick="setView('lugar')" disabled>Do meu lugar</button></div>
+          <div class="grp zoomg"><button aria-label="Aproximar" onclick="zoom(-1)">+</button><button aria-label="Afastar" onclick="zoom(1)">−</button></div></div>
+      </section>
+      <section class="side" aria-labelledby="setT">
+        <h2 id="setT">Setores</h2>
+        <ul class="sets" id="sets"></ul>
+        <div class="det" id="det" hidden></div>
+        <div class="det" id="carr" hidden></div>
+      </section>
+    </div>
+  </section>
+  <section class="in info" aria-labelledby="infoT">
+    <h2 class="sec" id="infoT">Portões e meia-entrada</h2>
+    <div class="grid" id="infos"></div>
+  </section>
+</main>
+<footer class="in"><span id="foot"></span><a href="#portaria">Portaria</a></footer>
+<div class="dock" id="dock"><button class="b pri" onclick="abrirCompra()"><span id="dockL"></span><span id="dockP"></span></button></div>
+</div>
+
+<!-- portaria: login da equipe, leitor com câmera, Pix a confirmar -->
+<div id="vPortaria" hidden>
+  <main class="in reader">
+    <div class="demo" id="demoBox" hidden>Modo demonstração: os ingressos ficam só neste aparelho. Compre um no site e confira aqui. Para vender de verdade, preencha <code>supabase</code> no <code>dados.js</code> (veja o LEIA-ME).</div>
+    <form class="login f" id="login" hidden onsubmit="entrar(event)">
+      <h1 style="font-weight:800;font-stretch:118%;margin:0">Portaria</h1><p style="color:var(--soft);margin:0">Entre com a conta da equipe.</p>
+      <label>E-mail<input type="email" id="lEmail" autocomplete="username" required></label>
+      <label>Senha<input type="password" id="lSenha" autocomplete="current-password" required></label>
+      <button class="b pri" type="submit">Entrar</button><p class="err" id="lMsg" role="alert"></p>
+    </form>
+    <div id="painelR" hidden>
+      <div class="rhead"><h1>Portaria</h1><div style="display:flex;gap:8px"><a class="sb" href="./">Ver o site</a><button class="sb" id="bSair" onclick="sair()" hidden>Sair</button></div></div>
+      <div class="rsels"><select class="rsel" id="rEv" aria-label="Evento" onchange="atualizarR()"></select><select class="rsel" id="rPort" aria-label="Portão" onchange="atualizarR()"></select></div>
+      <div class="count"><div><small>Pagos</small><b id="kV">0</b></div><div><small>Já entraram</small><b id="kE">0</b></div><div><small>Faltam</small><b id="kF">0</b></div></div>
+      <div class="camwrap" id="camWrap" hidden><video id="camV" playsinline muted></video><span class="frame"></span><button class="camx" onclick="fecharCamera()">Fechar câmera</button></div>
+      <button class="scan" id="scanBtn" onclick="abrirCamera()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>Escanear ingressos<small>A câmera fica aberta e lê um QR atrás do outro</small></button>
+      <div class="manual"><label class="foto">Foto do QR<input type="file" accept="image/*" capture="environment" onchange="lerFoto(this.files[0]);this.value=''"></label><input id="codeIn" maxlength="8" placeholder="ou digite o código" autocomplete="off" aria-label="Código do ingresso"><button onclick="validarCodigo($('codeIn').value)">Validar</button></div>
+      <div class="result" id="result" role="status" aria-live="assertive"></div>
+      <section class="pend" id="pend"></section>
+      <div class="log" id="log"></div>
+    </div>
+  </main>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="wrap" id="shW"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="dados.js"></script>
+<script>
+/* ---------- dados (padrão do gerador + o que o dono pôs no dados.js) ---------- */
+const PADRAO={
+ "config": {
+  "nome": "Arena Vale do Sol",
+  "whatsapp": "SEU_WHATSAPP",
+  "endereco": "Av. dos Esportes, 1000, Vila Nova",
+  "pix": {
+   "chave": "SUA_CHAVE_PIX",
+   "nome": "Arena Vale do Sol",
+   "cidade": "Sua Cidade"
+  },
+  "portoes": {
+   "A": "Portão A · Av. dos Esportes (cadeiras e camarote)",
+   "B": "Portão B · Rua 3 (arquibancada leste)",
+   "C": "Portão C · Praça do Estádio (sul e pista)",
+   "D": "Portão D · Rua 5 (arquibancada norte)",
+   "E": "Portão E · Rua 7 (visitante)"
+  },
+  "tipos": [
+   [
+    "inteira",
+    "Inteira"
+   ],
+   [
+    "meia",
+    "Meia-entrada"
+   ]
+  ],
+  "regraMeia": "Meia-entrada para estudantes, pessoas com 60 anos ou mais, pessoas com deficiência e um acompanhante, e jovens de baixa renda (ID Jovem). Leve o documento: ele é conferido na entrada.",
+  "cotaMeia": 0.4,
+  "maxPorPedido": 6,
+  "reservaMinutos": 15,
+  "supabase": {
+   "url": "https://SEU-PROJETO.supabase.co",
+   "anonKey": "SUA_ANON_KEY"
+  }
+ },
+ "setores": [
+  {
+   "id": "central",
+   "nome": "Cadeira Central",
+   "lado": "O",
+   "ini": 0.38,
+   "fim": 0.62,
+   "filas": 12,
+   "marcado": true,
+   "portao": "A",
+   "cor": "#2F6BFF",
+   "coberto": true,
+   "desc": "Coberta, no meio do campo"
+  },
+  {
+   "id": "oeste-n",
+   "nome": "Cadeira Oeste Norte",
+   "lado": "O",
+   "ini": 0.12,
+   "fim": 0.36,
+   "filas": 12,
+   "marcado": true,
+   "portao": "A",
+   "cor": "#5E8DFF",
+   "coberto": true
+  },
+  {
+   "id": "oeste-s",
+   "nome": "Cadeira Oeste Sul",
+   "lado": "O",
+   "ini": 0.64,
+   "fim": 0.88,
+   "filas": 12,
+   "marcado": true,
+   "portao": "A",
+   "cor": "#5E8DFF",
+   "coberto": true
+  },
+  {
+   "id": "camarote",
+   "nome": "Camarote",
+   "lado": "O",
+   "ini": 0.43,
+   "fim": 0.57,
+   "filas": 3,
+   "marcado": true,
+   "portao": "A",
+   "cor": "#B98CFF",
+   "filaInicio": 13,
+   "coberto": true,
+   "desc": "Open bar e vista do alto"
+  },
+  {
+   "id": "leste",
+   "nome": "Arquibancada Leste",
+   "lado": "L",
+   "ini": 0.04,
+   "fim": 0.96,
+   "filas": 20,
+   "marcado": false,
+   "portao": "B",
+   "cor": "#2BB36A"
+  },
+  {
+   "id": "sul",
+   "nome": "Arquibancada Sul",
+   "lado": "S",
+   "ini": 0.05,
+   "fim": 0.95,
+   "filas": 18,
+   "marcado": false,
+   "portao": "C",
+   "cor": "#E5484D",
+   "desc": "Torcida da casa, atrás do gol"
+  },
+  {
+   "id": "norte",
+   "nome": "Arquibancada Norte",
+   "lado": "N",
+   "ini": 0.05,
+   "fim": 0.47,
+   "filas": 16,
+   "marcado": false,
+   "portao": "D",
+   "cor": "#F28C38"
+  },
+  {
+   "id": "visitante",
+   "nome": "Visitante",
+   "lado": "N",
+   "ini": 0.53,
+   "fim": 0.95,
+   "filas": 16,
+   "marcado": false,
+   "portao": "E",
+   "cor": "#9AA3B5",
+   "desc": "Entrada separada pela Rua 7"
+  },
+  {
+   "id": "pista",
+   "nome": "Pista",
+   "lado": "C",
+   "ini": 0,
+   "fim": 1,
+   "filas": 0,
+   "marcado": false,
+   "portao": "C",
+   "cor": "#FF5DA2",
+   "area": [
+    -26,
+    -10,
+    26,
+    38
+   ],
+   "capacidade": 3000,
+   "desc": "Em pé, de frente para o palco"
+  }
+ ],
+ "eventos": [
+  {
+   "id": "estadual",
+   "titulo": "Vale do Sol EC x Atlético Serrano",
+   "sub": "Campeonato Estadual · Série B · 12ª rodada",
+   "data": "2026-11-08",
+   "hora": "16:00",
+   "palco": "futebol",
+   "times": [
+    [
+     "VSE",
+     "#E5484D"
+    ],
+    [
+     "ATS",
+     "#9AA3B5"
+    ]
+   ],
+   "precos": {
+    "central": [
+     80,
+     40
+    ],
+    "oeste-n": [
+     60,
+     30
+    ],
+    "oeste-s": [
+     60,
+     30
+    ],
+    "camarote": [
+     180,
+     90
+    ],
+    "leste": [
+     40,
+     20
+    ],
+    "sul": [
+     30,
+     15
+    ],
+    "norte": [
+     30,
+     15
+    ],
+    "visitante": [
+     40,
+     20
+    ]
+   }
+  },
+  {
+   "id": "sertanejo",
+   "titulo": "Noite Sertaneja",
+   "sub": "Show com três duplas · portões às 19h",
+   "data": "2026-11-14",
+   "hora": "21:00",
+   "palco": "show",
+   "precos": {
+    "pista": [
+     90,
+     45
+    ],
+    "central": [
+     140,
+     70
+    ],
+    "oeste-n": [
+     110,
+     55
+    ],
+    "oeste-s": [
+     110,
+     55
+    ],
+    "camarote": [
+     320,
+     160
+    ],
+    "leste": [
+     70,
+     35
+    ]
+   }
+  },
+  {
+   "id": "rodeio",
+   "titulo": "Rodeio da Primavera",
+   "sub": "Montaria em touros e queima de fogos",
+   "data": "2026-11-20",
+   "hora": "20:00",
+   "palco": "rodeio",
+   "precos": {
+    "central": [
+     70,
+     35
+    ],
+    "oeste-n": [
+     50,
+     25
+    ],
+    "oeste-s": [
+     50,
+     25
+    ],
+    "camarote": [
+     150,
+     75
+    ],
+    "leste": [
+     35,
+     17.5
+    ],
+    "norte": [
+     30,
+     15
+    ],
+    "sul": [
+     30,
+     15
+    ]
+   }
+  }
+ ]
+};
+const DD=window.DADOS||{};
+const CONFIG=Object.assign({},PADRAO.config,DD.config||{});
+const SETORES=(DD.setores||PADRAO.setores);
+const EVENTOS=(DD.eventos||PADRAO.eventos);
+const TIPOS=CONFIG.tipos||[["inteira","Inteira"],["meia","Meia-entrada"]];
+const SLUG=CONFIG.nome.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-");
+const PFX="arena-"+SLUG;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const brl=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parseD=s=>{ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const DS=["dom","seg","ter","qua","qui","sex","sáb"], DL=["domingo","segunda","terça","quarta","quinta","sexta","sábado"], MS=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const diaTxt=s=>{ const d=parseD(s); return DL[d.getDay()]+", "+d.getDate()+" de "+MS[d.getMonth()]; };
+const hhmm=t=>{ const d=new Date(t); return pad(d.getHours())+":"+pad(d.getMinutes()); };
+function seeded(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;} return ()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return ((h^=h>>>16)>>>0)/4294967296;}; }
+const ls={get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }};
+let toastT; function toast(t){ let el=$("toast"); if(!el){ el=document.createElement("div"); el.id="toast"; el.className="toast"; el.setAttribute("role","status"); document.body.appendChild(el); } el.textContent=t; el.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("on"),3400); }
+const wa=txt=>{ const n=String(CONFIG.whatsapp||"").replace(/\D/g,""); return "https://wa.me/"+(n||"SEU_WHATSAPP")+"?text="+encodeURIComponent(txt); };
+const evPorId=id=>EVENTOS.find(e=>e.id===id), setPorId=id=>SETORES.find(s=>s.id===id);
+const tipoNome=t=>(TIPOS.find(x=>x[0]===t)||[t,t])[1];
+const precoDe=(ev,setor,tipo)=>{ const p=(ev.precos||{})[setor]; if(!p) return 0; return tipo==="meia"?(p[1]??p[0]/2):p[0]; };
+const portaoTxt=p=>(CONFIG.portoes||{})[p]||("Portão "+p);
+
+/* ---------- planta do estádio: onde fica cada lugar (usada no 3D, no mapa e na capacidade) ---------- */
+const CAMPO={W:68,L:105}, REC=8, ROWD=.85, ROWH=.42, BASE=1.2;
+const LADO={O:{o:[-(CAMPO.W/2+REC),-CAMPO.L/2],u:[-1,0],v:[0,1],len:CAMPO.L},L:{o:[CAMPO.W/2+REC,CAMPO.L/2],u:[1,0],v:[0,-1],len:CAMPO.L},
+  N:{o:[CAMPO.W/2,-(CAMPO.L/2+REC)],u:[0,-1],v:[-1,0],len:CAMPO.W},S:{o:[-CAMPO.W/2,CAMPO.L/2+REC],u:[0,1],v:[1,0],len:CAMPO.W}};
+const LAY={};
+SETORES.forEach(s=>{ if(s.lado==="C"){ LAY[s.id]={cap:s.capacidade||2000,lugares:[],porFila:0,filas:0}; return; }
+  const F=LADO[s.lado], esp=s.marcado?.6:.55, span=(s.fim-s.ini)*F.len, porFila=Math.floor(span/esp), sobra=(span-porFila*esp)/2, r0=(s.filaInicio||1)-1, lug=[];
+  for(let fi=0;fi<s.filas;fi++) for(let n=0;n<porFila;n++){ const a=s.ini*F.len+sobra+(n+.5)*esp, d=(r0+fi)*ROWD+.45;
+    lug.push({id:String.fromCharCode(65+fi)+(n+1),fi,n,x:F.o[0]+F.u[0]*d+F.v[0]*a,z:F.o[1]+F.u[1]*d+F.v[1]*a,y:BASE+(r0+fi)*ROWH}); }
+  LAY[s.id]={cap:s.capacidade||lug.length,lugares:lug,porFila,filas:s.filas,esp,r0}; });
+const capacidade=id=>LAY[id].cap;
+
+/* ---------- banco: Supabase de verdade ou demonstração neste aparelho ---------- */
+const SBC=CONFIG.supabase||{}; const REAL=!!(SBC.url&&SBC.anonKey&&!/SEU|xxxx/i.test(SBC.url+SBC.anonKey));
+let sb=null;
+function carregarSupabase(){ return new Promise(ok=>{ if(!REAL) return ok(null); if(sb) return ok(sb); if(window.supabase) return ok(sb=window.supabase.createClient(SBC.url,SBC.anonKey));
+  const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"; s.onload=()=>ok(sb=window.supabase.createClient(SBC.url,SBC.anonKey)); s.onerror=()=>ok(null); document.head.appendChild(s); }); }
+const DKEY=PFX+"-demo", MEUS=PFX+"-meus", MIN=CONFIG.reservaMinutos||15;
+const novoCod=(n=6)=>{ const a="ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<n;i++) s+=a[Math.floor(Math.random()*a.length)]; return s; };
+/* na demonstração o estádio já vem com parte dos ingressos vendidos (sempre os mesmos para cada evento) */
+const OCUPA_BASE={central:.55,"oeste-n":.42,"oeste-s":.38,camarote:.3,leste:.5,sul:.72,norte:.35,visitante:.22,pista:.45};
+function baseVendida(ev,setor){ const L=LAY[setor], r=seeded(ev+"|"+setor), p=(OCUPA_BASE[setor]??.4)*(.75+r()*.4);
+  if(setorDe(setor).marcado){ const s=new Set(); L.lugares.forEach(l=>{ const perto=1-l.fi/Math.max(1,L.filas)*.45, meio=1-Math.abs(l.n/(L.porFila-1)-.5)*.6; if(r()<p*perto*meio*1.25) s.add(l.id); }); return {lugares:s,n:s.size}; }
+  return {lugares:null,n:Math.floor(L.cap*p)}; }
+const setorDe=setPorId;
+function demo(){ const d=ls.get(DKEY,null)||{ing:[]}; const agora=Date.now(); d.ing.forEach(i=>{ if(i.status==="pendente"&&i.expira<agora) i.status="cancelado"; }); return d; }
+const salvarDemo=d=>ls.set(DKEY,d);
+const ATIVO=["pendente","pago","usado"];
+const ERROS={lugar_ocupado:"Um dos lugares acabou de ser vendido. Escolha outro.",setor_esgotado:"Esse setor esgotou.",meia_esgotada:"A cota de meia-entrada deste evento acabou. Troque para inteira.",
+  nome_obrigatorio:"Escreva seu nome.",evento_passou:"Esse evento já começou.",muitos_pendentes:"Você já tem pedidos esperando o Pix. Pague ou espere eles vencerem.",lugar_invalido:"Lugar inválido.",quantidade_invalida:"Quantidade inválida."};
+const erroTxt=e=>{ const m=String(e&&e.message||e); const k=Object.keys(ERROS).find(k=>m.includes(k)); return k?ERROS[k]:"Não deu certo agora. Confira a internet e tente de novo."; };
+const api={
+  async ocupacao(ev){ const out={}; Object.keys((evPorId(ev).precos||{})).forEach(s=>out[s]={lugares:new Set(),n:0});
+    if(!REAL){ Object.keys(out).forEach(s=>{ const b=baseVendida(ev,s); out[s]={lugares:b.lugares||new Set(),n:b.n}; });
+      demo().ing.forEach(i=>{ if(i.evento!==ev||!ATIVO.includes(i.status)||!out[i.setor]) return; out[i.setor].n++; if(i.lugar) out[i.setor].lugares.add(i.lugar); }); return out; }
+    await carregarSupabase(); const {data,error}=await sb.rpc("arena_ocupacao",{p_evento:ev}); if(error) throw error;
+    (data||[]).forEach(r=>{ const o=out[r.setor]||(out[r.setor]={lugares:new Set(),n:0}); o.n+=r.n; if(r.lugar) o.lugares.add(r.lugar); }); return out; },
+  async comprar(ev,itens,nome,zap){ if(!REAL){ const d=demo(), oc=await api.ocupacao(ev), e=evPorId(ev);
+      if(!nome.trim()) throw Error("nome_obrigatorio");
+      for(const it of itens){ if(it.lugar&&oc[it.setor].lugares.has(it.lugar)) throw Error("lugar_ocupado"); }
+      const porSetor={}; itens.forEach(it=>porSetor[it.setor]=(porSetor[it.setor]||0)+1); for(const s in porSetor) if(oc[s].n+porSetor[s]>capacidade(s)) throw Error("setor_esgotado");
+      const capTot=Object.keys(e.precos).reduce((a,s)=>a+capacidade(s),0), meiaJa=Math.round(Object.values(oc).reduce((a,o)=>a+o.n,0)*.3), meiaNova=itens.filter(i=>i.tipo==="meia").length;
+      if(meiaJa+meiaNova>Math.floor(capTot*(CONFIG.cotaMeia??.4))) throw Error("meia_esgotada");
+      const pedido=novoCod(8), exp=Date.now()+MIN*60000;
+      itens.forEach(it=>d.ing.push({codigo:novoCod(),pedido,evento:ev,setor:it.setor,lugar:it.lugar||null,tipo:it.tipo,preco:precoDe(e,it.setor,it.tipo),nome,whatsapp:zap,status:"pendente",criado:Date.now(),expira:exp}));
+      salvarDemo(d); return pedido; }
+    await carregarSupabase(); const {data,error}=await sb.rpc("arena_comprar",{p_evento:ev,p_itens:itens.map(i=>({setor:i.setor,lugar:i.lugar||null,tipo:i.tipo})),p_nome:nome,p_whatsapp:zap,p_minutos:MIN}); if(error) throw error; return data; },
+  async pedido(p){ if(!REAL) return demo().ing.filter(i=>i.pedido===p).map(i=>({...i,expira_em:i.expira}));
+    await carregarSupabase(); const {data,error}=await sb.rpc("arena_pedido",{p_pedido:p}); if(error) throw error; return (data||[]).map(i=>({...i,expira:Date.parse(i.expira_em)})); },
+  /* equipe */
+  async listar(ev){ if(!REAL) return demo().ing.filter(i=>i.evento===ev);
+    const {data,error}=await sb.from("arena_ingressos").select("codigo,pedido,setor,lugar,tipo,preco,nome,status,expira_em,usado_em,portao_uso").eq("evento",ev).in("status",["pendente","pago","usado"]).limit(20000); if(error) throw error; return data.map(i=>({...i,expira:Date.parse(i.expira_em)})); },
+  async confirmar(p){ if(!REAL){ const d=demo(); d.ing.forEach(i=>{ if(i.pedido===p&&i.status==="pendente") i.status="pago"; }); salvarDemo(d); return; }
+    const {error}=await sb.from("arena_ingressos").update({status:"pago"}).eq("pedido",p).eq("status","pendente"); if(error) throw error; },
+  async validar(cod,ev,portao){ if(!REAL){ const d=demo(), i=d.ing.find(x=>x.codigo===cod); if(!i) return {r:"nao_existe"}; const s=setPorId(i.setor);
+      if(i.evento!==ev) return {r:"outro_evento",evento:i.evento}; if(i.status==="cancelado") return {r:"cancelado",...i}; if(i.status==="pendente") return {r:"nao_pago",...i};
+      if(i.status==="usado") return {r:"usado",...i,portao:i.portao_uso}; if(portao&&s.portao!==portao) return {r:"portao_errado",...i,portao:s.portao};
+      i.status="usado"; i.usado_em=Date.now(); i.portao_uso=portao||null; salvarDemo(d); return {r:"ok",...i}; }
+    const {data,error}=await sb.rpc("arena_validar",{p_codigo:cod,p_evento:ev,p_portao:portao||""}); if(error) throw error; return data; }
+};
+
+/* ---------- site: escolha de setor e lugares ---------- */
+const S={ev:null,setor:null,sel:[],oc:{}};
+const noAr=()=>EVENTOS.filter(e=>parseD(e.data).getTime()+864e5>Date.now()).sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
+const ev=()=>evPorId(S.ev);
+const aVenda=id=>!!(ev().precos||{})[id];
+const restam=id=>Math.max(0,capacidade(id)-((S.oc[id]||{}).n||0)-S.sel.filter(x=>x.setor===id&&!x.lugar).length);
+const ocupado=(setor,lug)=>!!(S.oc[setor]&&S.oc[setor].lugares.has(lug));
+const PALCO={futebol:"Jogo",show:"Show",rodeio:"Rodeio"};
+function renderEventos(){ const l=noAr(); if(!S.ev||!l.find(e=>e.id===S.ev)) S.ev=(l[0]||EVENTOS[0]).id;
+  $("evs").innerHTML=l.map(e=>{ const d=parseD(e.data); return `<button class="ev" aria-pressed="${e.id===S.ev}" onclick="setEvento('${e.id}')"><span class="dt"><b>${d.getDate()}</b><small>${MS[d.getMonth()]} · ${DS[d.getDay()]}</small></span><em>${PALCO[e.palco]||"Evento"} · ${e.hora}</em><strong>${esc(e.titulo)}</strong><span>${esc(e.sub||"")}</span></button>`; }).join("")||'<p class="vazio">Nenhum evento à venda agora.</p>'; }
+async function setEvento(id){ if(S.sel.length&&id!==S.ev&&!confirm("Trocar de evento limpa os lugares escolhidos. Continuar?")) return; S.ev=id; S.sel=[]; S.setor=null; renderEventos(); await carregarOcupacao(); if(window.trocarEvento3D) trocarEvento3D(); }
+async function carregarOcupacao(silencioso){ try{ S.oc=await api.ocupacao(S.ev); }catch(e){ if(!silencioso) toast("Não deu para ver os lugares vendidos agora."); }
+  const antes=S.sel.length; S.sel=S.sel.filter(x=>!x.lugar||!ocupado(x.setor,x.lugar)); if(S.sel.length<antes) toast("Um lugar que você escolheu acabou de ser vendido.");
+  renderTudo(); }
+function renderTudo(){ renderSetores(); renderDet(); renderCarrinho(); if(window.paint3D) paint3D(); }
+function renderSetores(){ const e=ev(), ids=SETORES.filter(s=>aVenda(s.id)).sort((a,b)=>precoDe(e,b.id,"inteira")-precoDe(e,a.id,"inteira"));
+  $("sets").innerHTML=ids.map(s=>{ const r=restam(s.id), cap=capacidade(s.id), poucos=r>0&&r<cap*.1;
+    return `<li><button class="set" aria-pressed="${s.id===S.setor}" ${r<=0?"disabled":""} onclick="escolherSetor('${s.id}')"><i style="background:${s.cor}"></i><b>${esc(s.nome)}</b><small>${s.marcado?"Lugar marcado":"Lugar livre no setor"}${s.coberto?" · coberto":""} · portão ${s.portao}${r<=0?" · esgotado":poucos?" · últimos "+r:""}</small><span class="pr">${brl(precoDe(e,s.id,"inteira"))}<small>meia ${brl(precoDe(e,s.id,"meia"))}</small></span></button></li>`; }).join(""); }
+function escolherSetor(id,de3D){ if(!aVenda(id)){ toast("Esse setor não está à venda neste evento."); return; } if(restam(id)<=0&&!S.sel.some(x=>x.setor===id)){ toast("Esse setor esgotou."); return; }
+  S.setor=id; renderTudo(); if(window.focoSetor3D) focoSetor3D(id); if(!de3D&&matchMedia("(max-width:979px)").matches) setTimeout(()=>$("det").scrollIntoView({behavior:"smooth",block:"start"}),60); }
+function renderDet(){ const d=$("det"), s=setPorId(S.setor); if(!s){ d.hidden=true; return; } d.hidden=false; const e=ev();
+  if(s.marcado){ const L=LAY[s.id], meus=new Set(S.sel.filter(x=>x.setor===s.id).map(x=>x.lugar)); let h=`<p><b style="color:var(--ink)">${esc(s.nome)}</b>${s.desc?" · "+esc(s.desc):""}. Toque nos lugares azuis, aqui ou no 3D. A fila A é a mais perto do campo.</p><div class="mapscroll" id="mapa"><div class="campo">campo</div>`;
+    for(let fi=0;fi<L.filas;fi++){ const f=String.fromCharCode(65+fi); h+=`<div class="fila"><span>${f}</span>`; for(let n=1;n<=L.porFila;n++){ const id=f+n, oc=ocupado(s.id,id); h+=`<button class="lg${n>1&&(n-1)%14===0?" gap":""}" style="--c:${s.cor}" aria-label="Fila ${f}, lugar ${n}${oc?", vendido":""}" ${oc?"disabled":""} aria-pressed="${meus.has(id)}" onclick="toggleLugar('${s.id}','${id}')"></button>`; } h+=`</div>`; }
+    d.innerHTML=h+`</div><button class="linkb" onclick="melhores()">Escolher os melhores lugares juntos para mim</button>`; }
+  else { const n=S.sel.filter(x=>x.setor===s.id).length, r=restam(s.id);
+    d.innerHTML=`<p><b style="color:var(--ink)">${esc(s.nome)}</b>${s.desc?" · "+esc(s.desc):""}. Sem lugar marcado: você senta${s.lado==="C"?" ou fica":""} onde quiser no setor. ${r<=0?"Esgotado.":"Restam "+r.toLocaleString("pt-BR")+"."}</p>
+    <div class="pp"><div class="step"><button aria-label="Menos um ingresso" onclick="qtdGeral('${s.id}',-1)">−</button><output aria-live="polite">${n}</output><button aria-label="Mais um ingresso" onclick="qtdGeral('${s.id}',1)">+</button></div><span>ingressos neste setor · ${brl(precoDe(e,s.id,"inteira"))} cada</span></div>`; } }
+const maxPed=()=>CONFIG.maxPorPedido||6;
+function toggleLugar(setor,id){ const i=S.sel.findIndex(x=>x.setor===setor&&x.lugar===id);
+  if(i>=0) S.sel.splice(i,1); else { if(ocupado(setor,id)) return toast("Esse lugar já foi vendido."); if(S.sel.length>=maxPed()) return toast("Até "+maxPed()+" ingressos por compra."); S.sel.push({setor,lugar:id,tipo:"inteira"}); if(window.ultimoLugar3D) ultimoLugar3D(setor,id); }
+  S.setor=setor; renderTudo(); }
+function qtdGeral(setor,k){ if(k>0){ if(S.sel.length>=maxPed()) return toast("Até "+maxPed()+" ingressos por compra."); if(restam(setor)<=0) return toast("Esse setor esgotou."); S.sel.push({setor,lugar:null,tipo:"inteira"}); }
+  else { const i=S.sel.map(x=>x.setor===setor&&!x.lugar).lastIndexOf(true); if(i>=0) S.sel.splice(i,1); } renderTudo(); }
+function melhores(){ const s=setPorId(S.setor), L=LAY[s.id], q=Math.max(1,S.sel.filter(x=>x.setor===s.id).length||2); S.sel=S.sel.filter(x=>x.setor!==s.id);
+  let best=null; for(let fi=0;fi<L.filas;fi++) for(let n=1;n+q-1<=L.porFila;n++){ let ok=true; for(let k=0;k<q;k++) if(ocupado(s.id,String.fromCharCode(65+fi)+(n+k))){ ok=false; break; } if(!ok) continue;
+    const meio=Math.abs(n+(q-1)/2-(L.porFila+1)/2)/L.porFila, sc=meio*2+Math.abs(fi-L.filas*.35)/L.filas; if(!best||sc<best.sc) best={fi,n,sc}; }
+  if(!best) return toast("Não há "+q+" lugares juntos livres neste setor.");
+  for(let k=0;k<q&&S.sel.length<maxPed();k++) S.sel.push({setor:s.id,lugar:String.fromCharCode(65+best.fi)+(best.n+k),tipo:"inteira"});
+  if(window.ultimoLugar3D) ultimoLugar3D(s.id,S.sel[S.sel.length-1].lugar); renderTudo(); toast("Fila "+String.fromCharCode(65+best.fi)+", lugares "+best.n+" a "+(best.n+q-1)+"."); }
+const total=()=>S.sel.reduce((a,x)=>a+precoDe(ev(),x.setor,x.tipo),0);
+function setTipo(i,t){ S.sel[i].tipo=t; renderCarrinho(); }
+function tirar(i){ S.sel.splice(i,1); renderTudo(); }
+function renderCarrinho(){ const c=$("carr"), n=S.sel.length; c.hidden=!n; $("dock").classList.toggle("on",!!n);
+  if(!n) return; const e=ev();
+  c.innerHTML=`<h2 style="font-size:17px">Seus ingressos</h2><div class="tks">${S.sel.map((x,i)=>{ const s=setPorId(x.setor); return `<div class="tk"><div><b>${esc(s.nome)}</b><small>${x.lugar?"Fila "+x.lugar[0]+", lugar "+x.lugar.slice(1):"Sem lugar marcado"} · ${brl(precoDe(e,x.setor,x.tipo))}</small></div>
+    <span class="tg" role="group" aria-label="Tipo do ingresso">${TIPOS.map(([k,l])=>`<button aria-pressed="${x.tipo===k}" onclick="setTipo(${i},'${k}')">${k==="meia"?"Meia":l}</button>`).join("")}</span><button class="rm" aria-label="Tirar este ingresso" onclick="tirar(${i})">×</button></div>`; }).join("")}</div>
+    ${S.sel.some(x=>x.tipo==="meia")?`<p>${esc(CONFIG.regraMeia||"")}</p>`:""}<div class="tot"><span>Total</span><span>${brl(total())}</span></div><button class="b pri wide" onclick="abrirCompra()">Comprar ${n} ${n>1?"ingressos":"ingresso"}</button>`;
+  $("dockL").textContent="Comprar "+n+" "+(n>1?"ingressos":"ingresso"); $("dockP").textContent=brl(total()); }
+
+/* ---------- compra: dados, Pix, ingressos ---------- */
+function abrirSheet(h){ $("shW").innerHTML=`<button class="x" aria-label="Fechar" onclick="fecharSheet()">×</button>`+h; $("sheet").classList.add("on"); const f=$("shW").querySelector("input"); if(f) setTimeout(()=>f.focus(),60); }
+function fecharSheet(){ $("sheet").classList.remove("on"); clearInterval(pixT); }
+function abrirCompra(){ if(!S.sel.length) return; const e=ev(), u=ls.get(PFX+"-cli",{});
+  abrirSheet(`<h2 id="shT">${esc(e.titulo)}</h2><p class="sub">${diaTxt(e.data)} às ${e.hora}. Depois de confirmar, você tem ${MIN} minutos para pagar o Pix; até lá os lugares ficam guardados para você.</p>
+  <dl class="resumo">${S.sel.map(x=>`<dt>${esc(setPorId(x.setor).nome)}</dt><dd>${x.lugar?x.lugar:"geral"} · ${tipoNome(x.tipo)} · ${brl(precoDe(e,x.setor,x.tipo))}</dd>`).join("")}<dt>Total</dt><dd>${brl(total())}</dd></dl>
+  <form class="f" onsubmit="confirmar(event)"><label>Nome de quem compra<input id="fNome" required maxlength="80" autocomplete="name" value="${esc(u.nome||"")}"></label>
+  <label>WhatsApp<input id="fZap" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(11) 99999-9999" value="${esc(u.zap||"")}"></label>
+  ${S.sel.some(x=>x.tipo==="meia")?`<p class="sub" style="margin:0">Meia-entrada: leve o documento. Sem ele, a entrada só com a diferença paga.</p>`:""}
+  <p class="err" id="fErr" role="alert"></p><button class="b pri" id="fBtn" type="submit">Ir para o Pix</button></form>`); }
+async function confirmar(ev_){ ev_.preventDefault(); const b=$("fBtn"), nome=$("fNome").value.trim(), zap=$("fZap").value.replace(/\D/g,"");
+  if(!nome){ $("fErr").textContent=ERROS.nome_obrigatorio; return; } b.disabled=true; b.textContent="Guardando seus lugares…";
+  try{ const p=await api.comprar(S.ev,S.sel,nome,zap); ls.set(PFX+"-cli",{nome,zap:$("fZap").value}); const m=ls.get(MEUS,[]); m.unshift({pedido:p,evento:S.ev,criado:Date.now()}); ls.set(MEUS,m.slice(0,30));
+    S.sel=[]; await carregarOcupacao(true); telaPedido(p); }
+  catch(e){ $("fErr").textContent=erroTxt(e); b.disabled=false; b.textContent="Ir para o Pix"; if(/lugar_ocupado|setor_esgotado/.test(String(e.message||e))) carregarOcupacao(true); } }
+function crc16(s){ let c=0xFFFF; for(let i=0;i<s.length;i++){ c^=s.charCodeAt(i)<<8; for(let j=0;j<8;j++) c=(c&0x8000)?((c<<1)^0x1021):(c<<1); c&=0xFFFF; } return c.toString(16).toUpperCase().padStart(4,"0"); }
+function pixPayload(chave,nome,cidade,valor,txid){ const f=(id,v)=>id+String(v.length).padStart(2,"0")+v, limpa=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9 ]/g,"").toUpperCase().trim();
+  const p=f("00","01")+f("26",f("00","br.gov.bcb.pix")+f("01",chave))+f("52","0000")+f("53","986")+(valor>0?f("54",valor.toFixed(2)):"")+f("58","BR")+f("59",limpa(nome).slice(0,25)||"ARENA")+f("60",limpa(cidade).slice(0,15)||"BRASIL")+f("62",f("05",String(txid||"").replace(/[^A-Za-z0-9]/g,"").slice(0,25)||"***"))+"6304";
+  return p+crc16(p); }
+function qrSVG(t,ec){ if(!window.qrcode) return ""; const q=qrcode(0,ec||"M"); q.addData(t); q.make(); return q.createSvgTag({cellSize:4,margin:0,scalable:true}); }
+let pixT=null;
+async function telaPedido(p){ clearInterval(pixT); let lst; try{ lst=await api.pedido(p); }catch(e){ return abrirSheet(`<h2 id="shT">Sem conexão</h2><p class="sub">Não deu para abrir o pedido ${esc(p)}. Tente de novo em Meus ingressos.</p>`); }
+  if(!lst.length) return abrirSheet(`<h2 id="shT">Pedido não encontrado</h2>`);
+  const e=evPorId(lst[0].evento)||ev(), pend=lst.filter(i=>i.status==="pendente"), pagos=lst.filter(i=>i.status==="pago"||i.status==="usado");
+  if(pend.length){ const tot=pend.reduce((a,i)=>a+Number(i.preco),0), pix=CONFIG.pix||{}, pay=pixPayload(pix.chave||"",pix.nome||CONFIG.nome,pix.cidade||CONFIG.cidade,tot,p); window._pix=pay;
+    abrirSheet(`<h2 id="shT">Pague com Pix</h2><p class="sub">${lst.length} ${lst.length>1?"ingressos":"ingresso"} para ${esc(e.titulo)}. Assim que ${esc(CONFIG.nome)} confirmar o Pix, os QR codes aparecem aqui. Esta tela atualiza sozinha.</p>
+    <div class="pix"><small>Valor</small><span class="v">${brl(tot)}</span><div class="pq">${qrSVG(pay,"M")}</div><span class="cont" id="cont"></span><div class="cc">${esc(pay)}</div><button class="b pri wide" onclick="navigator.clipboard&&navigator.clipboard.writeText(_pix).then(()=>toast('Código Pix copiado'))">Copiar Pix copia e cola</button></div>
+    <p class="espera" style="margin-top:12px"><i></i>Esperando a confirmação do Pix · pedido ${esc(p)}</p>
+    ${REAL?"":`<button class="b sec wide" onclick="api.confirmar('${p}').then(()=>telaPedido('${p}'))">Simular Pix recebido (demonstração)</button>`}
+    <a class="b sec wide" style="margin-top:10px" href="${wa("Olá! Paguei o Pix do pedido "+p+" ("+brl(tot)+").")}" target="_blank" rel="noopener">Enviar comprovante no WhatsApp</a>`);
+    const exp=Math.min(...pend.map(i=>i.expira));
+    const tic=()=>{ const s=Math.max(0,Math.round((exp-Date.now())/1000)); const c=$("cont"); if(c) c.textContent=s?`Lugares guardados por ${Math.floor(s/60)}:${pad(s%60)}`:"O tempo acabou. Se você já pagou, mande o comprovante no WhatsApp."; };
+    tic(); let k=0; pixT=setInterval(async()=>{ tic(); if(++k%5) return; try{ const l2=await api.pedido(p); if(!l2.some(i=>i.status==="pendente")){ clearInterval(pixT); telaPedido(p); } }catch(e){} },1000); return; }
+  if(!pagos.length) return abrirSheet(`<h2 id="shT">Pedido vencido</h2><p class="sub">O Pix do pedido ${esc(p)} não foi pago a tempo e os lugares voltaram à venda. Se você pagou, mande o comprovante no WhatsApp.</p><a class="b pri wide" href="${wa("Olá! Paguei o pedido "+p+" mas ele venceu.")}" target="_blank" rel="noopener">Falar no WhatsApp</a>`);
+  abrirSheet(`<h2 id="shT">Seus ingressos</h2><p class="sub">${esc(e.titulo)} · ${diaTxt(e.data)} às ${e.hora}. Mostre o QR na entrada, pela tela do celular. Cada QR vale uma entrada.</p>
+    ${pagos.map(i=>{ const s=setPorId(i.setor)||{nome:i.setor,portao:"?"}; return `<div class="ing"><div><small>Setor</small><b>${esc(s.nome)}</b></div><div><small>${i.lugar?"Lugar":"Entrada"}</small><b>${i.lugar?"Fila "+esc(i.lugar[0])+" · "+esc(i.lugar.slice(1)):"Geral"}</b></div>
+      <div><small>${tipoNome(i.tipo)}${i.status==="usado"?" · já usado":""}</small><span class="cd">${esc(i.codigo)}</span></div><div class="q">${qrSVG("ZVARENA|"+i.codigo,"Q")}</div><div class="pt">${esc(portaoTxt(s.portao))}</div></div>`; }).join("")}
+    <button class="b sec wide" onclick="fecharSheet()">Fechar</button>`); }
+async function abrirMeus(){ const m=ls.get(MEUS,[]);
+  abrirSheet(`<h2 id="shT">Meus ingressos</h2><p class="sub">As compras feitas neste aparelho.</p><div id="mLst">${m.length?"Carregando…":'<p class="vazio">Você ainda não comprou por aqui.</p>'}</div>`);
+  if(!m.length) return; const det=await Promise.all(m.map(x=>api.pedido(x.pedido).catch(()=>[])));
+  $("mLst").innerHTML=m.map((x,i)=>{ const l=det[i], e=evPorId(x.evento), st=!l.length?"?":l.some(t=>t.status==="pendente")?"pendente":l.some(t=>t.status==="pago"||t.status==="usado")?"pago":"vencido";
+    const pill=st==="pago"?'<span class="pill ok">Pago</span>':st==="pendente"?'<span class="pill oil">Esperando Pix</span>':'<span class="pill no">Vencido</span>';
+    return `<div class="minha"><div><b>${esc(e?e.titulo:x.evento)}</b><p>${e?diaTxt(e.data)+" · ":""}${l.length} ${l.length===1?"ingresso":"ingressos"} · pedido ${esc(x.pedido)}</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">${pill}<button class="linkb" onclick="telaPedido('${x.pedido}')">Abrir</button></div></div>`; }).join(""); }
+function renderInfo(){ const p=CONFIG.portoes||{};
+  $("infos").innerHTML=`<div class="card"><h3>Endereço</h3><p>${esc(CONFIG.endereco)}</p></div>
+  <div class="card"><h3>Portões</h3><p style="font-size:14.5px">${Object.values(p).map(esc).join("<br>")}</p></div>
+  <div class="card"><h3>Meia-entrada</h3><p style="font-size:14.5px">${esc(CONFIG.regraMeia||"")}</p><p style="margin-top:10px"><a href="${wa("Olá! Tenho uma dúvida sobre ingressos.")}" target="_blank" rel="noopener">Falar no WhatsApp</a></p></div>`;
+  $("foot").textContent="© "+new Date().getFullYear()+" "+CONFIG.nome; }
+
+/* ---------- portaria ---------- */
+let LOG=[], ultimoCod="", ultimoT=0, camStream=null, camLoop=0, actx=null;
+const evR=()=>$("rEv").value, portR=()=>$("rPort").value;
+function bip(ok){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const o=actx.createOscillator(), g=actx.createGain(); o.frequency.value=ok?880:220; g.gain.value=.08; o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+(ok?.12:.35)); }catch(e){} }
+function mostra(cls,h,lugar,p){ const r=$("result"); r.className="result on "+cls; r.innerHTML=`<span class="h">${h}</span>${lugar?`<span class="seat">${esc(lugar)}</span>`:""}<p>${p}</p>`; if(navigator.vibrate) navigator.vibrate(cls==="ok"?60:[80,60,80]); bip(cls==="ok"); }
+const lugTxt=r=>{ const s=setPorId(r.setor); return (s?s.nome:r.setor||"")+(r.lugar?" · "+r.lugar:""); };
+async function validarCodigo(raw){ const code=String(raw||"").trim().toUpperCase(); if(code.length<6) return mostra("warn","Código incompleto","","O código tem 6 letras e números, embaixo do QR.");
+  let r; try{ r=await api.validar(code,evR(),portR()); }catch(e){ return mostra("warn","Sem conexão","","Não deu para conferir agora. Confira a internet e tente de novo."); }
+  $("codeIn").value="";
+  if(r.r==="ok"){ mostra("ok","Entrada liberada",lugTxt(r),`${esc(tipoNome(r.tipo))}${r.nome?", "+esc(r.nome):""}.${r.tipo==="meia"?" Confira o documento de meia-entrada.":""}`); LOG.unshift([code,lugTxt(r),Date.now()]); }
+  else if(r.r==="usado") mostra("bad","Já foi usado",lugTxt(r),`Entrou às ${hhmm(r.usado_em)}${r.portao?" pelo portão "+esc(r.portao):""}. Cada QR vale uma entrada.`);
+  else if(r.r==="nao_pago") mostra("warn","Pix não confirmado",lugTxt(r),`Pedido ${esc(r.pedido)}. Confira o Pix e toque em “Pix recebido” na lista abaixo.`);
+  else if(r.r==="portao_errado") mostra("warn","Portão errado",lugTxt(r),`Esse ingresso entra pelo ${esc(portaoTxt(r.portao))}.`);
+  else if(r.r==="outro_evento"){ const e=evPorId(r.evento); mostra("warn","Outro evento","",`Esse ingresso é para ${esc(e?e.titulo+", "+diaTxt(e.data):r.evento)}.`); }
+  else if(r.r==="cancelado") mostra("bad","Pedido vencido",lugTxt(r),"O Pix não foi pago a tempo e o lugar voltou à venda.");
+  else mostra("bad","Ingresso não encontrado","","Esse código não foi vendido pelo site.");
+  atualizarR(); }
+function lidoQR(txt){ const m=/^ZVARENA\|([A-Z0-9]{6,8})$/.exec(String(txt).trim()); if(!m) return mostra("bad","QR desconhecido","","Esse QR não foi gerado por este site."); const now=Date.now(); if(m[1]===ultimoCod&&now-ultimoT<4000) return; ultimoCod=m[1]; ultimoT=now; validarCodigo(m[1]); }
+async function abrirCamera(){ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return mostra("warn","Câmera indisponível","","Use “Foto do QR” ou digite o código.");
+  try{ camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280},height:{ideal:720}},audio:false}); }catch(e){ return mostra("warn","Sem acesso à câmera","","Libere a câmera para este site nas configurações do navegador, ou use “Foto do QR”."); }
+  const v=$("camV"); v.srcObject=camStream; await v.play().catch(()=>{}); $("camWrap").hidden=false; $("scanBtn").hidden=true;
+  const det=("BarcodeDetector" in window)?new BarcodeDetector({formats:["qr_code"]}):null, c=document.createElement("canvas"), x=c.getContext("2d",{willReadFrequently:true}); let ocup=false, ult=0;
+  const passo=async t=>{ camLoop=requestAnimationFrame(passo); if(ocup||t-ult<140||v.readyState<2) return; ult=t; ocup=true;
+    try{ if(det){ const r=await det.detect(v); if(r[0]) lidoQR(r[0].rawValue); } else if(window.jsQR){ const sc=Math.min(1,640/v.videoWidth); c.width=v.videoWidth*sc; c.height=v.videoHeight*sc; x.drawImage(v,0,0,c.width,c.height); const q=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height,{inversionAttempts:"dontInvert"}); if(q) lidoQR(q.data); } }catch(e){}
+    ocup=false; }; camLoop=requestAnimationFrame(passo); }
+function fecharCamera(){ cancelAnimationFrame(camLoop); if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; } $("camWrap").hidden=true; $("scanBtn").hidden=false; }
+function lerFoto(file){ if(!file) return; if(!window.jsQR) return mostra("warn","Leitor indisponível","","Digite o código embaixo do QR.");
+  const img=new Image(), url=URL.createObjectURL(file); img.onload=()=>{ const sc=Math.min(1,1100/Math.max(img.width,img.height)), c=document.createElement("canvas"); c.width=img.width*sc; c.height=img.height*sc; const x=c.getContext("2d"); x.drawImage(img,0,0,c.width,c.height);
+    const q=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height,{inversionAttempts:"attemptBoth"}); URL.revokeObjectURL(url); if(!q) return mostra("warn","Não consegui ler","","Aproxime o celular do QR, com boa luz, e tente de novo. Ou digite o código."); ultimoCod=""; lidoQR(q.data); }; img.src=url; }
+async function atualizarR(){ let l; try{ l=await api.listar(evR()); }catch(e){ return; } const p=portR(), noP=i=>!p||(setPorId(i.setor)||{}).portao===p;
+  const pagos=l.filter(i=>noP(i)&&(i.status==="pago"||i.status==="usado")), ent=pagos.filter(i=>i.status==="usado").length;
+  $("kV").textContent=pagos.length; $("kE").textContent=ent; $("kF").textContent=pagos.length-ent;
+  const ped={}; l.filter(i=>i.status==="pendente"&&i.expira>Date.now()).forEach(i=>{ (ped[i.pedido]=ped[i.pedido]||{p:i.pedido,nome:i.nome,tot:0,n:0,exp:i.expira}); ped[i.pedido].tot+=Number(i.preco); ped[i.pedido].n++; });
+  const pl=Object.values(ped).sort((a,b)=>a.exp-b.exp);
+  $("pend").innerHTML=pl.length?`<h3>Pix a confirmar</h3>`+pl.map(x=>`<div class="pp"><div><b>${brl(x.tot)}</b> · ${esc(x.nome)}<p>Pedido ${esc(x.p)} · ${x.n} ${x.n>1?"ingressos":"ingresso"} · vence ${hhmm(x.exp)}</p></div><button class="sb" onclick="confirmarPix('${x.p}')">Pix recebido</button></div>`).join(""):"";
+  $("log").innerHTML=LOG.length?`<h3>Últimas entradas</h3>`+LOG.slice(0,8).map(([c,t,h])=>`<div><span>${esc(t)}</span><span>${hhmm(h)}</span></div>`).join(""):""; }
+async function confirmarPix(p){ if(!confirm("Confirma que o Pix do pedido "+p+" caiu na conta?")) return; try{ await api.confirmar(p); toast("Pedido "+p+" liberado."); atualizarR(); }catch(e){ toast("Não salvou: "+(e.message||e)); } }
+async function sincronizar(){ const evs=EVENTOS.map(e=>({id:e.id,titulo:e.titulo,data:e.data,hora:e.hora,cota_meia:CONFIG.cotaMeia??.4}));
+  let r=await sb.from("arena_eventos").upsert(evs,{onConflict:"id"}); if(r.error) throw r.error;
+  const sets=[]; EVENTOS.forEach(e=>Object.keys(e.precos||{}).forEach(id=>{ const s=setPorId(id); if(!s) return; const L=LAY[id];
+    sets.push({evento:e.id,setor:id,nome:s.nome,marcado:!!s.marcado,capacidade:L.cap,filas:s.marcado?L.filas:null,por_fila:s.marcado?L.porFila:null,portao:s.portao||null,preco_inteira:precoDe(e,id,"inteira"),preco_meia:precoDe(e,id,"meia")}); }));
+  r=await sb.from("arena_setores").upsert(sets,{onConflict:"evento,setor"}); if(r.error) throw r.error; }
+let rT=null;
+async function abrirPortaria(){ $("login").hidden=true; $("painelR").hidden=false;
+  const l=noAr(); $("rEv").innerHTML=(l.length?l:EVENTOS).map(e=>`<option value="${e.id}">${esc(e.titulo)} · ${parseD(e.data).getDate()}/${parseD(e.data).getMonth()+1}</option>`).join("");
+  $("rPort").innerHTML=`<option value="">Todos os portões</option>`+Object.keys(CONFIG.portoes||{}).map(p=>`<option value="${p}">Portão ${p}</option>`).join("");
+  if(REAL){ $("bSair").hidden=false; try{ await sincronizar(); }catch(e){ toast("Não deu para salvar eventos e setores no banco: "+(e.message||e)); } }
+  atualizarR(); clearInterval(rT); rT=setInterval(atualizarR,REAL?5000:3000); }
+async function entrar(e){ e.preventDefault(); $("lMsg").textContent=""; await carregarSupabase(); if(!sb){ $("lMsg").textContent="Não carregou a conexão. Confira a internet."; return; }
+  const {error}=await sb.auth.signInWithPassword({email:$("lEmail").value.trim(),password:$("lSenha").value}); if(error){ $("lMsg").textContent="E-mail ou senha não conferem."; return; }
+  const {data:eq}=await sb.rpc("arena_e_equipe"); if(!eq){ $("lMsg").textContent="Essa conta não está na equipe. Veja o LEIA-ME."; await sb.auth.signOut(); return; } abrirPortaria(); }
+async function sair(){ clearInterval(rT); fecharCamera(); if(sb) await sb.auth.signOut(); location.hash=""; location.reload(); }
+async function iniciarPortaria(){ $("vSite").hidden=true; $("vPortaria").hidden=false; document.title="Portaria · "+CONFIG.nome;
+  if(!window.jsQR){ const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"; document.head.appendChild(s); }
+  $("codeIn").addEventListener("keydown",e=>{ if(e.key==="Enter") validarCodigo(e.target.value); });
+  if(!REAL){ $("demoBox").hidden=false; return abrirPortaria(); }
+  await carregarSupabase(); const {data}=sb?await sb.auth.getSession():{data:{}}; if(data&&data.session){ const {data:eq}=await sb.rpc("arena_e_equipe"); if(eq) return abrirPortaria(); } $("login").hidden=false; }
+
+/* ---------- estádio em 3D: arquibancadas por setor, torcida onde já vendeu, vista do seu lugar ---------- */
+const col=h=>new THREE.Color(h).convertSRGBToLinear();
+const MC={}; function mat(hex,o={}){ const k=hex+JSON.stringify(o); return MC[k]||(MC[k]=new THREE.MeshStandardMaterial({color:col(hex),roughness:.75,...o})); }
+function rounded(w,h,r){ const s=new THREE.Shape(); s.moveTo(-w/2+r,-h/2); s.lineTo(w/2-r,-h/2); s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r); s.lineTo(w/2,h/2-r); s.quadraticCurveTo(w/2,h/2,w/2-r,h/2); s.lineTo(-w/2+r,h/2); s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r); s.lineTo(-w/2,-h/2+r); s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2); return s; }
+function makeGeoms(){
+  G.sph=new THREE.SphereGeometry(1,22,16); G.sphLo=new THREE.SphereGeometry(1,10,8); G.cyl=new THREE.CylinderGeometry(1,1,1,12); G.box=new THREE.BoxGeometry(1,1,1);
+  G.cap=new THREE.SphereGeometry(1,24,12,0,Math.PI*2,0,Math.PI*.56); G.smile=new THREE.TorusGeometry(1,.16,6,16,Math.PI); G.ring=new THREE.TorusGeometry(1,.13,6,20);
+  G.bucket=new THREE.CylinderGeometry(.075,.055,.16,14,1,true);
+  const ext={bevelEnabled:true,bevelThickness:.05,bevelSize:.05,bevelSegments:3,curveSegments:6};
+  G.cush=new THREE.ExtrudeGeometry(rounded(.58,.5,.12),{...ext,depth:.12}); G.cush.rotateX(-Math.PI/2); G.cush.translate(0,.26,.25);
+  G.back=new THREE.ExtrudeGeometry(rounded(.58,.66,.14),{...ext,depth:.12}); G.back.translate(0,.62,.22); G.back.rotateX(-.13);
+  G.arm=new THREE.BoxGeometry(.08,.08,.52); }
+const V=(x,y,z)=>new THREE.Vector3(x,y,z), UP=window.THREE?V(0,1,0):null;
+function part(geo,m,s,p,shadow){ const o=new THREE.Mesh(geo,m); o.scale.set(...s); o.position.set(...p); if(shadow&&renderer&&renderer.shadowMap.enabled) o.castShadow=true; return o; }
+function limb(a,b,r,m){ const d=b.clone().sub(a), L=d.length(), o=new THREE.Mesh(G.cyl,m); o.scale.set(r,L,r); o.position.copy(a).addScaledVector(d,.5); o.quaternion.setFromUnitVectors(UP,d.normalize()); return o; }
+function avatarFor(id,mine){ if(mine){ const a=S.av; return {pele:AV_OPC.pele[a.pele],cabelo:a.cabelo,corCabelo:AV_OPC.corCabelo[a.corCabelo],roupa:AV_OPC.roupa[a.roupa],calca:"#23262F",oculos:a.oculos==="sim",pipoca:false}; }
+  const r=seeded(id+"|"+sk()), pk=a=>a[Math.floor(r()*a.length)];
+  return {pele:pk(SKIN),cabelo:pk(HAIRS),corCabelo:pk(HAIRC),roupa:pk(SHIRTS),calca:pk(PANTS),oculos:r()<.22,pipoca:r()<.28,bone:pk(["#C8102E","#1F3A93","#111111","#2E7D32"]),ph:r()*6.28}; }
+function makePerson(id,mine,cfg){ const a=cfg||avatarFor(id,mine), g=new THREE.Group(), z=-.06;
+  const skin=mat(a.pele,{roughness:.6}), shirt=mat(a.roupa,{roughness:.85}), pants=mat(a.calca,{roughness:.9}), hair=mat(a.corCabelo,{roughness:.9}), dark=mat("#15131A",{roughness:.4}), white=mat("#FFFFFF",{roughness:.3}), shoe=mat("#1D1D24",{roughness:.6});
+  const body=new THREE.Group(); g.add(body);
+  body.add(part(G.sph,pants,[.2,.11,.19],[0,.45,.12+z]));
+  const torso=part(G.sph,shirt,[.2,.25,.15],[0,.7,.15+z],1); body.add(torso);
+  body.add(part(G.sph,shirt,[.25,.1,.15],[0,.86,.15+z],1));
+  body.add(part(G.cyl,skin,[.055,.1,.055],[0,.97,.13+z]));
+  [-1,1].forEach(s=>{ const sh=V(s*.22,.85,.15+z), el=V(s*.28,.56,.09+z), wr=V(s*.275,.54,-.13+z);
+    body.add(limb(sh,el,.058,shirt), part(G.sphLo,shirt,[.06,.06,.06],sh.toArray()), part(G.sphLo,skin,[.048,.048,.048],el.toArray()), limb(el,wr,.046,skin), part(G.sph,skin,[.052,.045,.06],wr.toArray()));
+    const hp=V(s*.1,.44,.1+z), kn=V(s*.12,.46,-.27+z), an=V(s*.12,.1,-.32+z);
+    body.add(limb(hp,kn,.075,pants), part(G.sphLo,pants,[.075,.075,.075],kn.toArray()), limb(kn,an,.062,pants), part(G.sph,shoe,[.065,.045,.11],[s*.12,.05,-.37+z])); });
+  if(a.pipoca){ body.add(part(G.bucket,mat("#E23B3B",{side:THREE.DoubleSide}),[1,1,1],[.0,.6,-.14+z])); for(let i=0;i<7;i++){ const an=i/7*6.28; body.add(part(G.sphLo,mat("#FFE6A0",{roughness:.9}),[.03,.026,.03],[Math.cos(an)*.04,.69+(i%2)*.015,-.14+z+Math.sin(an)*.04])); } }
+  /* cabeça num grupo com pivô no pescoço, para virar e balançar */
+  const head=new THREE.Group(); head.position.set(0,1.0,.12+z); g.add(head);
+  const hy=.16; head.add(part(G.sph,skin,[.2,.215,.195],[0,hy,0],1));
+  [-1,1].forEach(s=>{ head.add(part(G.sph,skin,[.035,.05,.028],[s*.198,hy,.01]));
+    const eye=part(G.sph,dark,[.03,.036,.02],[s*.072,hy+.03,-.178]); eye.userData.eye=1; head.add(eye); head.add(part(G.sphLo,white,[.009,.009,.006],[s*.072+.011,hy+.044,-.195]));
+    const br=part(G.box,hair,[.065,.014,.014],[s*.075,hy+.095,-.175]); br.rotation.z=s*-.12; head.add(br);
+    head.add(part(G.sphLo,mat("#F08A8A",{roughness:.9,transparent:true,opacity:.35}),[.03,.018,.01],[s*.11,hy-.02,-.172])); });
+  head.add(part(G.sph,skin,[.026,.03,.026],[0,hy-.005,-.198]));
+  const sm=part(G.smile,mat("#7A2A2A"),[.042,.042,.042],[0,hy-.06,-.186]); sm.rotation.z=Math.PI; head.add(sm);
+  const H=a.cabelo;
+  if(H==="curto"||H==="longo"||H==="coque"){ const c=part(G.cap,hair,[.214,.23,.212],[0,hy+.012,.012],1); c.rotation.x=.32; head.add(c); }
+  if(H==="longo"){ head.add(part(G.sph,hair,[.205,.27,.11],[0,hy-.12,.1],1)); [-1,1].forEach(s=>head.add(part(G.sph,hair,[.06,.2,.09],[s*.17,hy-.1,.02]))); }
+  if(H==="coque") head.add(part(G.sph,hair,[.09,.09,.09],[0,hy+.21,.1],1));
+  if(H==="cacheado"){ for(let i=0;i<14;i++){ const t=i/14*6.28, rr=i%2?.12:.16, yy=i%2?.19:.14; head.add(part(G.sphLo,hair,[.075,.075,.075],[Math.cos(t)*rr,hy+yy,Math.sin(t)*rr*.95+.03])); } head.add(part(G.sph,hair,[.13,.1,.13],[0,hy+.2,.02])); }
+  if(H==="bone"){ const bm=mat(mine?a.roupa:a.bone||"#C8102E",{roughness:.7}); const c=part(G.cap,bm,[.218,.2,.216],[0,hy+.03,.0],1); c.rotation.x=.1; head.add(c); head.add(part(G.box,bm,[.2,.018,.15],[0,hy+.075,-.24])); }
+  if(a.oculos){ const gm=mat("#121218",{roughness:.3,metalness:.4}); [-1,1].forEach(s=>head.add(part(G.ring,gm,[.048,.048,.048],[s*.072,hy+.03,-.2]))); head.add(part(G.box,gm,[.05,.01,.01],[0,hy+.035,-.205])); }
+  if(mine){ const c=document.createElement("canvas"); c.width=160; c.height=72; const x=c.getContext("2d"); x.fillStyle="#F2B544"; x.beginPath(); x.roundRect?x.roundRect(4,4,152,52,26):x.rect(4,4,152,52); x.fill(); x.beginPath(); x.moveTo(68,56); x.lineTo(80,70); x.lineTo(92,56); x.fill();
+    x.fillStyle="#1a1205"; x.font="700 30px 'Hanken Grotesk', sans-serif"; x.textAlign="center"; x.fillText("você",80,41); const tex=new THREE.CanvasTexture(c); tex.encoding=THREE.sRGBEncoding;
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,toneMapped:false})); sp.scale.set(.5,.225,1); sp.position.set(0,1.62,0); sp.renderOrder=10; g.add(sp); g.userData.pin=sp; }
+  g.userData.head=head; g.userData.torso=torso; g.userData.ph=a.ph||0; g.userData.eyes=[]; head.traverse(o=>{ if(o.userData.eye) g.userData.eyes.push(o); });
+  return g; }
+let scene,camera,renderer,ray,ptr,vis=true,seatMesh,bodyMesh,headMesh,palcoG=null,telaoTex=null,ULT=null;
+const G={}, STANDS=[], SEATS=[], PISTA=[];
+const cam={th:1,ph:.9,r:150,tth:1,tph:.9,tr:150,tx:0,ty:0,tz:0,ttx:0,tty:0,ttz:0,modo:"tudo",eye:null,yaw:0,tyaw:0,look:[0,0,0]};
+const fone=()=>matchMedia("(max-width:600px)").matches;
+function tex(w,h,f){ const c=document.createElement("canvas"); c.width=w; c.height=h; f(c.getContext("2d"),w,h); const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return t; }
+function grama(palco){ return tex(512,790,(x,w,h)=>{ const k=w/CAMPO.W;
+  if(palco==="rodeio"){ x.fillStyle="#B98A55"; x.fillRect(0,0,w,h); for(let i=0;i<5000;i++){ x.fillStyle=Math.random()<.5?"rgba(90,60,30,.18)":"rgba(255,230,190,.12)"; x.fillRect(Math.random()*w,Math.random()*h,2,2); } return; }
+  for(let i=0;i<14;i++){ x.fillStyle=i%2?"#2E8B3E":"#33964A"; x.fillRect(0,i*h/14,w,h/14+1); }
+  if(palco!=="futebol") return;
+  x.strokeStyle="rgba(255,255,255,.9)"; x.lineWidth=2.4; const L=(a,b,c,d)=>x.strokeRect(a*k,b*k,c*k,d*k);
+  L(.5,.5,CAMPO.W-1,CAMPO.L-1); x.beginPath(); x.moveTo(.5*k,h/2); x.lineTo(w-.5*k,h/2); x.stroke(); x.beginPath(); x.arc(w/2,h/2,9.15*k,0,7); x.stroke();
+  [0,1].forEach(s=>{ const y=s?CAMPO.L-.5-16.5:.5; L((CAMPO.W-40.3)/2,y,40.3,16.5); L((CAMPO.W-18.3)/2,s?CAMPO.L-.5-5.5:.5,18.3,5.5);
+    x.beginPath(); x.arc(w/2,(s?CAMPO.L-11:11)*k,9.15*k,s?Math.PI*1.2:Math.PI*.2,s?Math.PI*1.8:Math.PI*.8); x.stroke(); }); }); }
+function telao(e){ return tex(1024,420,(x,w,h)=>{ x.fillStyle="#05070C"; x.fillRect(0,0,w,h); x.strokeStyle="#FFCC33"; x.lineWidth=8; x.strokeRect(6,6,w-12,h-12); x.textAlign="center"; x.textBaseline="middle"; x.fillStyle="#fff";
+  if(e.palco==="futebol"&&e.times){ e.times.forEach(([n,c],i)=>{ const cx=i?w*.78:w*.22; x.fillStyle=c; x.fillRect(cx-150,70,300,26); x.fillStyle="#fff"; x.font="800 120px Archivo, system-ui"; x.fillText(n,cx,190); });
+    x.font="800 150px Archivo, system-ui"; x.fillStyle="#FFCC33"; x.fillText("0 x 0",w/2,190); x.fillStyle="#cfd6e6"; x.font="600 40px Archivo, system-ui"; x.fillText(diaTxt(e.data)+" · "+e.hora,w/2,340); }
+  else { x.font="800 92px Archivo, system-ui"; let t=e.titulo; while(x.measureText(t).width>w-80) x.font=(parseInt(x.font.split(" ")[1])-6)+"px Archivo, system-ui"; x.fillText(t,w/2,170); x.fillStyle="#FFCC33"; x.font="600 44px Archivo, system-ui"; x.fillText(diaTxt(e.data)+" · "+e.hora,w/2,300); } }); }
+function W(L,d,y,a){ return [L.o[0]+L.u[0]*d+L.v[0]*a,y,L.o[1]+L.u[1]*d+L.v[1]*a]; }
+function caixaEm(arr,L,d0,d1,y0,y1,a0,a1){ const p=[[d0,y0,a0],[d1,y0,a0],[d1,y1,a0],[d0,y1,a0],[d0,y0,a1],[d1,y0,a1],[d1,y1,a1],[d0,y1,a1]].map(q=>W(L,...q));
+  [[0,1,2,0,2,3],[5,4,7,5,7,6],[4,0,3,4,3,7],[1,5,6,1,6,2],[3,2,6,3,6,7],[4,5,1,4,1,0]].forEach(f=>f.forEach(i=>arr.push(...p[i]))); }
+function malha(arr,m){ const g=new THREE.BufferGeometry(); g.setAttribute("position",new THREE.Float32BufferAttribute(arr,3)); g.computeVertexNormals(); return new THREE.Mesh(g,m); }
+function juntar(geos){ const pos=[],nor=[]; geos.forEach(g=>{ g=g.index?g.toNonIndexed():g; pos.push(...g.attributes.position.array); nor.push(...g.attributes.normal.array); }); const g=new THREE.BufferGeometry(); g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3)); g.setAttribute("normal",new THREE.Float32BufferAttribute(nor,3)); return g; }
+function init3D(){ const st=$("stage");
+  try{ renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"}); }catch(e){ $("loading").textContent="O estádio em 3D não abriu neste aparelho. Use a lista de setores."; return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.outputEncoding=THREE.sRGBEncoding; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
+  st.prepend(renderer.domElement); scene=new THREE.Scene(); scene.background=col("#060A14"); scene.fog=new THREE.Fog(col("#060A14"),220,420);
+  camera=new THREE.PerspectiveCamera(45,1,.3,900); ray=new THREE.Raycaster(); ptr=new THREE.Vector2(); makeGeoms();
+  scene.add(new THREE.HemisphereLight(col("#C9D8FF"),col("#1A2230"),.75));
+  [[-60,90,80],[70,90,-70]].forEach(([x,y,z])=>{ const l=new THREE.DirectionalLight(col("#F2F6FF"),.6); l.position.set(x,y,z); scene.add(l); });
+  montarEntorno(); montarSetores(); montarGente(); trocarEvento3D(true);
+  window.addEventListener("resize",resize); resize(); setView("tudo",true); controles();
+  new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(st);
+  $("loading").remove(); requestAnimationFrame(loop); }
+function montarEntorno(){ const chao=new THREE.Mesh(new THREE.PlaneGeometry(700,700),mat("#141B28",{roughness:1})); chao.rotation.x=-Math.PI/2; chao.position.y=-.05; scene.add(chao);
+  const pista=new THREE.Mesh(new THREE.PlaneGeometry(CAMPO.W+2*REC+1,CAMPO.L+2*REC+1),mat("#2A5E3A",{roughness:1})); pista.rotation.x=-Math.PI/2; pista.position.y=-.02; scene.add(pista);
+  /* cantos de concreto entre as arquibancadas */ const conc=mat("#3A4150",{roughness:.95});
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([a,b])=>{ const m=new THREE.Mesh(G.box,conc); m.scale.set(18,6,18); m.position.set(a*(CAMPO.W/2+REC+9),3,b*(CAMPO.L/2+REC+9)); scene.add(m); });
+  /* torres de refletor */ const poste=mat("#8E96A6",{metalness:.6,roughness:.4}), luz=new THREE.MeshBasicMaterial({color:col("#FFFFFF")});
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([a,b])=>{ const x=a*(CAMPO.W/2+REC+14), z=b*(CAMPO.L/2+REC+14); const p=new THREE.Mesh(G.cyl,poste); p.scale.set(.6,40,.6); p.position.set(x,20,z); scene.add(p);
+    const pn=new THREE.Mesh(G.box,luz); pn.scale.set(7,4,.6); pn.position.set(x,41,z); pn.lookAt(0,0,0); scene.add(pn);
+    const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:tex(64,64,(c)=>{ const g=c.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,"rgba(255,255,255,.9)"); g.addColorStop(1,"rgba(255,255,255,0)"); c.fillStyle=g; c.fillRect(0,0,64,64); }),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})); halo.scale.set(13,13,1); halo.position.set(x,41,z); scene.add(halo); });
+  /* estrelas */ const sp=[]; for(let i=0;i<700;i++){ const t=Math.random()*6.28, f=Math.random()*1.2+.15, R=400; sp.push(Math.cos(t)*Math.cos(f)*R,Math.sin(f)*R,Math.sin(t)*Math.cos(f)*R); }
+  const sg=new THREE.BufferGeometry(); sg.setAttribute("position",new THREE.Float32BufferAttribute(sp,3)); scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xcfd8ff,size:1.4,sizeAttenuation:false,fog:false})));
+  /* telão atrás da arquibancada norte */ const zt=-(CAMPO.L/2+REC)-17*ROWD-3; [-9,9].forEach(x=>{ const p=new THREE.Mesh(G.box,poste); p.scale.set(.8,16,.8); p.position.set(x,8,zt-.6); scene.add(p); });
+  const tm=new THREE.Mesh(new THREE.PlaneGeometry(24,9.8),new THREE.MeshBasicMaterial({color:0xffffff,toneMapped:false})); tm.position.set(0,19,zt); scene.add(tm); window._telao=tm;
+  const tb=new THREE.Mesh(G.box,mat("#11151F")); tb.scale.set(25,10.8,.8); tb.position.set(0,19,zt-.45); scene.add(tb); }
+function montarSetores(){ const conc=mat("#4A5263",{roughness:.95,side:THREE.DoubleSide}), mureta=mat("#2B3140",{roughness:.8,side:THREE.DoubleSide}), cober={};
+  SETORES.forEach(s=>{ if(s.lado==="C"){ const [x0,z0,x1,z1]=s.area, m=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),new THREE.MeshBasicMaterial({color:col(s.cor),transparent:true,opacity:.2,depthWrite:false}));
+      m.rotation.x=-Math.PI/2; m.position.set((x0+x1)/2,.06,(z0+z1)/2); m.userData.setor=s.id; scene.add(m); STANDS.push({s,mesh:m,mat:m.material}); return; }
+    const L=LADO[s.lado], Y=LAY[s.id], a0=s.ini*L.len, a1=s.fim*L.len, r0=Y.r0, arr=[], last=r0+s.filas;
+    for(let r=r0;r<last;r++) caixaEm(arr,L,r*ROWD,(r+1)*ROWD,0,BASE+r*ROWH,a0,a1);
+    caixaEm(arr,L,last*ROWD,last*ROWD+.8,0,BASE+last*ROWH+1.8,a0,a1);
+    const m=malha(arr,new THREE.MeshStandardMaterial({color:col("#4A5263"),roughness:.95,side:THREE.DoubleSide,emissive:col(s.cor),emissiveIntensity:0}));
+    m.userData.setor=s.id; scene.add(m); STANDS.push({s,mesh:m,mat:m.material});
+    if(r0===0){ const mu=[]; caixaEm(mu,L,-.35,0,0,1.1,a0,a1); scene.add(malha(mu,mureta)); }
+    if(s.coberto){ const c=cober[s.lado]||(cober[s.lado]={a0,a1,last}); c.a0=Math.min(c.a0,a0); c.a1=Math.max(c.a1,a1); c.last=Math.max(c.last,last); } });
+  /* cobertura das cadeiras */ Object.entries(cober).forEach(([k,c])=>{ const L=LADO[k], arr=[], yb=BASE+c.last*ROWH+5; caixaEm(arr,L,-2,c.last*ROWD+1.5,yb,yb+.35,c.a0-.5,c.a1+.5);
+    scene.add(malha(arr,new THREE.MeshStandardMaterial({color:col("#D8DEE9"),roughness:.6,side:THREE.DoubleSide,transparent:true,opacity:.92})));
+    for(let a=c.a0;a<=c.a1+.1;a+=(c.a1-c.a0)/6){ const p=[]; caixaEm(p,L,c.last*ROWD+.9,c.last*ROWD+1.3,0,yb,a-.2,a+.2); scene.add(malha(p,mat("#9AA3B5",{side:THREE.DoubleSide}))); } });
+  /* cadeiras: uma malha instanciada para o estádio todo */
+  const ass=new THREE.BoxGeometry(.46,.1,.42); ass.translate(0,.38,0); const enc=new THREE.BoxGeometry(.46,.42,.08); enc.translate(0,.62,.2);
+  SETORES.forEach(s=>{ if(s.lado==="C") return; const L=LADO[s.lado], ry=Math.atan2(L.u[0],L.u[1]); LAY[s.id].lugares.forEach(l=>{ l.idx=SEATS.length; SEATS.push({s,l,ry}); }); });
+  seatMesh=new THREE.InstancedMesh(juntar([ass,enc]),new THREE.MeshStandardMaterial({roughness:.6}),SEATS.length); const o=new THREE.Object3D();
+  SEATS.forEach((q,i)=>{ o.position.set(q.l.x,q.l.y,q.l.z); o.rotation.set(0,q.ry,0); o.updateMatrix(); seatMesh.setMatrixAt(i,o.matrix); seatMesh.setColorAt(i,col(q.s.cor)); });
+  scene.add(seatMesh); }
+function montarGente(){ const pista=SETORES.find(s=>s.lado==="C"), np=pista?1400:0;
+  if(pista){ const r=seeded("pista"), [x0,z0,x1,z1]=pista.area; for(let i=0;i<np;i++) PISTA.push([x0+1+r()*(x1-x0-2),z0+1+r()*(z1-z0-2)]); }
+  const n=SEATS.length+np, cg=new THREE.BoxGeometry(.4,.52,.26), hg=new THREE.IcosahedronGeometry(.15,0);
+  bodyMesh=new THREE.InstancedMesh(cg,new THREE.MeshStandardMaterial({roughness:.85}),n); headMesh=new THREE.InstancedMesh(hg,new THREE.MeshStandardMaterial({roughness:.7}),n);
+  for(let i=0;i<n;i++){ bodyMesh.setColorAt(i,col("#fff")); headMesh.setColorAt(i,col("#fff")); } bodyMesh.count=headMesh.count=0; scene.add(bodyMesh,headMesh); }
+const ORDEM={}; function ordem(id){ if(ORDEM[id]) return ORDEM[id]; const r=seeded("ordem|"+id), L=LAY[id]; return ORDEM[id]=L.lugares.map(l=>[l,l.fi+r()*7]).sort((a,b)=>a[1]-b[1]).map(x=>x[0].id); }
+function montarPalco(e){ if(palcoG) scene.remove(palcoG); palcoG=new THREE.Group(); scene.add(palcoG);
+  const gm=new THREE.Mesh(new THREE.PlaneGeometry(CAMPO.W,CAMPO.L),new THREE.MeshStandardMaterial({map:grama(e.palco),roughness:.95})); gm.rotation.x=-Math.PI/2; gm.position.y=.01; palcoG.add(gm);
+  const bco=mat("#F4F6FA",{roughness:.4}), caixaG=(w,h,d,m,x,y,z)=>{ const b=new THREE.Mesh(G.box,typeof m==="string"?mat(m):m); b.scale.set(w,h,d); b.position.set(x,y,z); palcoG.add(b); return b; };
+  if(e.palco==="futebol"){ [-1,1].forEach(s=>{ const z=s*(CAMPO.L/2-.5); caixaG(.15,2.44,.15,bco,-3.66,1.22,z); caixaG(.15,2.44,.15,bco,3.66,1.22,z); caixaG(7.47,.15,.15,bco,0,2.44,z);
+      const rede=new THREE.Mesh(new THREE.PlaneGeometry(7.3,2.4),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.25,side:THREE.DoubleSide})); rede.position.set(0,1.2,z+s*1.5); palcoG.add(rede); });
+    [-1,1].forEach(s=>caixaG(.9,1,6,"#1F2C4A",s*(CAMPO.W/2+3),.5,0)); }
+  if(e.palco==="show"){ const z0=CAMPO.L/2-12; caixaG(40,2.4,12,"#15171E",0,1.2,z0+6); const tl=tex(1024,400,(x,w,h)=>{ const g=x.createLinearGradient(0,0,w,h); g.addColorStop(0,"#FF5DA2"); g.addColorStop(1,"#3A1F7A"); x.fillStyle=g; x.fillRect(0,0,w,h); x.fillStyle="#fff"; x.textAlign="center"; x.font="800 90px Archivo, system-ui"; x.fillText(e.titulo,w/2,h/2+30); });
+    const tela=new THREE.Mesh(new THREE.PlaneGeometry(30,11.7),new THREE.MeshBasicMaterial({map:tl,toneMapped:false})); tela.position.set(0,9.5,z0+11.5); tela.rotation.y=Math.PI; palcoG.add(tela);
+    const tr=mat("#9AA3B5",{metalness:.7,roughness:.3}); [-19,19].forEach(x=>{ caixaG(.6,17,.6,tr,x,8.5,z0+1); caixaG(.6,17,.6,tr,x,8.5,z0+11); }); caixaG(39,.6,.6,tr,0,17,z0+1);
+    ["#FF5DA2","#5DD9FF","#FFCC33","#8E6BFF","#5DFFB0"].forEach((c,i)=>{ const cn=new THREE.Mesh(new THREE.ConeGeometry(4,16,20,1,true),new THREE.MeshBasicMaterial({color:col(c),transparent:true,opacity:.13,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+      cn.position.set(-16+i*8,9,z0+1); cn.rotation.x=.25; cn.userData.luz=i; palcoG.add(cn); });
+    const pv=new THREE.Mesh(new THREE.PlaneGeometry(52,48),mat("#222632",{roughness:.9})); pv.rotation.x=-Math.PI/2; pv.position.set(0,.03,14); palcoG.add(pv); }
+  if(e.palco==="rodeio"){ const cerca=mat("#7A5230",{roughness:.8}), ax=26, az=38;
+    [[-ax,0,.3,2*az],[ax,0,.3,2*az],[0,-az,2*ax,.3],[0,az,2*ax,.3]].forEach(([x,z,w,d])=>{ caixaG(w,.25,d,cerca,x,1.6,z); caixaG(w,.25,d,cerca,x,.9,z); });
+    for(let x=-ax;x<=ax;x+=4){ caixaG(.3,1.9,.3,cerca,x,.95,-az); caixaG(.3,1.9,.3,cerca,x,.95,az); } for(let z=-az;z<=az;z+=4){ caixaG(.3,1.9,.3,cerca,-ax,.95,z); caixaG(.3,1.9,.3,cerca,ax,.95,z); }
+    for(let i=0;i<6;i++) caixaG(2.6,2.4,3,"#5A3B22",-7.5+i*3,1.2,-az-1.6);
+    const loc=new THREE.Mesh(G.cyl,mat("#C9302C")); loc.scale.set(2.2,3.2,2.2); loc.position.set(0,1.6,0); palcoG.add(loc); }
+  telaoTex=telao(e); window._telao.material.map=telaoTex; window._telao.material.needsUpdate=true;
+  STANDS.forEach(t=>{ if(t.s.lado==="C") t.mesh.visible=aVenda(t.s.id); }); }
+function trocarEvento3D(ja){ if(!scene) return; montarPalco(ev()); ULT=null; paint3D(); setView("tudo",ja); }
+const CAMISAS=["#F4F6FA","#1C1F27","#2F6BFF","#E5484D","#FFCC33","#2BB36A","#8E6BFF","#FF8A3D","#5DD9FF","#C9C2B0"];
+function camisa(s,r){ const e=ev(); if(e.palco==="futebol"&&e.times){ const casa=e.times[0][1], fora=e.times[1][1]; if(s.id==="visitante") return r<.75?fora:r<.9?"#F4F6FA":"#1C1F27"; return r<.6?casa:r<.75?"#F4F6FA":r<.85?"#1C1F27":CAMISAS[Math.floor(r*97)%CAMISAS.length]; }
+  return CAMISAS[Math.floor(r*97)%CAMISAS.length]; }
+const PELE=["#F6D3B3","#E8B48C","#C98E65","#9C6644","#6B4128"];
+function paint3D(){ if(!scene) return; const e=ev(), meus=new Set(S.sel.filter(x=>x.lugar).map(x=>x.setor+"|"+x.lugar)), o=new THREE.Object3D(), cc=new THREE.Color(); let k=0;
+  const fechado=col("#262C3A"), vend=col("#1B2030"), ouro=col("#FFCC33"), cheio={};
+  SETORES.forEach(s=>{ if(s.lado==="C"||!aVenda(s.id)||s.marcado) return; const n=Math.min(((S.oc[s.id]||{}).n||0),LAY[s.id].lugares.length); cheio[s.id]=new Set(ordem(s.id).slice(0,n)); });
+  const pessoa=(x,y,z,ry,sd)=>{ const r=seeded(sd); o.position.set(x,y+.68,z); o.rotation.set(0,ry,0); o.scale.set(1,1,1); o.updateMatrix(); bodyMesh.setMatrixAt(k,o.matrix); bodyMesh.setColorAt(k,cc.copy(col(camisa(pessoa.s,r()))));
+    o.position.set(x,y+1.08,z); o.updateMatrix(); headMesh.setMatrixAt(k,o.matrix); headMesh.setColorAt(k,cc.copy(col(PELE[Math.floor(r()*5)]))); k++; };
+  SEATS.forEach((q,i)=>{ const s=q.s, l=q.l; let c;
+    if(!aVenda(s.id)) c=fechado;
+    else if(meus.has(s.id+"|"+l.id)) c=ouro;
+    else if(s.marcado?ocupado(s.id,l.id):cheio[s.id].has(l.id)){ c=vend; pessoa.s=s; pessoa(l.x,l.y,l.z,q.ry,s.id+l.id); }
+    else { c=cc.copy(col(s.cor)); if(S.setor&&S.setor!==s.id) c.lerp(fechado,.45); }
+    seatMesh.setColorAt(i,c); });
+  const pista=SETORES.find(s=>s.lado==="C"); if(pista&&aVenda(pista.id)){ const n=Math.min(PISTA.length,Math.round(((S.oc[pista.id]||{}).n||0)/2)); pessoa.s=pista; for(let i=0;i<n;i++) pessoa(PISTA[i][0],.45,PISTA[i][1],Math.PI,"p"+i); }
+  seatMesh.instanceColor.needsUpdate=true; bodyMesh.count=headMesh.count=k; bodyMesh.instanceMatrix.needsUpdate=headMesh.instanceMatrix.needsUpdate=true; if(bodyMesh.instanceColor){ bodyMesh.instanceColor.needsUpdate=headMesh.instanceColor.needsUpdate=true; }
+  STANDS.forEach(t=>{ if(t.s.lado==="C"){ t.mat.opacity=t.s.id===S.setor?.42:.2; return; } t.mat.emissiveIntensity=t.s.id===S.setor?.22:0; });
+  $("cSetor").disabled=!S.setor; $("cLugar").disabled=!S.setor&&!ULT; }
+function centroSetor(id){ const s=setPorId(id); if(s.lado==="C"){ const [x0,z0,x1,z1]=s.area; return {x:(x0+x1)/2,y:0,z:(z0+z1)/2,u:[0,-1]}; }
+  const L=LADO[s.lado], Y=LAY[s.id], p=W(L,(Y.r0+s.filas/2)*ROWD,BASE+(Y.r0+s.filas/2)*ROWH,(s.ini+s.fim)/2*L.len); return {x:p[0],y:p[1],z:p[2],u:L.u}; }
+function focoSetor3D(id){ if(!scene) return; paint3D(); setView("setor"); }
+function ultimoLugar3D(setor,id){ ULT={setor,id}; if(scene) paint3D(); }
+function olharDe(){ const e=ev(); return e.palco==="show"?[0,4,CAMPO.L/2-4]:[0,0,0]; }
+function setView(v,ja){ cam.modo=v; cam.eye=null; cam.tyaw=0;
+  if(v==="tudo"){ cam.tth=ev().palco==="show"?2.35:1.0; cam.tph=fone()?.8:.9; cam.tr=fone()?205:138; cam.ttx=cam.tty=cam.ttz=0; }
+  if(v==="setor"){ const id=S.setor; if(!id) return setView("tudo",ja); const c=centroSetor(id); cam.ttx=c.x; cam.tty=c.y; cam.ttz=c.z; cam.tth=Math.atan2(-c.u[0],-c.u[1]); cam.tph=1.02; cam.tr=fone()?78:58; }
+  if(v==="lugar"){ let p; const id=ULT&&ULT.setor===S.setor?ULT:ULT||null; const s=setPorId((id&&id.setor)||S.setor);
+    if(id&&s.marcado){ p=LAY[s.id].lugares.find(l=>l.id===id.id); }
+    if(!p){ if(s.lado==="C"){ const c=centroSetor(s.id); p={x:c.x,y:.6,z:c.z-8}; } else { const Y=LAY[s.id]; p=Y.lugares[Math.floor(Y.filas/2)*Y.porFila+Math.floor(Y.porFila/2)]; } }
+    cam.eye=[p.x,p.y+1.35,p.z]; cam.look=olharDe(); }
+  if(ja){ Object.assign(cam,{th:cam.tth,ph:cam.tph,r:cam.tr,tx:cam.ttx,ty:cam.tty,tz:cam.ttz}); }
+  [["tudo","cTudo"],["setor","cSetor"],["lugar","cLugar"]].forEach(([k,id])=>$(id).setAttribute("aria-pressed",k===v)); }
+function zoom(k){ if(cam.modo==="lugar") return; cam.tr=Math.max(14,Math.min(320,cam.tr*(k>0?1.25:.8))); }
+function resize(){ const st=$("stage"), w=st.clientWidth, h=st.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w<600?55:45; camera.updateProjectionMatrix(); }
+function controles(){ const el=renderer.domElement, pts=new Map(); let mov=0, dist0=0;
+  el.addEventListener("pointerdown",e=>{ el.setPointerCapture(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(pts.size===1) mov=0; if(pts.size===2){ const [a,b]=[...pts.values()]; dist0=Math.hypot(a.x-b.x,a.y-b.y); } });
+  el.addEventListener("pointermove",e=>{ const p=pts.get(e.pointerId); if(!p){ if(e.pointerType==="mouse") el.style.cursor=alvo(e)?"pointer":"grab"; return; } const dx=e.clientX-p.x, dy=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY; mov+=Math.abs(dx)+Math.abs(dy);
+    if(pts.size===1){ if(cam.modo==="lugar") cam.tyaw=Math.max(-1.2,Math.min(1.2,cam.tyaw-dx*.004)); else { cam.tth-=dx*.005; cam.tph=Math.max(.08,Math.min(1.42,cam.tph-dy*.004)); } }
+    else if(pts.size===2&&cam.modo!=="lugar"){ const [a,b]=[...pts.values()], dd=Math.hypot(a.x-b.x,a.y-b.y); if(dist0) cam.tr=Math.max(14,Math.min(320,cam.tr*dist0/dd)); dist0=dd; } });
+  const fim=e=>{ const era=pts.size; pts.delete(e.pointerId); if(era===1&&mov<8&&e.type==="pointerup") clicar(e); };
+  el.addEventListener("pointerup",fim); el.addEventListener("pointercancel",fim);
+  el.addEventListener("wheel",e=>{ e.preventDefault(); if(cam.modo!=="lugar") cam.tr=Math.max(14,Math.min(320,cam.tr*(1+e.deltaY*.0012))); },{passive:false}); }
+function alvo(e){ const r=renderer.domElement.getBoundingClientRect(); ptr.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1); ray.setFromCamera(ptr,camera);
+  const h=ray.intersectObjects([seatMesh,...STANDS.filter(t=>t.mesh.visible).map(t=>t.mesh)],false)[0]; if(!h) return null;
+  if(h.object===seatMesh){ const q=SEATS[h.instanceId]; return {setor:q.s.id,lugar:q.s.marcado?q.l.id:null}; } return {setor:h.object.userData.setor}; }
+function clicar(e){ const a=alvo(e); if(!a) return; $("hint3d").hidden=true; if(!aVenda(a.setor)) return toast(setPorId(a.setor).nome+" não está à venda neste evento.");
+  if(a.lugar&&S.setor===a.setor&&cam.modo!=="tudo") return toggleLugar(a.setor,a.lugar);
+  if(S.setor!==a.setor) escolherSetor(a.setor,true); }
+let t0=performance.now();
+function loop(t){ requestAnimationFrame(loop); if(!vis||document.hidden) return; const dt=Math.min(.05,(t-t0)/1000); t0=t; const k=1-Math.pow(.002,dt);
+  if(cam.modo==="lugar"&&cam.eye){ cam.yaw+=(cam.tyaw-cam.yaw)*k; const [ex,ey,ez]=cam.eye, [lx,ly,lz]=cam.look, dx=lx-ex, dz=lz-ez, c=Math.cos(cam.yaw), s=Math.sin(cam.yaw);
+    camera.position.lerp(new THREE.Vector3(ex,ey,ez),k*1.4); const alvoV=new THREE.Vector3(ex+dx*c-dz*s,ly,ez+dx*s+dz*c); cam.lk=cam.lk||alvoV.clone(); cam.lk.lerp(alvoV,k*1.4); camera.lookAt(cam.lk); }
+  else { cam.th+=(cam.tth-cam.th)*k; cam.ph+=(cam.tph-cam.ph)*k; cam.r+=(cam.tr-cam.r)*k; cam.tx+=(cam.ttx-cam.tx)*k; cam.ty+=(cam.tty-cam.ty)*k; cam.tz+=(cam.ttz-cam.tz)*k;
+    const p=new THREE.Vector3(cam.tx+cam.r*Math.sin(cam.ph)*Math.sin(cam.th),cam.ty+cam.r*Math.cos(cam.ph)+2,cam.tz+cam.r*Math.sin(cam.ph)*Math.cos(cam.th)); camera.position.lerp(p,Math.min(1,k*2.5)); cam.lk=new THREE.Vector3(cam.tx,cam.ty,cam.tz); camera.lookAt(cam.lk); }
+  if(palcoG) palcoG.children.forEach(o=>{ if(o.userData.luz!=null) o.rotation.z=Math.sin(t/900+o.userData.luz)*.35; });
+  renderer.render(scene,camera); }
+
+/* ---------- início ---------- */
+function iniciarSite(){ $("logoNome").textContent=CONFIG.nome; document.title=CONFIG.nome+" | Ingressos";
+  renderEventos(); renderInfo(); carregarOcupacao().then(()=>{ if(window.THREE) init3D(); else $("loading").textContent="O estádio em 3D não abriu neste aparelho. Use a lista de setores."; });
+  setInterval(()=>{ if(!document.hidden&&!$("sheet").classList.contains("on")) carregarOcupacao(true); },REAL?20000:10000);
+  window.addEventListener("storage",e=>{ if(e.key===DKEY) carregarOcupacao(true); });
+  if(location.hash==="#meus") abrirMeus(); }
+$("nMeus").addEventListener("click",e=>{ e.preventDefault(); abrirMeus(); });
+$("sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") fecharSheet(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") fecharSheet(); });
+window.addEventListener("hashchange",()=>{ if(location.hash==="#portaria"||$("vPortaria").hidden===false) location.reload(); });
+if(location.hash==="#portaria") iniciarPortaria(); else iniciarSite();
+</script>
+<script src="/demo.js"></script>
+</body>
+</html>
