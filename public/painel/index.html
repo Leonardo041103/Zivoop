@@ -229,12 +229,13 @@ const ERR = { limite_negocios: "Você chegou ao limite de 5 negócios nesta cont
 const erro = e => { const m = String(e && e.message || e); const k = Object.keys(ERR).find(k => m.includes(k)); return k ? ERR[k] : "Não deu certo: " + m; };
 
 let U = null, NEGS = [], NEG = null, PAD = null, MODELOS = [], TAB = "inicio", pollT = null, vistos = new Set(), primeira = true;
-const ehAgenda = () => NEG && NEG.tipo === "agenda";
+const ehAgenda = () => NEG && NEG.tipo !== "pedido";
+const ehRes = () => NEG && NEG.tipo === "reserva";
 const cfg = () => Object.assign({}, PAD && PAD.config || {}, NEG.dados.config || {});
 const textos = () => Object.assign({}, PAD && PAD.textos || {}, NEG.dados.textos || {}, { nome: NEG.nome });
 const menu = () => clone(NEG.dados.menu || (PAD && PAD.menu) || []);
 const siteURL = () => location.origin + "/" + NEG.slug;
-const W = () => ehAgenda() ? { itens: "Serviços", item: "serviço", ped: "Agenda" } : { itens: "Catálogo", item: "produto", ped: "Pedidos" };
+const W = () => ehRes() ? { itens: "Unidades e preços", item: "item", ped: "Reservas" } : ehAgenda() ? { itens: "Serviços", item: "serviço", ped: "Agenda" } : { itens: "Catálogo", item: "produto", ped: "Pedidos" };
 
 /* ---------------- entrar ---------------- */
 let modoA = "entrar";
@@ -288,7 +289,7 @@ const IC = {
   financeiro: '<path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/>', site: '<path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   assistente: '<path d="M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01"/>'
 };
-function abas() { const a = [["inicio", "Início"], ehAgenda() ? ["agenda", "Agenda"] : ["pedidos", "Pedidos"], ["clientes", "Clientes"], ["catalogo", W().itens]];
+function abas() { const a = [["inicio", "Início"], ehAgenda() ? ["agenda", W().ped] : ["pedidos", "Pedidos"], ["clientes", "Clientes"], ["catalogo", W().itens]];
   if (!ehAgenda()) a.push(["estoque", "Estoque"]); a.push(["financeiro", "Caixa"], ["site", "Meu site"], ["assistente", "Assistente"]); return a; }
 function montarNav() { const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
   const h = abas().map(([k, l]) => `<a href="#${k}" data-k="${k}">${svg(k)}<span>${l}</span>${k === "pedidos" || k === "agenda" ? '<span class="n" id="n-' + k + '" hidden></span>' : ""}</a>`).join("");
@@ -325,19 +326,20 @@ async function telaInicio() { const m = $("main"); const hoje = isoD(new Date())
     sb.from("zv_lancamentos").select("tipo,valor").eq("negocio", NEG.id).gte("data", mes),
     sb.from("zv_clientes").select("id,criado_em", { count: "exact" }).eq("negocio", NEG.id).gte("criado_em", new Date(Date.now() - 7 * 864e5).toISOString()),
     ehAgenda() ? Promise.resolve({ data: [] }) : sb.from("zv_estoque").select("nome,qtd,minimo").eq("negocio", NEG.id),
-    ehAgenda() ? sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gte("inicio", ini.toISOString()).lt("inicio", new Date(ini.getTime() + 864e5).toISOString()).in("status", ["pendente", "confirmado", "atendido"]).order("inicio")
+    ehRes() ? sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gt("fim", ini.toISOString()).lt("inicio", new Date(ini.getTime() + 8 * 864e5).toISOString()).in("status", ["pendente", "confirmado"]).order("inicio")
+    : ehAgenda() ? sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gte("inicio", ini.toISOString()).lt("inicio", new Date(ini.getTime() + 864e5).toISOString()).in("status", ["pendente", "confirmado", "atendido"]).order("inicio")
       : sb.from("zv_pedidos").select("*").eq("negocio", NEG.id).in("etapa", ["novo", "preparo", "pronto"]).order("criado_em", { ascending: false }).limit(8)]);
   const soma = (l, t) => (l.data || []).filter(x => x.tipo === t).reduce((a, x) => a + Number(x.valor), 0);
   const baixo = (est.data || []).filter(e => Number(e.qtd) <= Number(e.minimo));
-  const lista = ab.data || [];
+  const lista = (ab.data || []).filter(x => !(x.detalhes || {}).bloqueio);
   m.innerHTML = topo("Olá! Este é o " + esc(NEG.nome), `<a class="b sec" href="${siteURL()}" target="_blank" rel="noopener">Ver meu site</a>`) +
   `<div class="kpis"><div class="card kpi"><small>Entrou hoje</small><b>${brl(soma(lh, "entrada"))}</b></div><div class="card kpi"><small>Saldo do mês</small><b>${brl(soma(lm, "entrada") - soma(lm, "saida"))}</b><div class="sub">${brl(soma(lm, "entrada"))} de entradas</div></div>
-   <div class="card kpi"><small>${ehAgenda() ? "Atendimentos hoje" : "Pedidos em aberto"}</small><b>${lista.length}</b></div><div class="card kpi"><small>Clientes novos (7 dias)</small><b>${cl.count || 0}</b></div></div>
-  <div class="cols2"><div class="card"><h2>${ehAgenda() ? "Agenda de hoje" : "Pedidos em aberto"}</h2><div class="lst">${lista.length ? lista.map(x => ehAgenda()
+   <div class="card kpi"><small>${ehRes() ? "Reservas (próx. 7 dias)" : ehAgenda() ? "Atendimentos hoje" : "Pedidos em aberto"}</small><b>${lista.length}</b></div><div class="card kpi"><small>Clientes novos (7 dias)</small><b>${cl.count || 0}</b></div></div>
+  <div class="cols2"><div class="card"><h2>${ehRes() ? "Próximas reservas" : ehAgenda() ? "Agenda de hoje" : "Pedidos em aberto"}</h2><div class="lst">${lista.length ? lista.map(x => ehRes() ? `<div class="r"><span><b>${periodo(x)}</b> · ${esc(x.nome)} <span class="muted">${esc(unidades(x))}</span></span>${pillStatus(x.status)}</div>` : ehAgenda()
       ? `<div class="r"><span><b>${hhmm(x.inicio)}</b> · ${esc(x.nome)}${x.profissional ? ` <span class="muted">com ${esc(x.profissional)}</span>` : ""}</span>${pillStatus(x.status)}</div>`
       : `<div class="r"><span><b>nº ${x.numero}</b> · ${esc(x.nome)} <span class="muted">${desde(x.criado_em)}</span></span><span>${brl(x.total)} ${pillEtapa(x.etapa)}</span></div>`).join("")
-      : `<p class="vazio">${ehAgenda() ? "Nenhum horário marcado hoje ainda." : "Nenhum pedido em aberto. Quando alguém pedir pelo site, aparece aqui com um aviso sonoro."}</p>`}</div>
-    <a class="b sec sm" style="margin-top:10px" href="#${ehAgenda() ? "agenda" : "pedidos"}">Abrir ${ehAgenda() ? "a agenda" : "o quadro de pedidos"}</a></div>
+      : `<p class="vazio">${ehRes() ? "Nenhuma reserva nos próximos 7 dias." : ehAgenda() ? "Nenhum horário marcado hoje ainda." : "Nenhum pedido em aberto. Quando alguém pedir pelo site, aparece aqui com um aviso sonoro."}</p>`}</div>
+    <a class="b sec sm" style="margin-top:10px" href="#${ehAgenda() ? "agenda" : "pedidos"}">Abrir ${ehRes() ? "as reservas" : ehAgenda() ? "a agenda" : "o quadro de pedidos"}</a></div>
    <div style="display:flex;flex-direction:column;gap:14px"><div class="card"><h2>Seu site</h2><div class="linkbox"><span>${esc(siteURL().replace(/^https?:\/\//, ""))}</span><button class="b sec sm" onclick="copiar(siteURL())">Copiar</button></div>
      <p class="muted" style="font-size:13.5px;margin:10px 0 0">Coloque esse link na bio do Instagram e no status do WhatsApp.</p></div>
      ${baixo.length ? `<div class="card"><h2>Estoque baixo</h2><div class="lst">${baixo.slice(0, 6).map(e => `<div class="r"><span>${esc(e.nome)}</span><span class="pill am">${Number(e.qtd)} un.</span></div>`).join("")}</div><a class="b sec sm" style="margin-top:10px" href="#estoque">Ver estoque</a></div>` : ""}
@@ -353,7 +355,13 @@ function kanban(cols, itens, colDe, card, mover) { const h = `<div class="kb">${
   return h; }
 const ETAPAS = [["novo", "Novos"], ["preparo", "Em preparo"], ["pronto", "Pronto / saiu"], ["entregue", "Entregue"]];
 const pillEtapa = e => `<span class="pill ${e === "novo" ? "am" : e === "entregue" ? "ok" : e === "cancelado" ? "no" : "bl"}">${({ novo: "Novo", preparo: "Em preparo", pronto: "Pronto", entregue: "Entregue", cancelado: "Cancelado" })[e]}</span>`;
-const STATUS = [["pendente", "Pedidos de horário"], ["confirmado", "Confirmados"], ["atendido", "Atendidos"], ["faltou", "Faltaram"]];
+const STATUS_AG = [["pendente", "Pedidos de horário"], ["confirmado", "Confirmados"], ["atendido", "Atendidos"], ["faltou", "Faltaram"]];
+const STATUS_RES = [["pendente", "Pedidos de reserva"], ["confirmado", "Confirmadas"], ["atendido", "Concluídas"], ["faltou", "Não vieram"]];
+const unidades = x => ((x.detalhes || {}).itens || []).map(i => (i.q > 1 ? i.q + "× " : "") + (i.nome || nomeItem(i.u))).join(", ") || x.profissional;
+const nomeItem = id => { for (const c of menu()) for (const i of c.items || []) if (i.id === id) return i.n; return id; };
+const dBR = t => new Date(t).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+const periodo = x => { const m = (x.detalhes || {}).modo; if (m === "horas") return dBR(x.inicio) + " " + hhmm(x.inicio) + "–" + hhmm(x.fim); if (m === "noites") return dBR(x.inicio) + " a " + dBR(x.fim);
+  const f = new Date(new Date(x.fim).getTime() - 1); return dBR(x.inicio) === dBR(f) ? dBR(x.inicio) : dBR(x.inicio) + " a " + dBR(f); };
 const pillStatus = s => `<span class="pill ${s === "pendente" ? "am" : s === "confirmado" ? "bl" : s === "atendido" ? "ok" : "no"}">${({ pendente: "Pendente", confirmado: "Confirmado", atendido: "Atendido", faltou: "Faltou", cancelado: "Cancelado" })[s]}</span>`;
 
 /* ---------------- pedidos ---------------- */
@@ -385,13 +393,13 @@ function verPedido(id) { const p = PEDS.find(x => x.id === id); if (!p) return; 
 /* ---------------- agenda ---------------- */
 let AGS = [], BLQ = [], agDia = isoD(new Date()), agModo = "dia";
 const profs = () => (cfg().profissionais || []).map(p => typeof p === "string" ? p : p.nome);
-async function telaAgenda() { const m = $("main"); const d0 = new Date(agDia + "T00:00:00"), d1 = new Date(d0.getTime() + (agModo === "dia" ? 1 : 7) * 864e5);
+async function telaAgenda() { if (ehRes()) return telaReservas(); const m = $("main"); const d0 = new Date(agDia + "T00:00:00"), d1 = new Date(d0.getTime() + (agModo === "dia" ? 1 : 7) * 864e5);
   const [a, b] = await Promise.all([sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gte("inicio", d0.toISOString()).lt("inicio", d1.toISOString()).order("inicio"),
     sb.from("zv_bloqueios").select("*").eq("negocio", NEG.id).lt("inicio", d1.toISOString()).gt("fim", d0.toISOString()).order("inicio")]);
   AGS = a.data || []; BLQ = b.data || [];
   const dias = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i - 1); return d; });
   let corpo;
-  if (agModo === "quadro") corpo = kanban(STATUS, AGS.filter(x => x.status !== "cancelado"), x => x.status, x => `<div class="t"><b>${esc(x.nome)}</b><span>${brl(x.total)}</span></div><p>${new Date(x.inicio).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })} às ${hhmm(x.inicio)}${x.profissional ? " · " + esc(x.profissional) : ""}</p><p class="muted">${esc((x.servicos || []).map(s => s.nome).join(", "))}</p><div class="bt"><button class="b sec sm" onclick="verAg('${x.id}')">Detalhes</button></div>`, (x, c) => statusAg(x.id, c));
+  if (agModo === "quadro") corpo = kanban(ehRes() ? STATUS_RES : STATUS_AG, AGS.filter(x => x.status !== "cancelado"), x => x.status, x => `<div class="t"><b>${esc(x.nome)}</b><span>${brl(x.total)}</span></div><p>${new Date(x.inicio).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })} às ${hhmm(x.inicio)}${x.profissional ? " · " + esc(x.profissional) : ""}</p><p class="muted">${esc((x.servicos || []).map(s => s.nome).join(", "))}</p><div class="bt"><button class="b sec sm" onclick="verAg('${x.id}')">Detalhes</button></div>`, (x, c) => statusAg(x.id, c));
   else { const ps = profs().length ? profs() : [""];
     corpo = `<div class="dia">${ps.map(p => { const its = AGS.filter(x => x.profissional === p || (!profs().length)), bl = BLQ.filter(x => x.profissional === p || x.profissional === "");
       const tudo = [...its.map(x => ({ t: new Date(x.inicio), h: `<div class="ag ${x.status}"><span class="h">${hhmm(x.inicio)}–${hhmm(x.fim)}</span><b>${esc(x.nome)}</b><span class="muted" style="font-size:13px">${esc((x.servicos || []).map(s => s.nome).join(", "))}</span><div style="display:flex;justify-content:space-between;align-items:center;gap:6px">${pillStatus(x.status)}<button class="b sec sm" onclick="verAg('${x.id}')">Abrir</button></div></div>` })),
@@ -399,15 +407,49 @@ async function telaAgenda() { const m = $("main"); const d0 = new Date(agDia + "
       return `<section class="col">${p ? `<h3>${esc(p)}<span>${its.filter(x => x.status !== "cancelado").length}</span></h3>` : ""}${tudo.length ? tudo.map(x => x.h).join("") : `<p class="vazio" style="padding:8px 4px">Livre o dia todo.</p>`}</section>`; }).join("")}</div>`; }
   m.innerHTML = topo("Agenda", `<button class="chip" aria-pressed="${agModo === "dia"}" onclick="agModo='dia';telaAgenda()">Dia</button><button class="chip" aria-pressed="${agModo === "quadro"}" onclick="agModo='quadro';telaAgenda()">Quadro da semana</button><button class="b sec sm" onclick="novoBloqueio()">Bloquear horário</button>`) +
     `<div class="filtros" style="overflow-x:auto;flex-wrap:nowrap">${dias.map(d => `<button class="chip" aria-pressed="${isoD(d) === agDia}" onclick="agDia='${isoD(d)}';telaAgenda()">${isoD(d) === isoD(new Date()) ? "Hoje" : DS[d.getDay()].slice(0, 3) + " " + d.getDate()}</button>`).join("")}</div>` + corpo; }
+/* reservas: quadro dos próximos 60 dias e bloqueio de datas */
+let resModo = "quadro";
+async function telaReservas() { const m = $("main"), ini = new Date(); ini.setHours(0, 0, 0, 0);
+  const { data } = await sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gt("fim", new Date(ini.getTime() - 864e5).toISOString()).lt("inicio", new Date(ini.getTime() + 120 * 864e5).toISOString()).order("inicio").limit(500);
+  AGS = data || [];
+  const reais = AGS.filter(x => !(x.detalhes || {}).bloqueio), blqs = AGS.filter(x => (x.detalhes || {}).bloqueio && x.status !== "cancelado");
+  const card = x => `<div class="t"><b>${esc(x.nome)}</b><span>${brl(x.total)}</span></div><p><b>${periodo(x)}</b></p><p class="muted">${esc(unidades(x))}${(x.detalhes || {}).pessoas ? " · " + x.detalhes.pessoas + " pessoas" : ""}</p><div class="bt"><button class="b sec sm" onclick="verAg('${x.id}')">Detalhes</button></div>`;
+  m.innerHTML = topo("Reservas", `<button class="chip" aria-pressed="${resModo === "quadro"}" onclick="resModo='quadro';telaReservas()">Quadro</button><button class="chip" aria-pressed="${resModo === "lista"}" onclick="resModo='lista';telaReservas()">Lista por data</button><button class="b sec sm" onclick="novoBloqueioRes()">Bloquear datas</button>`) +
+    `<p class="muted" style="margin:-8px 0 14px;font-size:14px">Toda reserva feita pelo site já bloqueia as datas na hora. Cancelou? As datas voltam a ficar livres sozinhas.</p>` +
+    (resModo === "quadro" ? kanban(STATUS_RES, reais.filter(x => x.status !== "cancelado"), x => x.status, card, (x, c) => statusAg(x.id, c))
+      : `<div class="card"><div class="lst">${reais.filter(x => x.status !== "cancelado").map(x => `<div class="r"><span><b>${periodo(x)}</b> · ${esc(x.nome)}<br><span class="muted" style="font-size:13px">${esc(unidades(x))}</span></span><span style="display:flex;gap:6px;align-items:center">${pillStatus(x.status)}<button class="b sec sm" onclick="verAg('${x.id}')">Abrir</button></span></div>`).join("") || '<p class="vazio">Nenhuma reserva ainda.</p>'}</div></div>`) +
+    (blqs.length ? `<div class="card" style="margin-top:14px"><h2>Datas bloqueadas por você</h2><div class="lst">${blqs.map(x => `<div class="r"><span><b>${periodo(x)}</b> · ${esc(unidades(x))}${x.obs ? ` <span class="muted">${esc(x.obs)}</span>` : ""}</span><button class="b sec sm" onclick="statusAg('${x.id}','cancelado')">Liberar</button></div>`).join("")}</div></div>` : ""); }
+function novoBloqueioRes() { const c = cfg(), its = menu().flatMap(k => k.items || []), hoje = isoD(new Date()), horas = c.modo === "horas";
+  abrirSheet(`<h2>Bloquear datas</h2><p class="muted">Use quando vender por fora (Booking, Airbnb, telefone) ou for fechar. O site para de oferecer na hora.</p>
+  <label class="f" style="margin-top:12px">O quê<select class="t" id="rU">${its.map(i => `<option value="${esc(i.id)}">${esc(i.n)}</option>`).join("")}</select></label>
+  <div class="grid2" style="margin-top:12px"><label class="f">${horas ? "Dia" : "De"}<input class="t" type="date" id="rDe" value="${hoje}"></label>${horas ? `<label class="f">Horário<span style="display:flex;gap:6px"><input class="t" type="time" id="rH1" value="18:00"><input class="t" type="time" id="rH2" value="20:00"></span></label>` : `<label class="f">${c.modo === "noites" ? "Saída" : "Até (incluso)"}<input class="t" type="date" id="rAte" value="${hoje}"></label>`}</div>
+  <label class="f" style="margin-top:12px">Motivo (opcional)<input class="t" id="rMot" placeholder="Reserva pelo Airbnb, manutenção…"></label><p class="err" id="rErr"></p><button class="b pri wide" onclick="salvarBloqueioRes()">Bloquear</button>`); }
+async function salvarBloqueioRes() { const c = cfg(), u = $("rU").value, it = menu().flatMap(k => k.items || []).find(i => i.id === u) || {}, de = $("rDe").value, m = c.modo, est = it.estoque || (c.multi ? 99 : 1);
+  const add = (k, n) => { const d = new Date(k + "T12:00:00"); d.setDate(d.getDate() + n); return isoD(d); };
+  let ini, fim, ocup = [];
+  if (m === "horas") { const a = $("rH1").value, b = $("rH2").value; if (!(b > a)) { $("rErr").textContent = "O fim precisa ser depois do início."; return; } ini = de + "T" + a + ":00-03:00"; fim = de + "T" + b + ":00-03:00"; ocup = [{ u, data: de, de: a, ate: b }]; }
+  else { const ate = $("rAte").value; if (ate < de || (m === "noites" && ate === de)) { $("rErr").textContent = "Confira as datas."; return; }
+    if (m === "noites") { ini = de + "T14:00:00-03:00"; fim = ate + "T12:00:00-03:00"; ocup = [{ u, de, ate }]; }
+    else { ini = de + "T00:00:00-03:00"; fim = add(ate, 1) + "T00:00:00-03:00"; if (c.multi) { for (let k = de; k <= ate; k = add(k, 1)) ocup.push({ u, data: k, q: est }); } else ocup = [{ u, de, ate }]; } }
+  const { data: mx } = await sb.from("zv_agendamentos").select("numero").eq("negocio", NEG.id).order("numero", { ascending: false }).limit(1);
+  const { error } = await sb.from("zv_agendamentos").insert({ negocio: NEG.id, numero: ((mx && mx[0] && mx[0].numero) || 0) + 1, nome: "Bloqueio", profissional: u, inicio: new Date(ini).toISOString(), fim: new Date(fim).toISOString(), exclusivo: false, status: "confirmado", obs: $("rMot").value || null,
+    detalhes: { bloqueio: true, modo: m, ocup, itens: [{ u, q: est, estoque: est, nome: it.n }] } });
+  if (error) { $("rErr").textContent = erro(error); return; } toast("Datas bloqueadas."); fecharSheet(); telaReservas(); }
 async function statusAg(id, status) { const { error } = await sb.from("zv_agendamentos").update({ status }).eq("id", id); if (error) return toast(erro(error));
-  toast(status === "atendido" ? "Atendido. Valor lançado no caixa." : status === "cancelado" ? "Horário liberado." : "Atualizado."); fecharSheet(); telaAgenda(); }
-function verAg(id) { const x = AGS.find(a => a.id === id); if (!x) return; const dt = new Date(x.inicio).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" });
+  toast(status === "atendido" ? (ehRes() ? "Concluída. Valor lançado no caixa." : "Atendido. Valor lançado no caixa.") : status === "cancelado" ? (ehRes() ? "Datas liberadas." : "Horário liberado.") : "Atualizado."); fecharSheet(); telaAgenda(); }
+function verAg(id) { const x = AGS.find(a => a.id === id); if (!x) return; if (ehRes()) return verRes(x); const dt = new Date(x.inicio).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" });
   const conf = `Olá, ${x.nome}! Seu horário em ${NEG.nome} está confirmado: ${dt} às ${hhmm(x.inicio)}${x.profissional ? " com " + x.profissional : ""}. Até lá!`;
   abrirSheet(`<h2>${esc(x.nome)}</h2>${pillStatus(x.status)}<dl class="dl"><dt>Quando</dt><dd>${dt}, ${hhmm(x.inicio)}–${hhmm(x.fim)}</dd>${x.profissional ? `<dt>Com</dt><dd>${esc(x.profissional)}</dd>` : ""}${x.whatsapp ? `<dt>WhatsApp</dt><dd>${esc(x.whatsapp)}</dd>` : ""}<dt>Valor</dt><dd>${brl(x.total)}</dd></dl>
     <ul class="its">${(x.servicos || []).map(s => `<li><span>${s.qty > 1 ? s.qty + "× " : ""}${esc(s.nome)}</span><span class="muted">${s.dur ? s.dur + " min" : ""}</span></li>`).join("")}</ul>
     <div style="display:flex;flex-direction:column;gap:8px">${x.status === "pendente" ? `<button class="b pri" onclick="statusAg('${x.id}','confirmado')">Confirmar horário</button>` : ""}
     ${x.whatsapp ? `<a class="b ok" href="${zapLink(x.whatsapp, conf)}" target="_blank" rel="noopener">Mandar confirmação no WhatsApp</a>` : ""}
     ${["pendente", "confirmado"].includes(x.status) ? `<button class="b sec" onclick="statusAg('${x.id}','atendido')">Marcar como atendido</button><button class="b sec" onclick="statusAg('${x.id}','faltou')">Cliente faltou</button><button class="b no" onclick="if(confirm('Cancelar e liberar este horário?'))statusAg('${x.id}','cancelado')">Cancelar e liberar o horário</button>` : `<button class="b sec" onclick="statusAg('${x.id}','confirmado')">Voltar para confirmado</button>`}</div>`); }
+function verRes(x) { const d = x.detalhes || {}, conf = `Olá, ${x.nome}! Sua reserva em ${NEG.nome} está confirmada: ${periodo(x)} (${unidades(x)}). Qualquer dúvida, é só chamar.`;
+  abrirSheet(`<h2>${esc(x.nome)}</h2>${pillStatus(x.status)}<dl class="dl"><dt>Quando</dt><dd>${periodo(x)}</dd><dt>O quê</dt><dd>${esc(unidades(x))}</dd>${d.pessoas ? `<dt>Pessoas</dt><dd>${d.pessoas}</dd>` : ""}${x.whatsapp ? `<dt>WhatsApp</dt><dd>${esc(x.whatsapp)}</dd>` : ""}<dt>Total</dt><dd>${brl(x.total)}</dd></dl>
+    ${d.adicionais && Object.keys(d.adicionais).some(k => d.adicionais[k]) ? `<p class="muted">Adicionais: ${esc(Object.keys(d.adicionais).filter(k => d.adicionais[k]).join(", "))}</p>` : ""}
+    <div style="display:flex;flex-direction:column;gap:8px">${x.status === "pendente" ? `<button class="b pri" onclick="statusAg('${x.id}','confirmado')">Confirmar reserva</button>` : ""}
+    ${x.whatsapp ? `<a class="b ok" href="${zapLink(x.whatsapp, conf)}" target="_blank" rel="noopener">Mandar confirmação no WhatsApp</a>` : ""}
+    ${["pendente", "confirmado"].includes(x.status) ? `<button class="b sec" onclick="statusAg('${x.id}','atendido')">Marcar como concluída</button><button class="b sec" onclick="statusAg('${x.id}','faltou')">Cliente não veio</button><button class="b no" onclick="if(confirm('Cancelar e liberar as datas?'))statusAg('${x.id}','cancelado')">Cancelar e liberar as datas</button>` : `<button class="b sec" onclick="statusAg('${x.id}','confirmado')">Voltar para confirmada</button>`}</div>`); }
 function novoBloqueio() { abrirSheet(`<h2>Bloquear horário</h2><p class="muted">O site não deixa ninguém marcar nesse intervalo.</p><div class="grid2" style="margin-top:12px">
   <label class="f">Dia<input class="t" type="date" id="bDia" value="${agDia}"></label>${profs().length ? `<label class="f">Quem<select class="t" id="bProf"><option value="">Todos</option>${profs().map(p => `<option>${esc(p)}</option>`).join("")}</select></label>` : "<span></span>"}
   <label class="f">Das<input class="t" type="time" id="bDe" value="12:00"></label><label class="f">Até<input class="t" type="time" id="bAte" value="13:00"></label></div>
@@ -448,7 +490,8 @@ function desenharCatalogo() { const m = $("main"), ag = ehAgenda();
   CAT.map((c, ci) => `<section class="cat"><div class="ch"><input value="${esc(c.cat)}" aria-label="Nome da categoria" oninput="CAT[${ci}].cat=this.value;marcar()"><button class="b sec sm" onclick="novoItem(${ci})">+ ${W().item}</button>${c.items.length ? "" : `<button class="b no sm" onclick="CAT.splice(${ci},1);marcar();desenharCatalogo()">Apagar</button>`}</div>
     ${c.items.map((it, ii) => `<div class="it ${it.oculto ? "off" : ""}"><div class="ph">${it.img && /^https?:/.test(it.img) ? `<img src="${esc(it.img)}" alt="">` : it.img ? `<img src="/modelos/${NEG.nicho}/img/${esc(it.img)}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${esc(it.e || "📷")}'))">` : esc(it.e || "📷")}<input type="file" accept="image/*" aria-label="Trocar foto de ${esc(it.n)}" onchange="subirFoto(${ci},${ii},this.files[0])"></div>
       <div class="row"><input class="t nm" value="${esc(it.n)}" aria-label="Nome" oninput="CAT[${ci}].items[${ii}].n=this.value;marcar()">${it.v ? "" : `<input class="t pr" inputmode="decimal" value="${it.p != null ? Number(it.p).toFixed(2).replace(".", ",") : ""}" aria-label="Preço" placeholder="Preço" oninput="setPreco(${ci},${ii},this.value)">`}
-        ${ag ? `<input class="t pr" style="width:96px" inputmode="numeric" value="${it.dur || ""}" aria-label="Duração em minutos" placeholder="min" oninput="CAT[${ci}].items[${ii}].dur=parseInt(this.value)||0;marcar()">` : ""}</div>
+        ${ehRes() && cfg().multi ? `<input class="t pr" style="width:96px" inputmode="numeric" value="${it.estoque || ""}" aria-label="Quantos você tem" placeholder="qtd" title="Quantos você tem" oninput="CAT[${ci}].items[${ii}].estoque=parseInt(this.value)||0;marcar()">` : ""}
+        ${ag && !ehRes() ? `<input class="t pr" style="width:96px" inputmode="numeric" value="${it.dur || ""}" aria-label="Duração em minutos" placeholder="min" oninput="CAT[${ci}].items[${ii}].dur=parseInt(this.value)||0;marcar()">` : ""}</div>
       ${it.v ? `<div class="vs">${it.v.map((v, vi) => `<label>${esc(v.l)}<input class="t" inputmode="decimal" value="${Number(v.p).toFixed(2).replace(".", ",")}" oninput="setVar(${ci},${ii},${vi},this.value)"></label>`).join("")}</div>` : ""}
       ${it.g && !it.v ? `<p class="muted" style="grid-column:2;margin:0;font-size:12.5px">Tem opções de montagem (${it.g.map(g => esc(g.l)).join(", ")}). Os preços das opções seguem o modelo.</p>` : ""}
       <textarea class="t ds" rows="2" aria-label="Descrição" placeholder="Descrição" oninput="CAT[${ci}].items[${ii}].d=this.value;marcar()">${esc(it.d || "")}</textarea>
@@ -518,7 +561,7 @@ function telaSite() { const m = $("main"), c = cfg(), t = textos(), h = c.horari
      ${(t.sobre || []).map((p, i) => `<label class="f" style="margin-top:10px">Sobre, parágrafo ${i + 1}<textarea class="t" id="sSob${i}">${esc(p)}</textarea></label>`).join("")}
      <label class="f" style="margin-top:10px">Rodapé<input class="t" id="sFoot" value="${esc(t.foot || "")}"></label></div>
    <div class="card"><h2>Horário de funcionamento</h2><div class="hor">${[0, 1, 2, 3, 4, 5, 6].map(d => { const v = h[d] || h[String(d)]; return `<div class="d"><label><input type="checkbox" id="hA${d}" ${v ? "checked" : ""}>${DS[d].slice(0, 3)}</label><span class="hh"><input class="t" type="time" id="hI${d}" value="${v ? v[0] : "09:00"}"> às <input class="t" type="time" id="hF${d}" value="${v ? v[1] : "18:00"}"></span></div>`; }).join("")}</div></div>
-   ${ehAgenda() ? `<div class="card"><h2>Agenda</h2><label class="f">Profissionais (um por linha; deixe vazio se só você atende)<textarea class="t" id="sProf">${esc(profs().join("\n"))}</textarea></label>
+   ${ehAgenda() && !ehRes() ? `<div class="card"><h2>Agenda</h2><label class="f">Profissionais (um por linha; deixe vazio se só você atende)<textarea class="t" id="sProf">${esc(profs().join("\n"))}</textarea></label>
      <div class="grid2" style="margin-top:10px"><label class="f">Intervalo entre horários (min)<input class="t" id="sStep" inputmode="numeric" value="${c.slotStep || 30}"></label><label class="f">Quantas pessoas no mesmo horário<input class="t" id="sCap" inputmode="numeric" value="${c.capacidade || 1}"></label></div></div>` : ""}
    <button class="b pri" onclick="salvarSite()">Salvar e publicar</button></div>
    <div style="display:flex;flex-direction:column;gap:14px"><div class="card" style="text-align:center"><h2>Seu link</h2><div class="linkbox"><span>${esc(siteURL().replace(/^https?:\/\//, ""))}</span><button class="b sec sm" onclick="copiar(siteURL())">Copiar</button></div><div style="width:180px;margin:14px auto 4px">${qr}</div><p class="muted" style="font-size:13px;margin:0">Imprima o QR e cole no balcão.</p></div>
@@ -530,7 +573,7 @@ async function salvarSite() { const nome = $("sNome").value.trim(); if (!nome) r
   const grp = {}; [1, 2, 3, 4, 5, 6, 0].forEach(d => { if (horario[d]) { const k = horario[d].join("–"); (grp[k] = grp[k] || []).push(DS[d].slice(0, 3)); } });
   const horarioLabel = Object.entries(grp).map(([k, ds]) => ds.join(", ") + " " + k.replace(":00", "h").replace(":00", "h")).join(" · ") || "Fechado";
   const d = clone(NEG.dados) || {}; d.config = Object.assign(d.config || {}, { nome, whatsapp: z, endereco: $("sEnd").value, maps: $("sMaps").value, horario, horarioLabel, pix: Object.assign({}, cfg().pix || {}, { chave: $("sPix").value, nome }) });
-  if (ehAgenda()) { d.config.profissionais = $("sProf").value.split("\n").map(s => s.trim()).filter(Boolean); d.config.slotStep = parseInt($("sStep").value) || 30; d.config.capacidade = Math.max(1, parseInt($("sCap").value) || 1); }
+  if (ehAgenda() && !ehRes()) { d.config.profissionais = $("sProf").value.split("\n").map(s => s.trim()).filter(Boolean); d.config.slotStep = parseInt($("sStep").value) || 30; d.config.capacidade = Math.max(1, parseInt($("sCap").value) || 1); }
   const t = textos(); d.textos = Object.assign(d.textos || {}, { tagline: $("sTag").value, foot: $("sFoot").value, cidade: $("sCid").value, endereco: $("sEnd").value, sobre: (t.sobre || []).map((_, i) => $("sSob" + i).value) });
   const { data, error } = await sb.from("zv_negocios").update({ nome, whatsapp_dono: zap || null, dados: d }).eq("id", NEG.id).select().single();
   if (error) return toast(erro(error)); NEG = data; montarNav(); toast("Salvo. Já está no ar."); }
@@ -544,7 +587,7 @@ async function agente(texto, negocio) { const { data: s } = await sb.auth.getSes
 let MSGS = [];
 async function telaAssistente() { const m = $("main"); const { data } = await sb.from("zv_mensagens").select("papel,texto,criado_em").eq("negocio", NEG.id).order("criado_em", { ascending: false }).limit(40); MSGS = (data || []).reverse();
   const it = menu().flatMap(c => c.items)[1] || menu().flatMap(c => c.items)[0] || { n: "item", p: 20 };
-  const sug = ehAgenda() ? ["Como está a agenda de hoje?", `Muda o ${it.n} pra R$ ${String(Math.max(1, Math.round((it.p || 30) * .9))).replace(".", ",")}`, "Bloqueia amanhã das 12h às 14h", "Fecha no domingo", "Quanto entrou este mês?"]
+  const sug = ehRes() ? ["Como estão as reservas este mês?", `Muda ${it.n} pra R$ ${String(Math.round((it.p || 300) * .9))}`, "Fecha na segunda", "Muda o WhatsApp para (11) 98888-7777"] : ehAgenda() ? ["Como está a agenda de hoje?", `Muda o ${it.n} pra R$ ${String(Math.max(1, Math.round((it.p || 30) * .9))).replace(".", ",")}`, "Bloqueia amanhã das 12h às 14h", "Fecha no domingo", "Quanto entrou este mês?"]
     : ["Como foram as vendas hoje?", `Baixa o ${it.n} pra R$ ${((it.p || 20) * .9).toFixed(2).replace(".", ",")}`, `${it.n} esgotou`, "Adiciona Suco de laranja por R$ 9", "Muda o WhatsApp para (11) 98888-7777"];
   m.innerHTML = topo("Assistente") + `<div class="card chat"><div class="msgs" id="msgs" aria-live="polite">${MSGS.length ? MSGS.map(x => `<div class="msg ${x.papel}">${esc(x.texto)}</div>`).join("") : `<div class="msg agente">Oi! Eu cuido do site e do painel para você. Peça como falaria com um funcionário: mudar preço, tirar um item que acabou, trocar horário, ver os pedidos do dia. A mudança vai para o ar na hora.</div>`}</div>
    <div class="sug">${sug.map(s => `<button onclick="enviarMsg(${JSON.stringify(s).replace(/"/g, "&quot;")})">${esc(s)}</button>`).join("")}</div>

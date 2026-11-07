@@ -43,7 +43,9 @@ module.exports = async (req, res) => {
   const textos = Object.assign({}, pad.textos, dados.textos || {}, { nome: site.nome });
   let ocupados = [];
   if (site.tipo === "agenda") ocupados = (await rpc("zv_ocupados", { p_slug: slug, p_de: hojeSP(), p_dias: 62 }).catch(() => null)) || [];
-  const zv = { slug, id: site.id, tipo: site.tipo, nicho: site.nicho, api: SB, key: KEY, ocupados };
+  let ocupReserva = [];
+  if (site.tipo === "reserva") ocupReserva = ((await rpc("zv_reservas_ocupadas", { p_slug: slug }).catch(() => null)) || []).map(x => (x && x.zv_reservas_ocupadas) || x).filter(Boolean);
+  const zv = { slug, id: site.id, tipo: site.tipo, nicho: site.nicho, api: SB, key: KEY, ocupados, ocupReserva };
   const seguro = o => JSON.stringify(o).replace(/</g, "\\u003c");
   html = trocarTextos(html, pad.textos || {}, textos)
     .replace(/<script src="\/demo\.js"><\/script>\s*/g, "")

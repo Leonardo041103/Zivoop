@@ -233,3 +233,38 @@ revoke execute on function public.zv_criar_negocio(text,text,text,text) from ano
 revoke all on function public.zv_pedido_mudou(), public.zv_agenda_mudou(), public.zv_toca() from public, anon, authenticated;
 revoke all on function public.zv_meu(uuid) from public, anon;
 grant execute on function public.zv_meu(uuid) to authenticated;
+-- Reservas (pousada, chácara, quadra, aluguel de festa): guarda a reserva e não deixa vender a mesma unidade duas vezes.
+-- p_itens = [{"u":"luxo","q":1,"estoque":1}]  ·  p_detalhes.ocup = como o site desenha a ocupação (datas, horários, quantidades)
+create or replace function public.zv_reservar(p_slug text, p_itens jsonb, p_inicio timestamptz, p_fim timestamptz, p_nome text, p_whatsapp text, p_total numeric, p_detalhes jsonb)
+returns int language plpgsql security definer set search_path = public as $$
+declare n public.zv_negocios; v_num int; it jsonb; usado numeric; z text := regexp_replace(coalesce(p_whatsapp,''),'\D','','g');
+begin
+  select * into n from public.zv_negocios where slug = lower(p_slug) and status = 'ativo';
+  if n.id is null then raise exception 'negocio_inexistente'; end if;
+  if coalesce(trim(p_nome),'') = '' then raise exception 'nome_obrigatorio'; end if;
+  if p_fim <= p_inicio or p_fim > p_inicio + interval '120 days' then raise exception 'datas_invalidas'; end if;
+  if p_inicio < now() - interval '1 day' then raise exception 'horario_passado'; end if;
+  if jsonb_typeof(p_itens) <> 'array' or jsonb_array_length(p_itens) = 0 then raise exception 'sem_itens'; end if;
+  if z <> '' and (select count(*) from public.zv_agendamentos where negocio = n.id and whatsapp = z and status = 'pendente' and fim > now()) >= 3 then raise exception 'muitos_pendentes'; end if;
+  perform pg_advisory_xact_lock(hashtext('zvag' || n.id));
+  for it in select * from jsonb_array_elements(p_itens) loop
+    select coalesce(sum((x->>'q')::numeric), 0) into usado
+      from public.zv_agendamentos a, jsonb_array_elements(coalesce(a.detalhes->'itens','[]')) x
+     where a.negocio = n.id and a.status in ('pendente','confirmado') and a.inicio < p_fim and a.fim > p_inicio and x->>'u' = it->>'u';
+    if usado + coalesce((it->>'q')::numeric, 1) > greatest(coalesce((it->>'estoque')::numeric, 1), 1) then raise exception 'indisponivel:%', it->>'u'; end if;
+  end loop;
+  select coalesce(max(numero),0) + 1 into v_num from public.zv_agendamentos where negocio = n.id;
+  insert into public.zv_agendamentos (negocio, numero, cliente, nome, whatsapp, servicos, total, profissional, inicio, fim, exclusivo, detalhes)
+  values (n.id, v_num, public.zv_cliente(n.id, p_nome, z, p_total), left(trim(p_nome),80), nullif(z,''), coalesce(p_detalhes->'servicos','[]'), greatest(coalesce(p_total,0),0),
+          left((select string_agg(x->>'u', ', ') from jsonb_array_elements(p_itens) x), 120), p_inicio, p_fim, false,
+          coalesce(p_detalhes,'{}') || jsonb_build_object('itens', p_itens));
+  return v_num;
+end $$;
+
+-- o que o site deve mostrar como ocupado (reservas ativas e bloqueios do dono), já no formato do modelo
+create or replace function public.zv_reservas_ocupadas(p_slug text) returns setof jsonb
+language sql stable security definer set search_path = public as $$
+  select o from public.zv_agendamentos a join public.zv_negocios n on n.id = a.negocio, jsonb_array_elements(coalesce(a.detalhes->'ocup','[]')) o
+   where n.slug = lower(p_slug) and a.status in ('pendente','confirmado') and a.fim > now() - interval '1 day' $$;
+
+grant execute on function public.zv_reservar(text,jsonb,timestamptz,timestamptz,text,text,numeric,jsonb), public.zv_reservas_ocupadas(text) to anon, authenticated;

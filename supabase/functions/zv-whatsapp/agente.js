@@ -132,15 +132,16 @@ export const ACOES = {
     const lanc = await C.db.sel(`zv_lancamentos?select=tipo,valor&negocio=eq.${C.neg.id}&data=gte.${ini}`);
     const ent = lanc.filter(x => x.tipo === "entrada").reduce((a, x) => a + Number(x.valor), 0), sai = lanc.filter(x => x.tipo === "saida").reduce((a, x) => a + Number(x.valor), 0);
     const iniTs = ini + "T00:00:00-03:00", rot = ini === hoje ? "Hoje" : /mes/.test(p) ? "Este mês" : "Nos últimos 7 dias";
-    if (C.neg.tipo === "agenda") { const ag = await C.db.sel(`zv_agendamentos?select=status,total&negocio=eq.${C.neg.id}&inicio=gte.${encodeURIComponent(iniTs)}`);
+    if (C.neg.tipo !== "pedido") { const ag = await C.db.sel(`zv_agendamentos?select=status,total&negocio=eq.${C.neg.id}&inicio=gte.${encodeURIComponent(iniTs)}`);
       const c = s => ag.filter(x => x.status === s).length;
+      if (C.neg.tipo === "reserva") return `${rot}: ${ag.length} ${ag.length === 1 ? "reserva" : "reservas"} começando (${c("confirmado")} confirmadas, ${c("pendente")} esperando confirmação). Entrou ${brl(ent)}${sai ? `, saiu ${brl(sai)}` : ""}.`;
       return `${rot}: ${ag.length} ${ag.length === 1 ? "agendamento" : "agendamentos"} (${c("atendido")} atendidos, ${c("confirmado")} confirmados, ${c("pendente")} esperando confirmação, ${c("faltou")} faltas). Entrou ${brl(ent)}${sai ? `, saiu ${brl(sai)}` : ""}.`; }
     const ped = await C.db.sel(`zv_pedidos?select=etapa,total&negocio=eq.${C.neg.id}&criado_em=gte.${encodeURIComponent(iniTs)}`);
     const val = ped.filter(x => x.etapa !== "cancelado"), ab = ped.filter(x => ["novo", "preparo", "pronto"].includes(x.etapa)).length;
     return `${rot}: ${val.length} ${val.length === 1 ? "pedido" : "pedidos"} somando ${brl(val.reduce((a, x) => a + Number(x.total), 0))}${ab ? `, ${ab} ainda em aberto` : ""}. No caixa entrou ${brl(ent)}${sai ? ` e saiu ${brl(sai)}` : ""}.`;
   },
   async listar_agenda(C, { data }) {
-    if (C.neg.tipo !== "agenda") return ACOES.listar_pedidos(C, {});
+    if (C.neg.tipo === "pedido") return ACOES.listar_pedidos(C, {});
     const dia = resolverData(data || "hoje"); const l = await C.db.sel(`zv_agendamentos?select=nome,inicio,profissional,status,numero&negocio=eq.${C.neg.id}&inicio=gte.${encodeURIComponent(dia + "T00:00:00-03:00")}&inicio=lt.${encodeURIComponent(dia + "T23:59:59-03:00")}&status=neq.cancelado&order=inicio`);
     if (!l.length) return `Nada marcado em ${dia.split("-").reverse().join("/")}.`;
     return `${dia.split("-").reverse().join("/")}:\n` + l.map(x => { const t = new Date(new Date(x.inicio).getTime() - 3 * 3600e3); return `${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())} ${x.nome}${x.profissional ? " (" + x.profissional + ")" : ""} · ${x.status} · nº ${x.numero}`; }).join("\n");
@@ -199,7 +200,7 @@ export async function porFrases(C, texto) {
   if ((m = s.match(/bloque(?:ia|ar)\s+(?:a agenda\s+)?(?:de |do |da |no |na )?(hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado|\d{1,2} \d{1,2}(?: \d{2,4})?)(?:\s+(?:das|de)\s+(\d{1,2}(?: ?h ?\d{0,2})?)\s+(?:as|a|ate)\s+(\d{1,2}(?: ?h ?\d{0,2})?))?(?:\s+(?:para|pra|do|da)\s+(?:o |a )?(\w+))?/)))
     { const pr = m[4] && (C.cfg().profissionais || []).map(p => typeof p === "string" ? p : p.nome).find(p => sem(p) === m[4]); return ACOES.bloquear(C, { data: m[1], de: m[2] && m[2].replace(/ /g, ""), ate: m[3] && m[3].replace(/ /g, ""), profissional: pr || "" }); }
   if ((m = s.match(/(?:pedido|pedidos?)\s+(?:n |numero |no |nº )?(\d+)\s+(?:esta |ta |pra |para |foi |saiu |como )?(\w+)/)) && C.neg.tipo !== "agenda") return ACOES.mover_pedido(C, { numero: m[1], etapa: m[2] });
-  if ((m = s.match(/(confirma|cancela|atendido|faltou)\s+(?:o )?(?:agendamento|horario)?\s*(?:n |numero |nº )?(\d+)/)) && C.neg.tipo === "agenda") return ACOES.status_agendamento(C, { numero: m[2], status: m[1] });
+  if ((m = s.match(/(confirma|cancela|atendido|faltou)\s+(?:o )?(?:agendamento|horario)?\s*(?:n |numero |nº )?(\d+)/)) && C.neg.tipo !== "pedido") return ACOES.status_agendamento(C, { numero: m[2], status: m[1] });
   if (/agenda|quem (vem|esta marcado)|horarios? (de )?(hoje|amanha)|marcad/.test(s)) return ACOES.listar_agenda(C, { data: /amanha/.test(s) ? "amanha" : (s.match(/(\d{1,2} \d{1,2})/) || [])[1] || "hoje" });
   if (/pedidos? (em )?aberto|quais pedidos|tem pedido/.test(s)) return ACOES.listar_pedidos(C, {});
   if (/vend|fatur|entrou|caixa|resumo|como (foi|esta|ta)|quanto/.test(s)) return ACOES.resumo(C, { periodo: /mes/.test(s) ? "mes" : /semana/.test(s) ? "semana" : "hoje" });

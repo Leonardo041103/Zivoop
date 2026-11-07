@@ -8,7 +8,7 @@
       .then(function (r) { return r.json().catch(function () { return null; }).then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || ("HTTP " + r.status)); return j; }); });
   };
   var ERROS = { horario_ocupado: "Esse horário acabou de ser reservado. Escolha outro.", horario_passado: "Esse horário já passou.", muitos_pendentes: "Você já tem agendamentos esperando confirmação.",
-    muitos_pedidos: "Muitos pedidos em pouco tempo. Fale com a loja pelo WhatsApp.", nome_obrigatorio: "Digite seu nome.", negocio_inexistente: "Este site está fora do ar." };
+    muitos_pedidos: "Muitos pedidos em pouco tempo. Fale com a loja pelo WhatsApp.", indisponivel: "Essa data acabou de ser reservada. Escolha outra.", datas_invalidas: "Confira as datas.", nome_obrigatorio: "Digite seu nome.", negocio_inexistente: "Este site está fora do ar." };
   Z.erro = function (e) { var m = String((e && e.message) || e); for (var k in ERROS) if (m.indexOf(k) >= 0) return ERROS[k]; return "Não deu para salvar agora. Confira a internet e tente de novo."; };
   var conv = function (l) { return (l || []).map(function (o) { return { p: o.profissional || "", a: Date.parse(o.inicio), b: Date.parse(o.fim) }; }); };
   Z.busy = conv(Z.ocupados);
@@ -60,5 +60,29 @@
       Z.rpc("zv_novo_pedido", corpo).catch(function () { /* o pedido já foi pelo WhatsApp */ });
     };
   }
-  document.addEventListener("DOMContentLoaded", function () { if (Z.tipo === "agenda") ligarAgenda(); else if (Z.tipo === "pedido") ligarPedido(); });
+  /* reservas: datas e horários já reservados entram como ocupados antes do site montar o calendário */
+  if (Z.tipo === "reserva") { window.DADOS = window.DADOS || {}; DADOS.config = DADOS.config || {}; DADOS.config.ocupado = (Z.ocupReserva || []).slice(); }
+  function ligarReserva() {
+    if (typeof enviar !== "function" || typeof res === "undefined" || typeof unidadesSel !== "function") return;
+    var origEnviar = enviar;
+    var hh = function (m) { return pad(Math.floor(m / 60)) + ":" + pad(m % 60); };
+    var mais1 = function (k) { return addDia(k, 1); };
+    enviar = function () {
+      var f = faltando(); if (f) { toast(f); return; }
+      var us = unidadesSel(), multi = !!CONFIG.multi, ini, fim, ocup = [];
+      if (M === "noites") { ini = res.ini + "T14:00:00-03:00"; fim = res.fim + "T12:00:00-03:00"; us.forEach(function (x) { for (var i = 0; i < x.q; i++) ocup.push({ u: x.u.id, de: res.ini, ate: res.fim }); }); }
+      else if (M === "horas") { var h0 = res.hora, h1 = res.hora + res.dur * 60; ini = res.ini + "T" + hh(h0) + ":00-03:00"; fim = new Date(Date.parse(ini) + res.dur * 3600e3).toISOString(); us.forEach(function (x) { ocup.push({ u: x.u.id, data: res.ini, de: hh(h0), ate: hh(h1) }); }); }
+      else { var ds = diasLista(), ult = ds[ds.length - 1]; ini = ds[0] + "T00:00:00-03:00"; fim = mais1(ult) + "T00:00:00-03:00";
+        us.forEach(function (x) { if (multi) ds.forEach(function (k) { ocup.push({ u: x.u.id, data: k, q: x.q }); }); else ocup.push({ u: x.u.id, de: ds[0], ate: ult }); }); }
+      var itens = us.map(function (x) { return { u: x.u.id, q: x.q, estoque: estoque(x.u), nome: x.u.n }; });
+      var w = window.open("", "_blank");
+      Z.rpc("zv_reservar", { p_slug: Z.slug, p_itens: itens, p_inicio: new Date(ini).toISOString(), p_fim: new Date(fim).toISOString(), p_nome: res.nome, p_whatsapp: res.tel, p_total: total(),
+          p_detalhes: { ocup: ocup, servicos: us.map(function (x) { return { id: x.u.id, nome: x.u.n, qty: x.q }; }), modo: M, pessoas: res.pessoas, extra: res.extra, adicionais: res.adic } })
+        .then(function () { ocup.forEach(function (o) { OCUP.push(o); });
+          var o = window.open; window.open = function (u) { if (w && !w.closed) { w.location = u; return w; } return o.apply(window, arguments); }; try { origEnviar(); } finally { window.open = o; } })
+        .catch(function (e) { if (w) w.close(); toast(/indisponivel/.test(String(e.message)) ? "Essa data acabou de ser reservada. Escolha outra." : Z.erro(e));
+          Z.rpc("zv_reservas_ocupadas", { p_slug: Z.slug }).then(function (l) { OCUP.length = 0; (l || []).forEach(function (x) { x = (x && x.zv_reservas_ocupadas) || x; if (x) OCUP.push(x); }); if (typeof render === "function") render(); }).catch(function () {}); });
+    };
+  }
+  document.addEventListener("DOMContentLoaded", function () { if (Z.tipo === "reserva") ligarReserva(); if (Z.tipo === "agenda") ligarAgenda(); else if (Z.tipo === "pedido") ligarPedido(); });
 })();
