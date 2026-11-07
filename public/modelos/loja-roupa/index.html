@@ -672,6 +672,7 @@ footer{background:var(--c1d);font-size:14px}
    CONFIG — edite aqui os dados da loja
    ===================================================================== */
 const DADOS = window.DADOS||{};
+const imgUrl=v=>/^(https?:)?\/\//.test(v)?v:"img/"+v+".webp";
 const CONFIG = Object.assign({
  "slug": "loja_roupa",
  "nome": "Boutique Lila",
@@ -1567,7 +1568,7 @@ function norm(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
 function cardEl(it){
   const el=document.createElement("div"); el.className="card"+(it.esgotado?" esgotado":""); el.id="card-"+it.id;
   el.dataset.busca=norm(it.n+" "+(it.d||"")+" "+it.cat);
-  const thumb=it.img?`<img class="thumb" loading="lazy" src="img/${it.img}.webp" alt="${esc(it.n)}" onclick="openItem('${it.id}')">`
+  const thumb=it.img?`<img class="thumb" loading="lazy" src="${imgUrl(it.img)}" alt="${esc(it.n)}" onclick="openItem('${it.id}')">`
     :`<div class="ph" onclick="openItem('${it.id}')">${it.e||CONFIG.emoji}</div>`;
   const preco=it.consulta?`<span class="price" style="font-size:14px;color:var(--c2d)">${it.consultaTxt||"Consulte"}</span>`
     :`<span class="price">${variaPreco(it)?'<span class="from">a partir de</span>':''}${it.de?`<span class="de">${brl(it.de)}</span>`:''}${brl(minPreco(it))}${unidadeCard(it)?` <small>/${unidadeCard(it)}</small>`:''}</span>`;
@@ -1776,7 +1777,7 @@ function meioHtml(){
 }
 function renderItem(){
   const it=modal.item;
-  const img=it.vis?visHTML():it.img?`<img class="it-img" src="img/${it.img}.webp" alt="${esc(it.n)}">`:`<div class="it-ph">${it.e||CONFIG.emoji}</div>`;
+  const img=it.vis?visHTML():it.img?`<img class="it-img" src="${imgUrl(it.img)}" alt="${esc(it.n)}">`:`<div class="it-ph">${it.e||CONFIG.emoji}</div>`;
   const gs=it.g.map((_,gi)=>grupoHtml(gi));
   const unit=it.g.length?"":`<span class="it-unit">${brl(it.p)}${it.un?" por "+it.un:""}</span>`;
   document.getElementById("shBody").innerHTML=`${img}${unit}
@@ -1845,7 +1846,7 @@ function renderCart(){
   const body=document.getElementById("shBody"), foot=document.getElementById("shFoot");
   if(!cart.length){ body.innerHTML=`<div class="empty"><div class="em">${CONFIG.emoji}</div>${SEU} ${W.carrinho} está ${VAZ}.<br>${W.vazio}</div>`; foot.innerHTML=""; return; }
   body.innerHTML=freteBlock()+promoBlock()+cart.map(l=>{ const it=ALL[l.id];
-    const img=it.img?`<img src="img/${it.img}.webp" alt="">`:`<div class="ni">${it.e||CONFIG.emoji}</div>`;
+    const img=it.img?`<img src="${imgUrl(it.img)}" alt="">`:`<div class="ni">${it.e||CONFIG.emoji}</div>`;
     return `<div class="citem">${img}<div class="ci-t"><h4>${l.nome}</h4><div class="cfg">${qtdTxt(l)} ${passo(it)!==1?"":(l.cfg||l.un)}${l.obs?`<br>obs: ${esc(l.obs)}`:""}</div></div>
       <div class="ci-r"><span class="lp">${brl(l.precoUnit*l.qty)}</span>
       <span class="qtc"><button onclick="decLine('${l.lineId}')">−</button><span>${fq(l.qty)}</span><button onclick="incLine('${l.lineId}')">+</button></span></div></div>`;

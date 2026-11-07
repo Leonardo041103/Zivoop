@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Painel Zivoop</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#14162B">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+:root{--ink:#14162B;--ink2:#4A4E6A;--soft:#7A7F9A;--paper:#F5F6FA;--card:#fff;--cobalt:#2E4BFF;--cobalt-d:#1F36D6;--tang:#FF7A1A;--mint:#19B37A;--red:#E5484D;--amber:#F2A33A;
+  --line:rgba(20,22,43,.1);--line2:rgba(20,22,43,.18);--f:'Archivo',system-ui,sans-serif;--r:16px;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}button:disabled{opacity:.45;cursor:not-allowed}
+a{color:var(--cobalt)}
+:focus-visible{outline:3px solid var(--tang);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h1,h2,h3{font-stretch:118%;font-weight:850;letter-spacing:-.02em;line-height:1.05;margin:0}
+.b{min-height:42px;padding:0 16px;border-radius:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;white-space:nowrap}
+.b.pri{background:var(--cobalt);color:#fff}.b.pri:hover:not(:disabled){background:var(--cobalt-d)}
+.b.sec{background:var(--card);border:1px solid var(--line2);color:var(--ink)}.b.sec:hover{border-color:var(--ink2)}
+.b.ok{background:var(--mint);color:#fff}.b.no{color:var(--red);border:1px solid rgba(229,72,77,.35);background:#fff}
+.b.sm{min-height:34px;padding:0 11px;font-size:13.5px;border-radius:10px}
+.b.wide{width:100%}
+input.t,select.t,textarea.t{width:100%;background:#fff;border:1px solid var(--line2);border-radius:11px;padding:10px 12px;font-size:15px}
+textarea.t{min-height:80px;resize:vertical}input.t:focus,select.t:focus,textarea.t:focus{border-color:var(--cobalt);outline:none}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:650;color:var(--ink2)}
+.grid2{display:grid;gap:12px}@media (min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.err{color:var(--red);font-size:14px;min-height:1em;margin:0}
+.muted{color:var(--soft)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:750;border-radius:999px;padding:3px 9px;background:rgba(20,22,43,.06);color:var(--ink2);white-space:nowrap}
+.pill.ok{background:rgba(25,179,122,.12);color:#0e7c54}.pill.no{background:rgba(229,72,77,.1);color:#b32a2f}.pill.am{background:rgba(242,163,58,.16);color:#9a5a00}.pill.bl{background:rgba(46,75,255,.1);color:var(--cobalt-d)}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:650;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* entrar e criar o site */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.auth .box{width:min(440px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px -30px rgba(20,22,43,.35)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-stretch:125%;font-size:20px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--ink);display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
+.seg{display:flex;background:rgba(20,22,43,.06);border-radius:12px;padding:3px}
+.seg button{flex:1;min-height:38px;border-radius:9px;font-weight:700;color:var(--ink2)}.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.onb{max-width:980px;margin:0 auto;padding:28px 16px 80px}
+.onb h1{font-size:clamp(28px,5vw,44px);margin:18px 0 8px}
+.nichos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:18px 0}
+.nicho{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:92px}
+.nicho span{font-size:26px}.nicho b{font-size:14.5px}.nicho small{font-size:12px;color:var(--soft)}
+.nicho[aria-pressed="true"]{border-color:var(--cobalt);box-shadow:inset 0 0 0 1px var(--cobalt)}
+.ou{display:flex;align-items:center;gap:12px;color:var(--soft);font-size:13px;margin:20px 0}.ou::before,.ou::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* casca do painel */
+.app{display:grid;min-height:100vh}
+@media (min-width:980px){.app{grid-template-columns:232px 1fr}}
+.side{background:var(--ink);color:#fff;padding:18px 12px;display:none;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+@media (min-width:980px){.side{display:flex}}
+.side .logo{color:#fff;padding:4px 8px 14px}.side .logo i{background:#fff;color:var(--ink)}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:rgba(255,255,255,.72);text-decoration:none;font-weight:650}
+.nav a:hover{background:rgba(255,255,255,.07);color:#fff}.nav a[aria-current="page"]{background:#fff;color:var(--ink)}
+.nav a .n{margin-left:auto;background:var(--tang);color:#fff;border-radius:999px;font-size:11.5px;padding:1px 7px}
+.nav svg{width:19px;height:19px;flex:none}
+.side .neg{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:12px 8px 0;font-size:13px;color:rgba(255,255,255,.7)}
+.side .neg b{display:block;color:#fff;font-size:14px}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--line);display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom));overflow-x:auto;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+@media (min-width:980px){.tabbar{display:none}}
+.tabbar a{flex:1 0 64px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:650;color:var(--soft);text-decoration:none;padding:6px 2px;border-radius:10px;position:relative}
+.tabbar a[aria-current="page"]{color:var(--cobalt)}.tabbar svg{width:21px;height:21px}
+.tabbar a .n{position:absolute;top:2px;right:calc(50% - 20px);background:var(--tang);color:#fff;border-radius:999px;font-size:10px;padding:0 5px}
+main.main{padding:18px 16px 110px;min-width:0}
+@media (min-width:980px){main.main{padding:26px 32px 60px}}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.top h1{font-size:clamp(24px,4vw,32px)}
+.top .acts{display:flex;gap:8px;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h2{font-size:18px;margin-bottom:10px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media (min-width:760px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi small{display:block;color:var(--soft);font-weight:650;font-size:12.5px}.kpi b{font-size:26px;font-stretch:115%;font-weight:850;letter-spacing:-.02em}
+.kpi .sub{font-size:12.5px;color:var(--soft)}
+.cols2{display:grid;gap:14px}@media (min-width:980px){.cols2{grid-template-columns:1.4fr 1fr}}
+.linkbox{display:flex;align-items:center;gap:8px;background:rgba(46,75,255,.06);border:1px solid rgba(46,75,255,.2);border-radius:12px;padding:8px 8px 8px 12px;font-weight:700;overflow:hidden}
+.linkbox span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cobalt-d)}
+.lst{display:flex;flex-direction:column}
+.lst .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.lst .r:last-child{border-bottom:0}
+.vazio{color:var(--soft);padding:16px 0;font-size:14px}
+
+/* kanban */
+.kb{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,1fr);gap:12px;overflow-x:auto;padding-bottom:10px;align-items:start;scroll-snap-type:x proximity}
+.col{background:rgba(20,22,43,.04);border-radius:16px;padding:10px;min-height:120px;scroll-snap-align:start}
+.col.over{background:rgba(46,75,255,.08);outline:2px dashed rgba(46,75,255,.35)}
+.col h3{font-size:14px;font-stretch:105%;display:flex;justify-content:space-between;align-items:center;padding:2px 4px 10px}
+.col h3 span{font-size:12px;font-weight:700;color:var(--soft)}
+.kc{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:8px;cursor:grab;display:flex;flex-direction:column;gap:5px;box-shadow:0 1px 2px rgba(20,22,43,.05)}
+.kc:active{cursor:grabbing}.kc.drag{opacity:.4}.kc.novo{border-left:4px solid var(--tang)}
+.kc .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.kc .t b{font-size:15px}
+.kc p{margin:0;font-size:13px;color:var(--ink2)}
+.kc .bt{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.chip{min-height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--line2);background:#fff;font-weight:650;font-size:13.5px}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* agenda do dia */
+.dia{display:grid;gap:12px;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);overflow-x:auto}
+.ag{background:#fff;border:1px solid var(--line);border-left:4px solid var(--cobalt);border-radius:12px;padding:10px 12px;margin-bottom:8px;display:flex;flex-direction:column;gap:4px}
+.ag.pendente{border-left-color:var(--tang)}.ag.atendido{border-left-color:var(--mint);opacity:.75}.ag.faltou,.ag.cancelado{border-left-color:var(--red);opacity:.6}
+.ag .h{font-weight:850;font-stretch:112%;font-size:16px}
+.blq{background:repeating-linear-gradient(45deg,rgba(20,22,43,.05) 0 8px,transparent 8px 16px);border:1px dashed var(--line2);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13.5px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+
+/* catálogo */
+.cat{margin-bottom:16px}
+.cat .ch{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.cat .ch input{font-weight:800;font-size:17px;border:1px solid transparent;background:transparent;border-radius:10px;padding:6px 8px;flex:1;min-width:0}
+.cat .ch input:hover,.cat .ch input:focus{border-color:var(--line2);background:#fff;outline:none}
+.it{display:grid;grid-template-columns:56px 1fr;gap:10px 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px}
+.it.off{opacity:.55}
+.it .ph{width:56px;height:56px;border-radius:12px;background:var(--paper);display:grid;place-items:center;font-size:26px;overflow:hidden;position:relative}
+.it .ph img{width:100%;height:100%;object-fit:cover}
+.it .ph input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.it .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.it .nm{flex:1 1 200px}.it .pr{width:120px}
+.it .vs{grid-column:2;display:flex;gap:8px;flex-wrap:wrap}
+.it .vs label{display:flex;align-items:center;gap:6px;font-size:13px;background:var(--paper);border-radius:9px;padding:4px 4px 4px 9px}
+.it .vs input{width:90px;padding:6px 8px}
+.it .ds{grid-column:1/-1}
+.it .ac{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.salvar{position:sticky;bottom:calc(76px + env(safe-area-inset-bottom));z-index:20;background:var(--ink);color:#fff;border-radius:16px;padding:10px 10px 10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 14px 40px -14px rgba(20,22,43,.6)}
+@media (min-width:980px){.salvar{bottom:16px}}
+
+/* tabelas */
+table.tb{width:100%;border-collapse:collapse;font-size:14px}
+.tb th{text-align:left;font-size:12px;color:var(--soft);font-weight:700;padding:8px 6px;border-bottom:1px solid var(--line)}
+.tb td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tb input{width:90px;padding:7px 8px;border:1px solid var(--line2);border-radius:9px}
+.tb tr.baixo td{background:rgba(242,163,58,.09)}
+.scroll{overflow-x:auto}
+.barras{display:flex;align-items:flex-end;gap:3px;height:120px;padding-top:8px}
+.barras div{flex:1;background:var(--cobalt);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+.barras div.s{background:var(--red);opacity:.7}
+
+/* horário */
+.hor{display:grid;gap:6px}
+.hor .d{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:8px}
+.hor .d label{display:flex;align-items:center;gap:8px;font-weight:650}
+.hor .d .hh{display:flex;gap:6px;align-items:center}.hor .d .hh input{width:110px}
+
+/* assistente */
+.chat{display:flex;flex-direction:column;height:calc(100vh - 210px);min-height:420px}
+@media (min-width:980px){.chat{height:calc(100vh - 140px)}}
+.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:6px 2px 12px}
+.msg{max-width:min(560px,86%);padding:10px 13px;border-radius:16px;white-space:pre-wrap;font-size:15px;line-height:1.4}
+.msg.dono{align-self:flex-end;background:var(--cobalt);color:#fff;border-bottom-right-radius:5px}
+.msg.agente{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px}
+.msg.agente.pensando{color:var(--soft)}
+.sug{display:flex;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}.sug::-webkit-scrollbar{display:none}
+.sug button{flex:none;border:1px solid var(--line2);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600}
+.envio{display:flex;gap:8px;padding-top:6px}
+.envio textarea{flex:1;min-height:46px;max-height:140px;border-radius:14px;resize:none}
+.envio button{width:48px;height:48px;border-radius:14px;background:var(--cobalt);color:#fff;display:grid;place-items:center;flex:none}
+
+/* folha lateral */
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(20,22,43,.45);display:none;justify-content:flex-end}
+.sheet.on{display:flex}
+.sheet .w{background:#fff;width:min(520px,100%);height:100%;overflow-y:auto;padding:20px 18px calc(24px + env(safe-area-inset-bottom));animation:entra .2s ease-out}
+@keyframes entra{from{transform:translateX(30px);opacity:0}}
+.sheet .x{float:right;width:38px;height:38px;border-radius:50%;background:var(--paper);font-size:20px}
+.sheet h2{font-size:22px;margin:4px 0 4px}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:14px 0;font-size:14.5px}.dl dt{color:var(--soft)}.dl dd{margin:0;font-weight:600}
+.its{margin:10px 0;padding:0;list-style:none}.its li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.its small{display:block;color:var(--soft)}
+</style>
+</head>
+<body>
+<div id="vAuth" class="auth" hidden>
+  <form class="box" id="fAuth">
+    <a class="logo" href="/"><i>Z</i>Zivoop</a>
+    <div><h1 style="font-size:26px">Painel do seu negócio</h1><p class="muted" style="margin:6px 0 0">Pedidos, agenda, clientes, estoque e caixa num lugar só.</p></div>
+    <div class="seg" role="group"><button type="button" id="aEntrar" aria-pressed="true" onclick="modoAuth('entrar')">Entrar</button><button type="button" id="aCriar" aria-pressed="false" onclick="modoAuth('criar')">Criar conta</button></div>
+    <label class="f">E-mail<input class="t" type="email" id="aEmail" autocomplete="username" required></label>
+    <label class="f">Senha<input class="t" type="password" id="aSenha" autocomplete="current-password" minlength="6" required></label>
+    <p class="err" id="aErr" role="alert"></p>
+    <button class="b pri" id="aBtn" type="submit">Entrar</button>
+    <button class="b sec" type="button" id="aReset" onclick="esqueci()">Esqueci a senha</button>
+  </form>
+</div>
+
+<div id="vOnb" class="onb" hidden>
+  <div class="top"><a class="logo" href="/"><i>Z</i>Zivoop</a><button class="b sec sm" onclick="sair()">Sair</button></div>
+  <h1>Vamos colocar seu site no ar</h1>
+  <p class="muted" style="max-width:60ch">Escolha o tipo do seu negócio, diga o nome e o WhatsApp. O site sai pronto, com cardápio ou serviços de exemplo que você troca depois aqui no painel ou só conversando com o assistente.</p>
+  <div class="nichos" id="nichos" role="group" aria-label="Tipo de negócio"></div>
+  <div class="card" style="max-width:560px">
+    <div class="grid2"><label class="f">Nome do negócio<input class="t" id="oNome" maxlength="60" placeholder="Ex.: Brasa 77"></label><label class="f">WhatsApp que recebe os pedidos<input class="t" id="oZap" inputmode="tel" placeholder="(11) 99999-9999"></label></div>
+    <p class="err" id="oErr" role="alert" style="margin-top:10px"></p>
+    <button class="b pri wide" id="oBtn" onclick="criarSite()">Criar meu site</button>
+  </div>
+  <div class="ou">ou peça conversando</div>
+  <div class="card" style="max-width:560px"><div class="envio"><textarea class="t" id="oChat" placeholder="Cria o site da minha hamburgueria, a Brasa 77"></textarea><button aria-label="Enviar" onclick="onbChat()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div><p class="muted" id="oChatR" style="margin:10px 0 0;white-space:pre-wrap"></p></div>
+</div>
+
+<div id="vApp" class="app" hidden>
+  <aside class="side"><a class="logo" href="#inicio"><i>Z</i>Zivoop</a><nav class="nav" id="nav"></nav><div class="neg" id="negBox"></div></aside>
+  <main class="main" id="main"></main>
+  <nav class="tabbar" id="tabbar"></nav>
+</div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="w" id="shW"></div></div>
+
+<script>
+const SB_URL = window.ZV_SB_URL || "https://phswqjkytnkukqpbtoqd.supabase.co";
+const SB_KEY = window.ZV_SB_KEY || "sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8";
+const sb = supabase.createClient(SB_URL, SB_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const brl = v => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const pad = n => String(n).padStart(2, "0");
+const isoD = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+const DS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+const clone = o => JSON.parse(JSON.stringify(o ?? null));
+const zapLink = (num, txt) => "https://wa.me/" + (String(num).replace(/\D/g, "").length <= 11 ? "55" : "") + String(num).replace(/\D/g, "") + (txt ? "?text=" + encodeURIComponent(txt) : "");
+const desde = t => { const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 1 ? "agora" : m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.floor(m / 60) + "h" : "há " + Math.floor(m / 1440) + "d"; };
+let toastT; function toast(t) { let el = $("toast"); if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); } el.textContent = t; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 3000); }
+const ERR = { limite_negocios: "Você chegou ao limite de 5 negócios nesta conta.", nome_obrigatorio: "Escreva o nome do negócio.", modelo_inexistente: "Escolha o tipo do negócio.", "Invalid login credentials": "E-mail ou senha não conferem.", "User already registered": "Esse e-mail já tem conta. Entre com ele.", "Email not confirmed": "Confirme o e-mail: mandamos um link para a sua caixa de entrada." };
+const erro = e => { const m = String(e && e.message || e); const k = Object.keys(ERR).find(k => m.includes(k)); return k ? ERR[k] : "Não deu certo: " + m; };
+
+let U = null, NEGS = [], NEG = null, PAD = null, MODELOS = [], TAB = "inicio", pollT = null, vistos = new Set(), primeira = true;
+const ehAgenda = () => NEG && NEG.tipo === "agenda";
+const cfg = () => Object.assign({}, PAD && PAD.config || {}, NEG.dados.config || {});
+const textos = () => Object.assign({}, PAD && PAD.textos || {}, NEG.dados.textos || {}, { nome: NEG.nome });
+const menu = () => clone(NEG.dados.menu || (PAD && PAD.menu) || []);
+const siteURL = () => location.origin + "/" + NEG.slug;
+const W = () => ehAgenda() ? { itens: "Serviços", item: "serviço", ped: "Agenda" } : { itens: "Catálogo", item: "produto", ped: "Pedidos" };
+
+/* ---------------- entrar ---------------- */
+let modoA = "entrar";
+function modoAuth(m) { modoA = m; $("aEntrar").setAttribute("aria-pressed", m === "entrar"); $("aCriar").setAttribute("aria-pressed", m === "criar"); $("aBtn").textContent = m === "entrar" ? "Entrar" : "Criar conta"; $("aSenha").autocomplete = m === "entrar" ? "current-password" : "new-password"; $("aReset").hidden = m !== "entrar"; $("aErr").textContent = ""; }
+$("fAuth").addEventListener("submit", async e => { e.preventDefault(); const b = $("aBtn"); b.disabled = true; $("aErr").textContent = "";
+  const email = $("aEmail").value.trim(), password = $("aSenha").value;
+  try { const r = modoA === "entrar" ? await sb.auth.signInWithPassword({ email, password }) : await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + "/painel/" } });
+    if (r.error) throw r.error;
+    if (modoA === "criar" && !r.data.session) { $("aErr").style.color = "var(--mint)"; $("aErr").textContent = "Conta criada. Abra o link que mandamos para " + email + " e depois entre aqui."; b.disabled = false; return; }
+    U = r.data.user; await carregar(); } catch (er) { $("aErr").style.color = ""; $("aErr").textContent = erro(er); }
+  b.disabled = false; });
+async function esqueci() { const email = $("aEmail").value.trim(); if (!email) { $("aErr").textContent = "Escreva seu e-mail acima."; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "/painel/" }); $("aErr").style.color = error ? "" : "var(--mint)"; $("aErr").textContent = error ? erro(error) : "Mandamos um link para trocar a senha."; }
+async function sair() { clearInterval(pollT); await sb.auth.signOut(); location.hash = ""; location.reload(); }
+
+/* ---------------- criar o site ---------------- */
+let nichoSel = null;
+async function onboarding() { $("vAuth").hidden = true; $("vApp").hidden = true; $("vOnb").hidden = false;
+  if (!MODELOS.length) { const { data } = await sb.from("zv_modelos").select("nicho,tipo,nome,emoji").order("nome"); MODELOS = data || []; }
+  const tipo = { pedido: "Pedidos pelo site", agenda: "Agendamento", reserva: "Reservas" };
+  $("nichos").innerHTML = MODELOS.map(m => `<button class="nicho" aria-pressed="${m.nicho === nichoSel}" onclick="nichoSel='${m.nicho}';onboarding()"><span>${esc(m.emoji)}</span><b>${esc(m.nome)}</b><small>${tipo[m.tipo]}</small></button>`).join(""); }
+async function criarSite() { $("oErr").textContent = ""; if (!nichoSel) { $("oErr").textContent = "Escolha o tipo do negócio."; return; }
+  const b = $("oBtn"); b.disabled = true; b.textContent = "Criando…";
+  const { data, error } = await sb.rpc("zv_criar_negocio", { p_nicho: nichoSel, p_nome: $("oNome").value, p_whatsapp: $("oZap").value });
+  b.disabled = false; b.textContent = "Criar meu site";
+  if (error) { $("oErr").textContent = erro(error); return; }
+  localStorage.setItem("zv-neg", data); await carregar(); toast("Seu site está no ar!"); }
+async function onbChat() { const t = $("oChat").value.trim(); if (!t) return; $("oChatR").textContent = "Criando…";
+  const r = await agente(t, null); $("oChatR").textContent = r.resposta || ""; if (r.mudou) { await carregar(); } }
+
+/* ---------------- carregar ---------------- */
+async function carregar() {
+  const { data: s } = await sb.auth.getSession(); if (!s.session) { $("vAuth").hidden = false; $("vOnb").hidden = true; $("vApp").hidden = true; return; }
+  U = s.session.user;
+  const { data, error } = await sb.from("zv_negocios").select("*").order("criado_em"); if (error) { toast(erro(error)); return; }
+  NEGS = data || []; if (!NEGS.length) return onboarding();
+  const lembrado = localStorage.getItem("zv-neg"); NEG = NEGS.find(n => n.slug === lembrado || n.id === lembrado) || NEGS[0];
+  try { PAD = await fetch("/modelos/" + NEG.nicho + "/padrao.json").then(r => r.ok ? r.json() : null); } catch (e) { PAD = null; }
+  PAD = PAD || { config: {}, menu: [], textos: {} };
+  $("vAuth").hidden = true; $("vOnb").hidden = true; $("vApp").hidden = false;
+  montarNav(); ir(location.hash.slice(1) || "inicio"); clearInterval(pollT); pollT = setInterval(vigiar, 10000); vigiar(true);
+}
+async function recarregarNeg() { const { data } = await sb.from("zv_negocios").select("*").eq("id", NEG.id).single(); if (data) { NEG = data; NEGS = NEGS.map(n => n.id === data.id ? data : n); } }
+function trocarNeg(slug) { localStorage.setItem("zv-neg", slug); location.hash = "inicio"; carregar(); }
+
+const IC = {
+  inicio: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  pedidos: '<path d="M4 5h16v14H4zM4 9h16M9 13h6"/>', agenda: '<path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/>',
+  clientes: '<path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8"/>',
+  catalogo: '<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>', estoque: '<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',
+  financeiro: '<path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/>', site: '<path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  assistente: '<path d="M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01"/>'
+};
+function abas() { const a = [["inicio", "Início"], ehAgenda() ? ["agenda", "Agenda"] : ["pedidos", "Pedidos"], ["clientes", "Clientes"], ["catalogo", W().itens]];
+  if (!ehAgenda()) a.push(["estoque", "Estoque"]); a.push(["financeiro", "Caixa"], ["site", "Meu site"], ["assistente", "Assistente"]); return a; }
+function montarNav() { const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
+  const h = abas().map(([k, l]) => `<a href="#${k}" data-k="${k}">${svg(k)}<span>${l}</span>${k === "pedidos" || k === "agenda" ? '<span class="n" id="n-' + k + '" hidden></span>' : ""}</a>`).join("");
+  $("nav").innerHTML = h;
+  const curtas = abas().filter(([k]) => ["inicio", "pedidos", "agenda", "clientes", "assistente"].includes(k)), resto = abas().filter(a => !curtas.includes(a));
+  $("tabbar").innerHTML = curtas.map(([k, l]) => `<a href="#${k}" data-k="${k}">${svg(k)}<span>${l}</span>${k === "pedidos" || k === "agenda" ? '<span class="n" id="m-' + k + '" hidden></span>' : ""}</a>`).join("") +
+    `<a href="#" data-k="mais" onclick="event.preventDefault();maisMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg><span>Mais</span></a>`;
+  $("negBox").innerHTML = `<b>${esc(NEG.nome)}</b>${NEGS.length > 1 ? `<select class="t" style="margin:8px 0;background:#23264a;color:#fff;border-color:#3a3e6b" onchange="trocarNeg(this.value)">${NEGS.map(n => `<option value="${n.slug}" ${n.id === NEG.id ? "selected" : ""}>${esc(n.nome)}</option>`).join("")}</select>` : ""}<a href="${siteURL()}" target="_blank" rel="noopener" style="color:#fff">Ver meu site</a> · <a href="#" onclick="sair();return false" style="color:rgba(255,255,255,.7)">Sair</a>`; }
+function maisMenu() { const curtas = ["inicio", "pedidos", "agenda", "clientes", "assistente"];
+  abrirSheet(`<h2>Mais</h2><nav class="lst" style="margin-top:10px">${abas().filter(([k]) => !curtas.includes(k)).map(([k, l]) => `<a class="r" style="text-decoration:none;color:inherit;font-weight:700" href="#${k}" onclick="fecharSheet()">${l}<span aria-hidden="true">›</span></a>`).join("")}<a class="r" style="text-decoration:none;color:inherit;font-weight:700" href="${siteURL()}" target="_blank" rel="noopener">Ver meu site<span aria-hidden="true">↗</span></a><a class="r" style="text-decoration:none;color:var(--red);font-weight:700" href="#" onclick="sair();return false">Sair</a></nav>`); }
+function ir(k) { if (!abas().some(a => a[0] === k)) k = "inicio"; TAB = k; document.querySelectorAll(".nav a,.tabbar a").forEach(a => a.setAttribute("aria-current", a.dataset.k === k ? "page" : "false"));
+  window.scrollTo(0, 0); ({ inicio: telaInicio, pedidos: telaPedidos, agenda: telaAgenda, clientes: telaClientes, catalogo: telaCatalogo, estoque: telaEstoque, financeiro: telaFinanceiro, site: telaSite, assistente: telaAssistente })[k](); }
+window.addEventListener("hashchange", () => { if (NEG) ir(location.hash.slice(1)); });
+function topo(t, acts = "") { return `<div class="top"><h1>${t}</h1><div class="acts">${acts}</div></div>`; }
+
+/* novos pedidos/agendamentos: som e contador */
+let actx = null;
+function bip() { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); [0, .18].forEach((d, i) => { const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = i ? 1175 : 880; g.gain.setValueAtTime(.0001, actx.currentTime + d); g.gain.exponentialRampToValueAtTime(.15, actx.currentTime + d + .02); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + d + .16); o.connect(g); g.connect(actx.destination); o.start(actx.currentTime + d); o.stop(actx.currentTime + d + .2); }); } catch (e) {} }
+document.addEventListener("click", () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch (e) {} }, { once: true });
+async function vigiar(silencioso) { if (!NEG) return;
+  const t = ehAgenda() ? "zv_agendamentos" : "zv_pedidos", col = ehAgenda() ? "status" : "etapa", v = ehAgenda() ? "pendente" : "novo";
+  const { data } = await sb.from(t).select("id").eq("negocio", NEG.id).eq(col, v).limit(200); if (!data) return;
+  let chegou = false; data.forEach(r => { if (!vistos.has(r.id)) { vistos.add(r.id); if (!primeira) chegou = true; } }); primeira = false;
+  const k = ehAgenda() ? "agenda" : "pedidos"; ["n-", "m-"].forEach(p => { const el = $(p + k); if (el) { el.hidden = !data.length; el.textContent = data.length; } });
+  document.title = (data.length ? "(" + data.length + ") " : "") + "Painel · " + NEG.nome;
+  if (chegou) { bip(); toast(ehAgenda() ? "Novo agendamento!" : "Novo pedido!"); if (TAB === "pedidos" || TAB === "agenda" || TAB === "inicio") ir(TAB); } }
+
+/* ---------------- início ---------------- */
+async function telaInicio() { const m = $("main"); const hoje = isoD(new Date()), ini = new Date(); ini.setHours(0, 0, 0, 0);
+  m.innerHTML = topo("Olá! Este é o " + esc(NEG.nome), `<a class="b sec" href="${siteURL()}" target="_blank" rel="noopener">Ver meu site</a>`) + `<div class="card vazio">Carregando…</div>`;
+  const mes = hoje.slice(0, 8) + "01";
+  const [lh, lm, cl, est, ab] = await Promise.all([
+    sb.from("zv_lancamentos").select("tipo,valor").eq("negocio", NEG.id).eq("data", hoje),
+    sb.from("zv_lancamentos").select("tipo,valor").eq("negocio", NEG.id).gte("data", mes),
+    sb.from("zv_clientes").select("id,criado_em", { count: "exact" }).eq("negocio", NEG.id).gte("criado_em", new Date(Date.now() - 7 * 864e5).toISOString()),
+    ehAgenda() ? Promise.resolve({ data: [] }) : sb.from("zv_estoque").select("nome,qtd,minimo").eq("negocio", NEG.id),
+    ehAgenda() ? sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gte("inicio", ini.toISOString()).lt("inicio", new Date(ini.getTime() + 864e5).toISOString()).in("status", ["pendente", "confirmado", "atendido"]).order("inicio")
+      : sb.from("zv_pedidos").select("*").eq("negocio", NEG.id).in("etapa", ["novo", "preparo", "pronto"]).order("criado_em", { ascending: false }).limit(8)]);
+  const soma = (l, t) => (l.data || []).filter(x => x.tipo === t).reduce((a, x) => a + Number(x.valor), 0);
+  const baixo = (est.data || []).filter(e => Number(e.qtd) <= Number(e.minimo));
+  const lista = ab.data || [];
+  m.innerHTML = topo("Olá! Este é o " + esc(NEG.nome), `<a class="b sec" href="${siteURL()}" target="_blank" rel="noopener">Ver meu site</a>`) +
+  `<div class="kpis"><div class="card kpi"><small>Entrou hoje</small><b>${brl(soma(lh, "entrada"))}</b></div><div class="card kpi"><small>Saldo do mês</small><b>${brl(soma(lm, "entrada") - soma(lm, "saida"))}</b><div class="sub">${brl(soma(lm, "entrada"))} de entradas</div></div>
+   <div class="card kpi"><small>${ehAgenda() ? "Atendimentos hoje" : "Pedidos em aberto"}</small><b>${lista.length}</b></div><div class="card kpi"><small>Clientes novos (7 dias)</small><b>${cl.count || 0}</b></div></div>
+  <div class="cols2"><div class="card"><h2>${ehAgenda() ? "Agenda de hoje" : "Pedidos em aberto"}</h2><div class="lst">${lista.length ? lista.map(x => ehAgenda()
+      ? `<div class="r"><span><b>${hhmm(x.inicio)}</b> · ${esc(x.nome)}${x.profissional ? ` <span class="muted">com ${esc(x.profissional)}</span>` : ""}</span>${pillStatus(x.status)}</div>`
+      : `<div class="r"><span><b>nº ${x.numero}</b> · ${esc(x.nome)} <span class="muted">${desde(x.criado_em)}</span></span><span>${brl(x.total)} ${pillEtapa(x.etapa)}</span></div>`).join("")
+      : `<p class="vazio">${ehAgenda() ? "Nenhum horário marcado hoje ainda." : "Nenhum pedido em aberto. Quando alguém pedir pelo site, aparece aqui com um aviso sonoro."}</p>`}</div>
+    <a class="b sec sm" style="margin-top:10px" href="#${ehAgenda() ? "agenda" : "pedidos"}">Abrir ${ehAgenda() ? "a agenda" : "o quadro de pedidos"}</a></div>
+   <div style="display:flex;flex-direction:column;gap:14px"><div class="card"><h2>Seu site</h2><div class="linkbox"><span>${esc(siteURL().replace(/^https?:\/\//, ""))}</span><button class="b sec sm" onclick="copiar(siteURL())">Copiar</button></div>
+     <p class="muted" style="font-size:13.5px;margin:10px 0 0">Coloque esse link na bio do Instagram e no status do WhatsApp.</p></div>
+     ${baixo.length ? `<div class="card"><h2>Estoque baixo</h2><div class="lst">${baixo.slice(0, 6).map(e => `<div class="r"><span>${esc(e.nome)}</span><span class="pill am">${Number(e.qtd)} un.</span></div>`).join("")}</div><a class="b sec sm" style="margin-top:10px" href="#estoque">Ver estoque</a></div>` : ""}
+     <div class="card"><h2>Peça uma mudança</h2><p class="muted" style="margin:0 0 10px;font-size:14px">Escreva como falaria com alguém: “baixa o ${esc(menu()[1]?.items?.[0]?.n || menu()[0]?.items?.[0]?.n || "item")} pra R$ 29,90”.</p><a class="b pri sm" href="#assistente">Abrir o assistente</a></div></div></div>`; }
+function copiar(t) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast("Link copiado")).catch(() => prompt("Copie o link:", t)); }
+
+/* ---------------- kanban genérico ---------------- */
+function kanban(cols, itens, colDe, card, mover) { const h = `<div class="kb">${cols.map(([id, l]) => { const its = itens.filter(i => colDe(i) === id);
+    return `<section class="col" data-col="${id}" aria-label="${esc(l)}"><h3>${esc(l)}<span>${its.length}</span></h3>${its.map(i => `<article class="kc ${colDe(i) === cols[0][0] ? "novo" : ""}" draggable="true" data-id="${i.id}">${card(i)}</article>`).join("")}</section>`; }).join("")}</div>`;
+  setTimeout(() => { document.querySelectorAll(".kc").forEach(c => { c.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", c.dataset.id); c.classList.add("drag"); }); c.addEventListener("dragend", () => c.classList.remove("drag")); });
+    document.querySelectorAll(".col").forEach(c => { c.addEventListener("dragover", e => { e.preventDefault(); c.classList.add("over"); }); c.addEventListener("dragleave", () => c.classList.remove("over"));
+      c.addEventListener("drop", e => { e.preventDefault(); c.classList.remove("over"); const id = e.dataTransfer.getData("text/plain"); const it = itens.find(i => String(i.id) === id); if (it && colDe(it) !== c.dataset.col) mover(it, c.dataset.col); }); }); });
+  return h; }
+const ETAPAS = [["novo", "Novos"], ["preparo", "Em preparo"], ["pronto", "Pronto / saiu"], ["entregue", "Entregue"]];
+const pillEtapa = e => `<span class="pill ${e === "novo" ? "am" : e === "entregue" ? "ok" : e === "cancelado" ? "no" : "bl"}">${({ novo: "Novo", preparo: "Em preparo", pronto: "Pronto", entregue: "Entregue", cancelado: "Cancelado" })[e]}</span>`;
+const STATUS = [["pendente", "Pedidos de horário"], ["confirmado", "Confirmados"], ["atendido", "Atendidos"], ["faltou", "Faltaram"]];
+const pillStatus = s => `<span class="pill ${s === "pendente" ? "am" : s === "confirmado" ? "bl" : s === "atendido" ? "ok" : "no"}">${({ pendente: "Pendente", confirmado: "Confirmado", atendido: "Atendido", faltou: "Faltou", cancelado: "Cancelado" })[s]}</span>`;
+
+/* ---------------- pedidos ---------------- */
+let PEDS = [], verCanc = false;
+async function telaPedidos() { const m = $("main");
+  const { data, error } = await sb.from("zv_pedidos").select("*").eq("negocio", NEG.id).gte("criado_em", new Date(Date.now() - 4 * 864e5).toISOString()).order("criado_em", { ascending: false }).limit(300);
+  if (error) { m.innerHTML = topo("Pedidos") + `<p class="err">${esc(erro(error))}</p>`; return; }
+  const abertos = await sb.from("zv_pedidos").select("*").eq("negocio", NEG.id).in("etapa", ["novo", "preparo", "pronto"]).lt("criado_em", new Date(Date.now() - 4 * 864e5).toISOString()).limit(100);
+  PEDS = [...(data || []), ...(abertos.data || [])];
+  const cols = verCanc ? [...ETAPAS, ["cancelado", "Cancelados"]] : ETAPAS;
+  m.innerHTML = topo("Pedidos", `<button class="chip" aria-pressed="${verCanc}" onclick="verCanc=!verCanc;telaPedidos()">Mostrar cancelados</button>`) +
+    `<p class="muted" style="margin:-8px 0 14px;font-size:14px">Arraste o cartão para a próxima coluna, ou toque nele. Ao marcar como entregue, o valor entra no caixa e o estoque baixa sozinho.</p>` +
+    (PEDS.length ? kanban(cols, PEDS.filter(p => verCanc || p.etapa !== "cancelado"), p => p.etapa, p => `<div class="t"><b>nº ${p.numero} · ${esc(p.nome)}</b><span>${brl(p.total)}</span></div>
+      <p>${esc((p.itens || []).map(i => (i.qty || 1) + "× " + (i.nome || i.n)).join(", ")).slice(0, 120)}</p><p class="muted">${desde(p.criado_em)}${p.pagamento ? " · " + esc(p.pagamento) : ""}</p>
+      <div class="bt"><button class="b sec sm" onclick="verPedido('${p.id}')">Detalhes</button>${proxEtapa(p.etapa) ? `<button class="b pri sm" onclick="moverPedido('${p.id}','${proxEtapa(p.etapa)}')">${({ preparo: "Preparar", pronto: "Pronto", entregue: "Entregue" })[proxEtapa(p.etapa)]}</button>` : ""}</div>`,
+      (p, c) => moverPedido(p.id, c)) : `<div class="card"><p class="vazio">Ainda não chegou nenhum pedido. Faça um teste no seu site: <a href="${siteURL()}" target="_blank" rel="noopener">${esc(siteURL())}</a></p></div>`); }
+const proxEtapa = e => ({ novo: "preparo", preparo: "pronto", pronto: "entregue" })[e];
+async function moverPedido(id, etapa) { const { error } = await sb.from("zv_pedidos").update({ etapa }).eq("id", id); if (error) return toast(erro(error));
+  toast(etapa === "entregue" ? "Entregue. Valor lançado no caixa." : "Pedido movido."); fecharSheet(); telaPedidos(); }
+function verPedido(id) { const p = PEDS.find(x => x.id === id); if (!p) return; const d = p.detalhes || {};
+  const msg = { preparo: `Olá, ${p.nome}! Seu pedido nº ${p.numero} já está sendo preparado.`, pronto: `Olá, ${p.nome}! Seu pedido nº ${p.numero} está pronto${/entreg/i.test(p.entrega || "") ? " e saiu para entrega" : ""}.`, entregue: `Obrigado pelo pedido, ${p.nome}! Volte sempre.` }[p.etapa] || `Olá, ${p.nome}! Recebemos seu pedido nº ${p.numero}.`;
+  abrirSheet(`<h2>Pedido nº ${p.numero}</h2>${pillEtapa(p.etapa)}<dl class="dl"><dt>Cliente</dt><dd>${esc(p.nome)}</dd>${p.whatsapp ? `<dt>WhatsApp</dt><dd>${esc(p.whatsapp)}</dd>` : ""}<dt>Recebido</dt><dd>${new Date(p.criado_em).toLocaleString("pt-BR")}</dd>
+    ${p.entrega ? `<dt>Entrega</dt><dd>${esc(p.entrega)}</dd>` : ""}${d.ref ? `<dt>Referência</dt><dd>${esc(d.ref)}</dd>` : ""}${p.pagamento ? `<dt>Pagamento</dt><dd>${esc(p.pagamento)}${d.troco ? " (troco para " + esc(d.troco) + ")" : ""}</dd>` : ""}${d.cupom ? `<dt>Cupom</dt><dd>${esc(d.cupom)}</dd>` : ""}</dl>
+    <ul class="its">${(p.itens || []).map(i => `<li><span>${i.qty || 1}× ${esc(i.nome || i.n)}${i.cfg ? `<small>${esc(i.cfg)}</small>` : ""}${i.obs ? `<small>Obs.: ${esc(i.obs)}</small>` : ""}</span><b>${i.precoUnit != null ? brl(i.precoUnit * (i.qty || 1)) : ""}</b></li>`).join("")}<li><b>Total</b><b>${brl(p.total)}</b></li></ul>
+    <div style="display:flex;flex-direction:column;gap:8px">${p.whatsapp ? `<a class="b ok" href="${zapLink(p.whatsapp, msg)}" target="_blank" rel="noopener">Avisar o cliente no WhatsApp</a>` : ""}
+    ${proxEtapa(p.etapa) ? `<button class="b pri" onclick="moverPedido('${p.id}','${proxEtapa(p.etapa)}')">Mover para ${({ preparo: "Em preparo", pronto: "Pronto", entregue: "Entregue" })[proxEtapa(p.etapa)]}</button>` : ""}
+    ${p.etapa !== "cancelado" ? `<button class="b no" onclick="if(confirm('Cancelar o pedido nº ${p.numero}?'))moverPedido('${p.id}','cancelado')">Cancelar pedido</button>` : `<button class="b sec" onclick="moverPedido('${p.id}','novo')">Reabrir pedido</button>`}</div>`); }
+
+/* ---------------- agenda ---------------- */
+let AGS = [], BLQ = [], agDia = isoD(new Date()), agModo = "dia";
+const profs = () => (cfg().profissionais || []).map(p => typeof p === "string" ? p : p.nome);
+async function telaAgenda() { const m = $("main"); const d0 = new Date(agDia + "T00:00:00"), d1 = new Date(d0.getTime() + (agModo === "dia" ? 1 : 7) * 864e5);
+  const [a, b] = await Promise.all([sb.from("zv_agendamentos").select("*").eq("negocio", NEG.id).gte("inicio", d0.toISOString()).lt("inicio", d1.toISOString()).order("inicio"),
+    sb.from("zv_bloqueios").select("*").eq("negocio", NEG.id).lt("inicio", d1.toISOString()).gt("fim", d0.toISOString()).order("inicio")]);
+  AGS = a.data || []; BLQ = b.data || [];
+  const dias = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i - 1); return d; });
+  let corpo;
+  if (agModo === "quadro") corpo = kanban(STATUS, AGS.filter(x => x.status !== "cancelado"), x => x.status, x => `<div class="t"><b>${esc(x.nome)}</b><span>${brl(x.total)}</span></div><p>${new Date(x.inicio).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })} às ${hhmm(x.inicio)}${x.profissional ? " · " + esc(x.profissional) : ""}</p><p class="muted">${esc((x.servicos || []).map(s => s.nome).join(", "))}</p><div class="bt"><button class="b sec sm" onclick="verAg('${x.id}')">Detalhes</button></div>`, (x, c) => statusAg(x.id, c));
+  else { const ps = profs().length ? profs() : [""];
+    corpo = `<div class="dia">${ps.map(p => { const its = AGS.filter(x => x.profissional === p || (!profs().length)), bl = BLQ.filter(x => x.profissional === p || x.profissional === "");
+      const tudo = [...its.map(x => ({ t: new Date(x.inicio), h: `<div class="ag ${x.status}"><span class="h">${hhmm(x.inicio)}–${hhmm(x.fim)}</span><b>${esc(x.nome)}</b><span class="muted" style="font-size:13px">${esc((x.servicos || []).map(s => s.nome).join(", "))}</span><div style="display:flex;justify-content:space-between;align-items:center;gap:6px">${pillStatus(x.status)}<button class="b sec sm" onclick="verAg('${x.id}')">Abrir</button></div></div>` })),
+        ...bl.map(x => ({ t: new Date(x.inicio), h: `<div class="blq"><span><b>${hhmm(x.inicio)}–${hhmm(x.fim)}</b> bloqueado${x.motivo ? " · " + esc(x.motivo) : ""}</span><button class="b sec sm" onclick="tirarBloqueio('${x.id}')">Liberar</button></div>` }))].sort((a, b) => a.t - b.t);
+      return `<section class="col">${p ? `<h3>${esc(p)}<span>${its.filter(x => x.status !== "cancelado").length}</span></h3>` : ""}${tudo.length ? tudo.map(x => x.h).join("") : `<p class="vazio" style="padding:8px 4px">Livre o dia todo.</p>`}</section>`; }).join("")}</div>`; }
+  m.innerHTML = topo("Agenda", `<button class="chip" aria-pressed="${agModo === "dia"}" onclick="agModo='dia';telaAgenda()">Dia</button><button class="chip" aria-pressed="${agModo === "quadro"}" onclick="agModo='quadro';telaAgenda()">Quadro da semana</button><button class="b sec sm" onclick="novoBloqueio()">Bloquear horário</button>`) +
+    `<div class="filtros" style="overflow-x:auto;flex-wrap:nowrap">${dias.map(d => `<button class="chip" aria-pressed="${isoD(d) === agDia}" onclick="agDia='${isoD(d)}';telaAgenda()">${isoD(d) === isoD(new Date()) ? "Hoje" : DS[d.getDay()].slice(0, 3) + " " + d.getDate()}</button>`).join("")}</div>` + corpo; }
+async function statusAg(id, status) { const { error } = await sb.from("zv_agendamentos").update({ status }).eq("id", id); if (error) return toast(erro(error));
+  toast(status === "atendido" ? "Atendido. Valor lançado no caixa." : status === "cancelado" ? "Horário liberado." : "Atualizado."); fecharSheet(); telaAgenda(); }
+function verAg(id) { const x = AGS.find(a => a.id === id); if (!x) return; const dt = new Date(x.inicio).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" });
+  const conf = `Olá, ${x.nome}! Seu horário em ${NEG.nome} está confirmado: ${dt} às ${hhmm(x.inicio)}${x.profissional ? " com " + x.profissional : ""}. Até lá!`;
+  abrirSheet(`<h2>${esc(x.nome)}</h2>${pillStatus(x.status)}<dl class="dl"><dt>Quando</dt><dd>${dt}, ${hhmm(x.inicio)}–${hhmm(x.fim)}</dd>${x.profissional ? `<dt>Com</dt><dd>${esc(x.profissional)}</dd>` : ""}${x.whatsapp ? `<dt>WhatsApp</dt><dd>${esc(x.whatsapp)}</dd>` : ""}<dt>Valor</dt><dd>${brl(x.total)}</dd></dl>
+    <ul class="its">${(x.servicos || []).map(s => `<li><span>${s.qty > 1 ? s.qty + "× " : ""}${esc(s.nome)}</span><span class="muted">${s.dur ? s.dur + " min" : ""}</span></li>`).join("")}</ul>
+    <div style="display:flex;flex-direction:column;gap:8px">${x.status === "pendente" ? `<button class="b pri" onclick="statusAg('${x.id}','confirmado')">Confirmar horário</button>` : ""}
+    ${x.whatsapp ? `<a class="b ok" href="${zapLink(x.whatsapp, conf)}" target="_blank" rel="noopener">Mandar confirmação no WhatsApp</a>` : ""}
+    ${["pendente", "confirmado"].includes(x.status) ? `<button class="b sec" onclick="statusAg('${x.id}','atendido')">Marcar como atendido</button><button class="b sec" onclick="statusAg('${x.id}','faltou')">Cliente faltou</button><button class="b no" onclick="if(confirm('Cancelar e liberar este horário?'))statusAg('${x.id}','cancelado')">Cancelar e liberar o horário</button>` : `<button class="b sec" onclick="statusAg('${x.id}','confirmado')">Voltar para confirmado</button>`}</div>`); }
+function novoBloqueio() { abrirSheet(`<h2>Bloquear horário</h2><p class="muted">O site não deixa ninguém marcar nesse intervalo.</p><div class="grid2" style="margin-top:12px">
+  <label class="f">Dia<input class="t" type="date" id="bDia" value="${agDia}"></label>${profs().length ? `<label class="f">Quem<select class="t" id="bProf"><option value="">Todos</option>${profs().map(p => `<option>${esc(p)}</option>`).join("")}</select></label>` : "<span></span>"}
+  <label class="f">Das<input class="t" type="time" id="bDe" value="12:00"></label><label class="f">Até<input class="t" type="time" id="bAte" value="13:00"></label></div>
+  <label class="f" style="margin-top:12px">Motivo (opcional)<input class="t" id="bMot" placeholder="Almoço, médico, folga…"></label><p class="err" id="bErr"></p><button class="b pri wide" onclick="salvarBloqueio()">Bloquear</button>
+  <button class="b sec wide" style="margin-top:8px" onclick="$('bDe').value='00:00';$('bAte').value='23:59'">Dia inteiro</button>`); }
+async function salvarBloqueio() { const d = $("bDia").value, de = new Date(d + "T" + $("bDe").value), ate = new Date(d + "T" + $("bAte").value); if (!(ate > de)) { $("bErr").textContent = "O fim precisa ser depois do início."; return; }
+  const { error } = await sb.from("zv_bloqueios").insert({ negocio: NEG.id, profissional: $("bProf") ? $("bProf").value : "", inicio: de.toISOString(), fim: ate.toISOString(), motivo: $("bMot").value || null });
+  if (error) { $("bErr").textContent = erro(error); return; } toast("Horário bloqueado."); fecharSheet(); agDia = d; telaAgenda(); }
+async function tirarBloqueio(id) { await sb.from("zv_bloqueios").delete().eq("id", id); toast("Horário liberado."); telaAgenda(); }
+
+/* ---------------- clientes (CRM) ---------------- */
+let CLI = [], cliBusca = "";
+const FUNIL = [["novo", "Novos"], ["contato", "Em conversa"], ["cliente", "Clientes"], ["fiel", "Fiéis"], ["perdido", "Sumiram"]];
+async function telaClientes() { const m = $("main"); const { data } = await sb.from("zv_clientes").select("*").eq("negocio", NEG.id).order("ultimo_em", { ascending: false, nullsFirst: false }).limit(1000); CLI = data || [];
+  const f = CLI.filter(c => !cliBusca || (c.nome + " " + c.whatsapp).toLowerCase().includes(cliBusca.toLowerCase()));
+  m.innerHTML = topo("Clientes", `<input class="t" style="width:220px" placeholder="Buscar nome ou número" value="${esc(cliBusca)}" oninput="cliBusca=this.value;clearTimeout(window._cb);window._cb=setTimeout(telaClientes,300)">`) +
+    `<p class="muted" style="margin:-8px 0 14px;font-size:14px">Todo mundo que pede ou agenda pelo site entra aqui sozinho. Quem volta sobe para “Clientes” e depois “Fiéis”. Arraste para organizar seu funil.</p>` +
+    (CLI.length ? kanban(FUNIL, f, c => c.etapa, c => `<div class="t"><b>${esc(c.nome)}</b><span class="muted" style="font-size:12.5px">${c.qtd}×</span></div><p>${brl(c.total_gasto)} no total</p><p class="muted">${c.ultimo_em ? "Última vez " + desde(c.ultimo_em) : ""}</p>${(c.tags || []).length ? `<p>${c.tags.map(t => `<span class="pill">${esc(t)}</span>`).join(" ")}</p>` : ""}<div class="bt"><button class="b sec sm" onclick="verCliente('${c.id}')">Abrir</button><a class="b ok sm" href="${zapLink(c.whatsapp)}" target="_blank" rel="noopener">WhatsApp</a></div>`,
+      async (c, etapa) => { await sb.from("zv_clientes").update({ etapa }).eq("id", c.id); telaClientes(); }) : `<div class="card"><p class="vazio">Seus clientes aparecem aqui assim que fizerem o primeiro ${ehAgenda() ? "agendamento" : "pedido"}.</p></div>`); }
+async function verCliente(id) { const c = CLI.find(x => x.id === id); if (!c) return;
+  const h = ehAgenda() ? await sb.from("zv_agendamentos").select("numero,inicio,total,status").eq("cliente", id).order("inicio", { ascending: false }).limit(20) : await sb.from("zv_pedidos").select("numero,criado_em,total,etapa").eq("cliente", id).order("criado_em", { ascending: false }).limit(20);
+  abrirSheet(`<h2>${esc(c.nome)}</h2><p class="muted">${esc(c.whatsapp)}</p><dl class="dl"><dt>Vezes</dt><dd>${c.qtd}</dd><dt>Total gasto</dt><dd>${brl(c.total_gasto)}</dd><dt>Cliente desde</dt><dd>${new Date(c.criado_em).toLocaleDateString("pt-BR")}</dd></dl>
+    <label class="f">Etapa<select class="t" id="cEt">${FUNIL.map(([k, l]) => `<option value="${k}" ${k === c.etapa ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+    <label class="f" style="margin-top:10px">Etiquetas (separe por vírgula)<input class="t" id="cTg" value="${esc((c.tags || []).join(", "))}" placeholder="vip, aniversário em maio"></label>
+    <label class="f" style="margin-top:10px">Anotações<textarea class="t" id="cNt" placeholder="Prefere sem cebola, paga no Pix…">${esc(c.notas || "")}</textarea></label>
+    <button class="b pri wide" style="margin-top:12px" onclick="salvarCliente('${c.id}')">Salvar</button><a class="b ok wide" style="margin-top:8px" href="${zapLink(c.whatsapp, "Olá, " + c.nome + "!")}" target="_blank" rel="noopener">Chamar no WhatsApp</a>
+    <h3 style="margin:20px 0 6px;font-size:16px">Histórico</h3><div class="lst">${(h.data || []).map(x => `<div class="r"><span>nº ${x.numero} · ${new Date(x.inicio || x.criado_em).toLocaleDateString("pt-BR")}</span><span>${brl(x.total)} ${x.status ? pillStatus(x.status) : pillEtapa(x.etapa)}</span></div>`).join("") || '<p class="vazio">Sem histórico.</p>'}</div>`); }
+async function salvarCliente(id) { const { error } = await sb.from("zv_clientes").update({ etapa: $("cEt").value, notas: $("cNt").value, tags: $("cTg").value.split(",").map(s => s.trim()).filter(Boolean) }).eq("id", id);
+  if (error) return toast(erro(error)); toast("Cliente salvo."); fecharSheet(); telaClientes(); }
+
+/* ---------------- catálogo ---------------- */
+let CAT = null, sujo = false;
+const uid = () => "i" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+function telaCatalogo() { CAT = CAT && sujo ? CAT : menu(); desenharCatalogo(); }
+function desenharCatalogo() { const m = $("main"), ag = ehAgenda();
+  m.innerHTML = topo(W().itens, `<button class="b sec sm" onclick="novaCat()">Nova categoria</button>`) +
+  `<p class="muted" style="margin:-8px 0 14px;font-size:14px">Mude nome, preço, descrição e foto. Toque em “Salvar” e o site muda na hora.</p>` +
+  CAT.map((c, ci) => `<section class="cat"><div class="ch"><input value="${esc(c.cat)}" aria-label="Nome da categoria" oninput="CAT[${ci}].cat=this.value;marcar()"><button class="b sec sm" onclick="novoItem(${ci})">+ ${W().item}</button>${c.items.length ? "" : `<button class="b no sm" onclick="CAT.splice(${ci},1);marcar();desenharCatalogo()">Apagar</button>`}</div>
+    ${c.items.map((it, ii) => `<div class="it ${it.oculto ? "off" : ""}"><div class="ph">${it.img && /^https?:/.test(it.img) ? `<img src="${esc(it.img)}" alt="">` : it.img ? `<img src="/modelos/${NEG.nicho}/img/${esc(it.img)}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${esc(it.e || "📷")}'))">` : esc(it.e || "📷")}<input type="file" accept="image/*" aria-label="Trocar foto de ${esc(it.n)}" onchange="subirFoto(${ci},${ii},this.files[0])"></div>
+      <div class="row"><input class="t nm" value="${esc(it.n)}" aria-label="Nome" oninput="CAT[${ci}].items[${ii}].n=this.value;marcar()">${it.v ? "" : `<input class="t pr" inputmode="decimal" value="${it.p != null ? Number(it.p).toFixed(2).replace(".", ",") : ""}" aria-label="Preço" placeholder="Preço" oninput="setPreco(${ci},${ii},this.value)">`}
+        ${ag ? `<input class="t pr" style="width:96px" inputmode="numeric" value="${it.dur || ""}" aria-label="Duração em minutos" placeholder="min" oninput="CAT[${ci}].items[${ii}].dur=parseInt(this.value)||0;marcar()">` : ""}</div>
+      ${it.v ? `<div class="vs">${it.v.map((v, vi) => `<label>${esc(v.l)}<input class="t" inputmode="decimal" value="${Number(v.p).toFixed(2).replace(".", ",")}" oninput="setVar(${ci},${ii},${vi},this.value)"></label>`).join("")}</div>` : ""}
+      ${it.g && !it.v ? `<p class="muted" style="grid-column:2;margin:0;font-size:12.5px">Tem opções de montagem (${it.g.map(g => esc(g.l)).join(", ")}). Os preços das opções seguem o modelo.</p>` : ""}
+      <textarea class="t ds" rows="2" aria-label="Descrição" placeholder="Descrição" oninput="CAT[${ci}].items[${ii}].d=this.value;marcar()">${esc(it.d || "")}</textarea>
+      <div class="ac"><button class="b sec sm" onclick="CAT[${ci}].items[${ii}].oculto=!CAT[${ci}].items[${ii}].oculto;marcar();desenharCatalogo()">${it.oculto ? "Mostrar no site" : ag ? "Pausar" : "Esgotado (esconder)"}</button><button class="b no sm" onclick="if(confirm('Apagar ${esc(it.n).replace(/'/g, "")}?')){CAT[${ci}].items.splice(${ii},1);marcar();desenharCatalogo()}">Apagar</button></div></div>`).join("")}</section>`).join("") +
+  `<div class="salvar" id="barSalvar" ${sujo ? "" : "hidden"}><span>Você tem mudanças não salvas</span><span style="display:flex;gap:8px"><button class="b sec sm" onclick="sujo=false;CAT=null;telaCatalogo()">Desfazer</button><button class="b pri sm" onclick="salvarCatalogo()">Salvar e publicar</button></span></div>`; }
+function marcar() { sujo = true; const b = $("barSalvar"); if (b) b.hidden = false; }
+const num = v => { const n = parseFloat(String(v).replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return isNaN(n) ? null : Math.round(n * 100) / 100; };
+function setPreco(ci, ii, v) { CAT[ci].items[ii].p = num(v); marcar(); }
+function setVar(ci, ii, vi, v) { const n = num(v); if (n == null) return; CAT[ci].items[ii].v[vi].p = n; if (vi === 0) CAT[ci].items[ii].p = n; marcar(); }
+function novoItem(ci) { CAT[ci].items.push(ehAgenda() ? { id: uid(), n: "Novo serviço", d: "", p: 0, dur: 30, e: "✨" } : { id: uid(), n: "Novo produto", d: "", p: 0, e: "🛍️" }); marcar(); desenharCatalogo(); }
+function novaCat() { const n = prompt("Nome da categoria:"); if (!n) return; CAT.push({ cat: n, key: "c" + Date.now().toString(36), items: [] }); marcar(); desenharCatalogo(); }
+async function salvarCatalogo() { const ok = await salvarDados(d => { d.menu = CAT; }); if (ok) { sujo = false; CAT = null; telaCatalogo(); } }
+async function salvarDados(f, msg) { const d = clone(NEG.dados) || {}; f(d); const { data, error } = await sb.from("zv_negocios").update({ dados: d }).eq("id", NEG.id).select().single();
+  if (error) { toast(erro(error)); return false; } NEG = data; toast(msg || "Salvo. Já está no ar."); return true; }
+async function encolher(file) { const img = await createImageBitmap(file); const s = Math.min(1, 900 / Math.max(img.width, img.height)), c = document.createElement("canvas"); c.width = img.width * s; c.height = img.height * s; c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return await new Promise(ok => c.toBlob(ok, "image/jpeg", .84)); }
+async function subirFoto(ci, ii, file) { if (!file) return; toast("Enviando a foto…");
+  try { const blob = await encolher(file), path = NEG.id + "/" + CAT[ci].items[ii].id + "-" + Date.now() + ".jpg";
+    const { error } = await sb.storage.from("zv-fotos").upload(path, blob, { contentType: "image/jpeg", upsert: true }); if (error) throw error;
+    CAT[ci].items[ii].img = sb.storage.from("zv-fotos").getPublicUrl(path).data.publicUrl; marcar(); desenharCatalogo(); toast("Foto pronta. Toque em Salvar para publicar."); }
+  catch (e) { toast("Não deu para enviar a foto: " + (e.message || e)); } }
+
+/* ---------------- estoque ---------------- */
+async function telaEstoque() { const m = $("main"); const { data } = await sb.from("zv_estoque").select("*").eq("negocio", NEG.id); const E = {}; (data || []).forEach(e => E[e.item] = e);
+  const its = []; menu().forEach(c => c.items.forEach(i => its.push({ id: i.id, n: i.n, cat: c.cat })));
+  m.innerHTML = topo("Estoque") + `<p class="muted" style="margin:-8px 0 14px;font-size:14px">Quando um pedido é marcado como entregue, a quantidade baixa sozinha. Fica amarelo quando chega no mínimo.</p>
+  <div class="card scroll"><table class="tb"><thead><tr><th>Produto</th><th>Tem</th><th>Mínimo</th><th>Custo un.</th><th></th></tr></thead><tbody>${its.map(i => { const e = E[i.id] || {}; const baixo = e.item && Number(e.qtd) <= Number(e.minimo);
+    return `<tr class="${baixo ? "baixo" : ""}"><td><b>${esc(i.n)}</b><br><span class="muted" style="font-size:12.5px">${esc(i.cat)}</span></td><td><input inputmode="decimal" id="q-${i.id}" value="${e.qtd != null ? Number(e.qtd) : ""}" placeholder="—"></td><td><input inputmode="decimal" id="mi-${i.id}" value="${e.minimo != null ? Number(e.minimo) : ""}" placeholder="0"></td><td><input inputmode="decimal" id="cu-${i.id}" value="${e.custo != null ? String(e.custo).replace(".", ",") : ""}" placeholder="R$"></td>
+    <td style="white-space:nowrap"><button class="b sec sm" onclick="salvarEst('${i.id}',${JSON.stringify(i.n).replace(/"/g, "&quot;")})">Salvar</button> <button class="b sec sm" onclick="entradaEst('${i.id}',${JSON.stringify(i.n).replace(/"/g, "&quot;")})">+ Entrada</button></td></tr>`; }).join("")}</tbody></table></div>`; }
+async function salvarEst(id, nome) { const row = { negocio: NEG.id, item: id, nome, qtd: num($("q-" + id).value) || 0, minimo: num($("mi-" + id).value) || 0, custo: num($("cu-" + id).value) };
+  const { error } = await sb.from("zv_estoque").upsert(row, { onConflict: "negocio,item" }); toast(error ? erro(error) : "Estoque salvo."); if (!error) telaEstoque(); }
+async function entradaEst(id, nome) { const q = num(prompt("Quantas unidades de " + nome + " chegaram?")); if (!q) return; const atual = num($("q-" + id).value) || 0, custo = num($("cu-" + id).value);
+  const { error } = await sb.from("zv_estoque").upsert({ negocio: NEG.id, item: id, nome, qtd: atual + q, minimo: num($("mi-" + id).value) || 0, custo }, { onConflict: "negocio,item" }); if (error) return toast(erro(error));
+  if (custo && confirm("Lançar a compra de " + brl(custo * q) + " no caixa como saída?")) await sb.from("zv_lancamentos").insert({ negocio: NEG.id, tipo: "saida", valor: custo * q, categoria: "Compras", descricao: q + "× " + nome });
+  toast("Entrada registrada."); telaEstoque(); }
+
+/* ---------------- caixa ---------------- */
+let finMes = isoD(new Date()).slice(0, 7);
+async function telaFinanceiro() { const m = $("main"); const ini = finMes + "-01", fimD = new Date(+finMes.slice(0, 4), +finMes.slice(5, 7), 0), fim = isoD(fimD);
+  const { data } = await sb.from("zv_lancamentos").select("*").eq("negocio", NEG.id).gte("data", ini).lte("data", fim).order("data", { ascending: false }).order("criado_em", { ascending: false }); const L = data || [];
+  const ent = L.filter(x => x.tipo === "entrada").reduce((a, x) => a + Number(x.valor), 0), sai = L.filter(x => x.tipo === "saida").reduce((a, x) => a + Number(x.valor), 0);
+  const dias = fimD.getDate(), porDia = Array.from({ length: dias }, (_, i) => { const d = finMes + "-" + pad(i + 1); return [L.filter(x => x.data === d && x.tipo === "entrada").reduce((a, x) => a + Number(x.valor), 0), L.filter(x => x.data === d && x.tipo === "saida").reduce((a, x) => a + Number(x.valor), 0)]; });
+  const mx = Math.max(1, ...porDia.map(x => Math.max(x[0], x[1]))), cats = {}; L.forEach(x => { const k = (x.tipo === "entrada" ? "+ " : "− ") + x.categoria; cats[k] = (cats[k] || 0) + Number(x.valor); });
+  m.innerHTML = topo("Caixa", `<input class="t" type="month" style="width:170px" value="${finMes}" onchange="finMes=this.value;telaFinanceiro()"><button class="b pri sm" onclick="novoLanc()">Novo lançamento</button>`) +
+  `<div class="kpis"><div class="card kpi"><small>Entradas</small><b style="color:#0e7c54">${brl(ent)}</b></div><div class="card kpi"><small>Saídas</small><b style="color:#b32a2f">${brl(sai)}</b></div><div class="card kpi"><small>Saldo</small><b>${brl(ent - sai)}</b></div><div class="card kpi"><small>Lançamentos</small><b>${L.length}</b></div></div>
+  <div class="cols2"><div class="card"><h2>Dia a dia</h2><div class="barras" role="img" aria-label="Entradas por dia do mês">${porDia.map((x, i) => `<div title="Dia ${i + 1}: ${brl(x[0])}" style="height:${x[0] / mx * 100}%"></div>`).join("")}</div>
+    <div class="lst" style="margin-top:12px">${L.length ? L.slice(0, 60).map(x => `<div class="r"><span><b>${esc(x.descricao || x.categoria)}</b><br><span class="muted" style="font-size:12.5px">${x.data.split("-").reverse().join("/")} · ${esc(x.categoria)}${x.forma ? " · " + esc(x.forma) : ""}</span></span><span style="display:flex;align-items:center;gap:8px"><b style="color:${x.tipo === "entrada" ? "#0e7c54" : "#b32a2f"}">${x.tipo === "entrada" ? "+" : "−"} ${brl(x.valor)}</b>${!x.pedido && !x.agendamento ? `<button class="b sec sm" aria-label="Apagar" onclick="apagarLanc('${x.id}')">×</button>` : ""}</span></div>`).join("") : '<p class="vazio">Nenhum lançamento neste mês.</p>'}</div></div>
+   <div class="card"><h2>Por categoria</h2><div class="lst">${Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="r"><span>${esc(k)}</span><b>${brl(v)}</b></div>`).join("") || '<p class="vazio">—</p>'}</div></div></div>`; }
+function novoLanc() { abrirSheet(`<h2>Novo lançamento</h2><div class="grid2" style="margin-top:12px"><label class="f">Tipo<select class="t" id="lT"><option value="entrada">Entrada</option><option value="saida">Saída</option></select></label><label class="f">Valor<input class="t" id="lV" inputmode="decimal" placeholder="0,00"></label>
+  <label class="f">Categoria<input class="t" id="lC" list="lcats" placeholder="Vendas, Aluguel, Fornecedor…"><datalist id="lcats"><option>Vendas</option><option>Serviços</option><option>Compras</option><option>Aluguel</option><option>Salários</option><option>Contas (luz, água, internet)</option><option>Impostos</option><option>Marketing</option></datalist></label><label class="f">Data<input class="t" type="date" id="lD" value="${isoD(new Date())}"></label></div>
+  <label class="f" style="margin-top:12px">Descrição<input class="t" id="lDs"></label><label class="f" style="margin-top:12px">Forma<select class="t" id="lF"><option value="">—</option><option>Pix</option><option>Dinheiro</option><option>Cartão de crédito</option><option>Cartão de débito</option><option>Boleto</option></select></label>
+  <p class="err" id="lErr"></p><button class="b pri wide" onclick="salvarLanc()">Salvar</button>`); }
+async function salvarLanc() { const v = num($("lV").value); if (!v || v <= 0) { $("lErr").textContent = "Digite o valor."; return; }
+  const { error } = await sb.from("zv_lancamentos").insert({ negocio: NEG.id, tipo: $("lT").value, valor: v, categoria: $("lC").value || ($("lT").value === "entrada" ? "Vendas" : "Despesas"), descricao: $("lDs").value || null, forma: $("lF").value || null, data: $("lD").value });
+  if (error) { $("lErr").textContent = erro(error); return; } toast("Lançado."); fecharSheet(); telaFinanceiro(); }
+async function apagarLanc(id) { if (!confirm("Apagar este lançamento?")) return; await sb.from("zv_lancamentos").delete().eq("id", id); telaFinanceiro(); }
+
+/* ---------------- meu site ---------------- */
+function telaSite() { const m = $("main"), c = cfg(), t = textos(), h = c.horario || {};
+  let qr = ""; try { const q = qrcode(0, "M"); q.addData(siteURL()); q.make(); qr = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) {}
+  m.innerHTML = topo("Meu site", `<a class="b sec" href="${siteURL()}" target="_blank" rel="noopener">Abrir o site</a>`) +
+  `<div class="cols2"><div style="display:flex;flex-direction:column;gap:14px">
+   <div class="card"><h2>Dados do negócio</h2><div class="grid2"><label class="f">Nome<input class="t" id="sNome" value="${esc(NEG.nome)}"></label><label class="f">WhatsApp que recebe ${ehAgenda() ? "os agendamentos" : "os pedidos"}<input class="t" id="sZap" inputmode="tel" value="${esc(c.whatsapp || "")}"></label>
+     <label class="f">Endereço<input class="t" id="sEnd" value="${esc(c.endereco || "")}"></label><label class="f">Cidade<input class="t" id="sCid" value="${esc(t.cidade || "")}"></label>
+     <label class="f">Link do Google Maps<input class="t" id="sMaps" value="${esc(c.maps || "")}"></label><label class="f">Chave Pix<input class="t" id="sPix" value="${esc((c.pix || {}).chave || "")}" placeholder="CNPJ, e-mail, celular ou aleatória"></label></div></div>
+   <div class="card"><h2>Textos</h2><label class="f">Frase principal<input class="t" id="sTag" value="${esc(t.tagline || "")}"></label>
+     ${(t.sobre || []).map((p, i) => `<label class="f" style="margin-top:10px">Sobre, parágrafo ${i + 1}<textarea class="t" id="sSob${i}">${esc(p)}</textarea></label>`).join("")}
+     <label class="f" style="margin-top:10px">Rodapé<input class="t" id="sFoot" value="${esc(t.foot || "")}"></label></div>
+   <div class="card"><h2>Horário de funcionamento</h2><div class="hor">${[0, 1, 2, 3, 4, 5, 6].map(d => { const v = h[d] || h[String(d)]; return `<div class="d"><label><input type="checkbox" id="hA${d}" ${v ? "checked" : ""}>${DS[d].slice(0, 3)}</label><span class="hh"><input class="t" type="time" id="hI${d}" value="${v ? v[0] : "09:00"}"> às <input class="t" type="time" id="hF${d}" value="${v ? v[1] : "18:00"}"></span></div>`; }).join("")}</div></div>
+   ${ehAgenda() ? `<div class="card"><h2>Agenda</h2><label class="f">Profissionais (um por linha; deixe vazio se só você atende)<textarea class="t" id="sProf">${esc(profs().join("\n"))}</textarea></label>
+     <div class="grid2" style="margin-top:10px"><label class="f">Intervalo entre horários (min)<input class="t" id="sStep" inputmode="numeric" value="${c.slotStep || 30}"></label><label class="f">Quantas pessoas no mesmo horário<input class="t" id="sCap" inputmode="numeric" value="${c.capacidade || 1}"></label></div></div>` : ""}
+   <button class="b pri" onclick="salvarSite()">Salvar e publicar</button></div>
+   <div style="display:flex;flex-direction:column;gap:14px"><div class="card" style="text-align:center"><h2>Seu link</h2><div class="linkbox"><span>${esc(siteURL().replace(/^https?:\/\//, ""))}</span><button class="b sec sm" onclick="copiar(siteURL())">Copiar</button></div><div style="width:180px;margin:14px auto 4px">${qr}</div><p class="muted" style="font-size:13px;margin:0">Imprima o QR e cole no balcão.</p></div>
+   <div class="card"><h2>Situação</h2><p class="muted" style="margin:0 0 10px;font-size:14px">${NEG.status === "ativo" ? "O site está no ar." : "O site está pausado: quem abre vê um aviso."}</p><button class="b ${NEG.status === "ativo" ? "sec" : "pri"} wide" onclick="pausar()">${NEG.status === "ativo" ? "Pausar o site" : "Colocar no ar de novo"}</button></div>
+   <div class="card"><h2>Mais um negócio?</h2><button class="b sec wide" onclick="NEGS=[];nichoSel=null;onboarding()">Criar outro site</button></div></div></div>`; }
+async function salvarSite() { const nome = $("sNome").value.trim(); if (!nome) return toast("O nome não pode ficar vazio.");
+  const zap = $("sZap").value.replace(/\D/g, ""), z = zap && zap.length <= 11 ? "55" + zap : zap;
+  const horario = {}; [0, 1, 2, 3, 4, 5, 6].forEach(d => { horario[d] = $("hA" + d).checked ? [$("hI" + d).value, $("hF" + d).value] : null; });
+  const grp = {}; [1, 2, 3, 4, 5, 6, 0].forEach(d => { if (horario[d]) { const k = horario[d].join("–"); (grp[k] = grp[k] || []).push(DS[d].slice(0, 3)); } });
+  const horarioLabel = Object.entries(grp).map(([k, ds]) => ds.join(", ") + " " + k.replace(":00", "h").replace(":00", "h")).join(" · ") || "Fechado";
+  const d = clone(NEG.dados) || {}; d.config = Object.assign(d.config || {}, { nome, whatsapp: z, endereco: $("sEnd").value, maps: $("sMaps").value, horario, horarioLabel, pix: Object.assign({}, cfg().pix || {}, { chave: $("sPix").value, nome }) });
+  if (ehAgenda()) { d.config.profissionais = $("sProf").value.split("\n").map(s => s.trim()).filter(Boolean); d.config.slotStep = parseInt($("sStep").value) || 30; d.config.capacidade = Math.max(1, parseInt($("sCap").value) || 1); }
+  const t = textos(); d.textos = Object.assign(d.textos || {}, { tagline: $("sTag").value, foot: $("sFoot").value, cidade: $("sCid").value, endereco: $("sEnd").value, sobre: (t.sobre || []).map((_, i) => $("sSob" + i).value) });
+  const { data, error } = await sb.from("zv_negocios").update({ nome, whatsapp_dono: zap || null, dados: d }).eq("id", NEG.id).select().single();
+  if (error) return toast(erro(error)); NEG = data; montarNav(); toast("Salvo. Já está no ar."); }
+async function pausar() { const status = NEG.status === "ativo" ? "pausado" : "ativo"; const { data, error } = await sb.from("zv_negocios").update({ status }).eq("id", NEG.id).select().single(); if (error) return toast(erro(error)); NEG = data; telaSite(); }
+
+/* ---------------- assistente ---------------- */
+async function agente(texto, negocio) { const { data: s } = await sb.auth.getSession();
+  try { const r = await fetch(SB_URL + "/functions/v1/zv-agente", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + s.session.access_token, apikey: SB_KEY }, body: JSON.stringify({ texto, negocio }) });
+    const j = await r.json().catch(() => ({})); if (!r.ok) return { resposta: j.resposta || j.error || "O assistente não respondeu agora. Tente de novo." }; return j; }
+  catch (e) { return { resposta: "Sem conexão com o assistente agora." }; } }
+let MSGS = [];
+async function telaAssistente() { const m = $("main"); const { data } = await sb.from("zv_mensagens").select("papel,texto,criado_em").eq("negocio", NEG.id).order("criado_em", { ascending: false }).limit(40); MSGS = (data || []).reverse();
+  const it = menu().flatMap(c => c.items)[1] || menu().flatMap(c => c.items)[0] || { n: "item", p: 20 };
+  const sug = ehAgenda() ? ["Como está a agenda de hoje?", `Muda o ${it.n} pra R$ ${String(Math.max(1, Math.round((it.p || 30) * .9))).replace(".", ",")}`, "Bloqueia amanhã das 12h às 14h", "Fecha no domingo", "Quanto entrou este mês?"]
+    : ["Como foram as vendas hoje?", `Baixa o ${it.n} pra R$ ${((it.p || 20) * .9).toFixed(2).replace(".", ",")}`, `${it.n} esgotou`, "Adiciona Suco de laranja por R$ 9", "Muda o WhatsApp para (11) 98888-7777"];
+  m.innerHTML = topo("Assistente") + `<div class="card chat"><div class="msgs" id="msgs" aria-live="polite">${MSGS.length ? MSGS.map(x => `<div class="msg ${x.papel}">${esc(x.texto)}</div>`).join("") : `<div class="msg agente">Oi! Eu cuido do site e do painel para você. Peça como falaria com um funcionário: mudar preço, tirar um item que acabou, trocar horário, ver os pedidos do dia. A mudança vai para o ar na hora.</div>`}</div>
+   <div class="sug">${sug.map(s => `<button onclick="enviarMsg(${JSON.stringify(s).replace(/"/g, "&quot;")})">${esc(s)}</button>`).join("")}</div>
+   <form class="envio" onsubmit="event.preventDefault();enviarMsg($('chatIn').value)"><textarea class="t" id="chatIn" rows="1" placeholder="Escreva o que precisa…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMsg(this.value)}"></textarea><button type="submit" aria-label="Enviar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form></div>`;
+  const ms = $("msgs"); ms.scrollTop = ms.scrollHeight; }
+async function enviarMsg(t) { t = String(t || "").trim(); if (!t) return; const ms = $("msgs"); $("chatIn").value = "";
+  ms.insertAdjacentHTML("beforeend", `<div class="msg dono">${esc(t)}</div><div class="msg agente pensando" id="pens">…</div>`); ms.scrollTop = ms.scrollHeight;
+  const r = await agente(t, NEG.id); $("pens").remove(); ms.insertAdjacentHTML("beforeend", `<div class="msg agente">${esc(r.resposta || "")}</div>`); ms.scrollTop = ms.scrollHeight;
+  if (r.mudou) { await recarregarNeg(); CAT = null; sujo = false; montarNav(); } }
+
+/* ---------------- folha ---------------- */
+function abrirSheet(h) { $("shW").innerHTML = `<button class="x" aria-label="Fechar" onclick="fecharSheet()">×</button>` + h; $("sheet").classList.add("on"); }
+function fecharSheet() { $("sheet").classList.remove("on"); }
+$("sheet").addEventListener("click", e => { if (e.target.id === "sheet") fecharSheet(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharSheet(); });
+window.addEventListener("beforeunload", e => { if (sujo) { e.preventDefault(); e.returnValue = ""; } });
+sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") { NEG = null; } if (ev === "PASSWORD_RECOVERY") { const p = prompt("Nova senha (mínimo 6 caracteres):"); if (p) sb.auth.updateUser({ password: p }).then(r => toast(r.error ? erro(r.error) : "Senha trocada.")); } });
+carregar();
+</script>
+</body>
+</html>

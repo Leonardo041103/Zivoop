@@ -1,0 +1,15 @@
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 60, "capacidade": 15}}'::jsonb where nicho = 'academia';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 30}}'::jsonb where nicho = 'assistencia-celular';
+update public.zv_modelos set padrao = '{"config": {"profissionais": ["Rocha", "Léo", "Tiago"], "slotStep": 30}}'::jsonb where nicho = 'barbearia';
+update public.zv_modelos set padrao = '{"config": {"profissionais": ["Juliana", "Renata"], "slotStep": 30}}'::jsonb where nicho = 'clinica-estetica';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 60}}'::jsonb where nicho = 'dentista';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 60, "capacidade": 10}}'::jsonb where nicho = 'escola-aulas';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 60}}'::jsonb where nicho = 'fotografo';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 30, "capacidade": 2}}'::jsonb where nicho = 'lava-jato';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 60, "capacidade": 3}}'::jsonb where nicho = 'oficina-mecanica';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 60}}'::jsonb where nicho = 'personal';
+update public.zv_modelos set padrao = '{"config": {"profissionais": [], "slotStep": 30, "capacidade": 2}}'::jsonb where nicho = 'petshop';
+update public.zv_modelos set padrao = '{"config": {"profissionais": ["Bella", "Camila", "Duda"], "slotStep": 30}}'::jsonb where nicho = 'salao';
+update public.zv_modelos set padrao = '{"config": {"profissionais": ["Duda", "Rafa"], "slotStep": 30}}'::jsonb where nicho = 'studio-unhas';
+update public.zv_modelos set padrao = '{"config": {"profissionais": ["Rafa", "Lia", "Dante"], "slotStep": 60}}'::jsonb where nicho = 'tatuagem';
+update public.zv_modelos set padrao = '{"config": {"profissionais": ["Dra. Ana", "Dr. Paulo"], "slotStep": 30}}'::jsonb where nicho = 'veterinaria';

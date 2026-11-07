@@ -736,6 +736,7 @@ footer{background:var(--c1d);font-size:14px}
    porEvento: true = preço por evento/festa, sem contar diárias
    ===================================================================== */
 const DADOS = window.DADOS||{};
+const imgUrl=v=>/^(https?:)?\/\//.test(v)?v:"img/"+v+".webp";
 const CONFIG = Object.assign({
  "slug": "chacara",
  "nome": "Chácara Recanto do Sol",
@@ -1013,7 +1014,7 @@ function render(){
   const secs=MENU.map(c=>({id:"cat-"+c.key,t:c.cat,sub:c.sub,html:`<div class="units">${c.items.map(unitEl).join("")}</div>`}));
   if(ADICIONAIS.length&&!CONFIG.adicionaisSoNaReserva) secs.push({id:"cat-adicionais",t:W.adicTit||"Adicionais",sub:W.adicSub||"deixe sua reserva ainda melhor",html:`<div class="adds">${ADICIONAIS.map(addEl).join("")}</div>`});
   if(COMODIDADES.length) secs.push({id:"cat-comodidades",t:W.comTit||"Estrutura",sub:"",html:`<div class="coms">${COMODIDADES.map(c=>`<div class="com"><span class="e">${c.e}</span><span>${c.t}</span></div>`).join("")}</div>`});
-  if(GALERIA.length) secs.push({id:"cat-galeria",t:W.galTit||"Fotos",sub:W.galSub||"",html:`<div class="gal">${GALERIA.map(g=>`<img loading="lazy" src="img/${g}.webp" alt="${esc(CONFIG.nome)}">`).join("")}</div>`});
+  if(GALERIA.length) secs.push({id:"cat-galeria",t:W.galTit||"Fotos",sub:W.galSub||"",html:`<div class="gal">${GALERIA.map(g=>`<img loading="lazy" src="${imgUrl(g)}" alt="${esc(CONFIG.nome)}">`).join("")}</div>`});
   secs.forEach((s,i)=>{
     const a=document.createElement("a"); a.href="#"+s.id; a.textContent=s.t; a.dataset.cid=s.id; if(i===0)a.classList.add("active"); nav.appendChild(a);
     const el=document.createElement("section"); el.className="sec"; el.id=s.id;
@@ -1023,7 +1024,7 @@ function render(){
   sync();
 }
 function unitEl(u){
-  const ph=u.img?`<img loading="lazy" src="img/${u.img}.webp" alt="${esc(u.n)}">`:"";
+  const ph=u.img?`<img loading="lazy" src="${imgUrl(u.img)}" alt="${esc(u.n)}">`:"";
   const badge=u.cap?`<span class="badge">👥 até ${u.cap} ${W.pessoaUn||"pessoas"}</span>`:"";
   return `<div class="unit" id="u-${u.id}"><div class="uph">${u.e||CONFIG.emoji}${ph}${badge}</div><div class="ubd">
     <h3>${u.n}</h3><div class="ud">${u.d||""}</div>
@@ -1042,7 +1043,7 @@ function unitAct(u){
 }
 function addEl(a){
   const un={fixo:"por reserva",pp:"por pessoa",ppdia:"por pessoa, por dia",dia:"por dia",qtd:"cada"}[a.tipo||"fixo"];
-  return `<div class="addc"><div class="ic">${a.img?`<img loading="lazy" src="img/${a.img}.webp" alt="">`:(a.e||"➕")}</div>
+  return `<div class="addc"><div class="ic">${a.img?`<img loading="lazy" src="${imgUrl(a.img)}" alt="">`:(a.e||"➕")}</div>
     <div class="t"><h4>${a.n}</h4><small>${a.d?a.d+", ":""}${brl(a.p)} ${un}</small></div><span id="aa-${a.id}"></span></div>`;
 }
 function addAct(a){ const q=res.adic[a.id]||0;
@@ -1093,12 +1094,12 @@ function renderRes(){
   const u0=us[0].u;
   // unidades escolhidas
   let topo;
-  if(CONFIG.multi) topo=us.map(({u,q})=>`<div class="citem"><div class="ni">${u.img?`<img src="img/${u.img}.webp" alt="">`:(u.e||CONFIG.emoji)}</div>
+  if(CONFIG.multi) topo=us.map(({u,q})=>`<div class="citem"><div class="ni">${u.img?`<img src="${imgUrl(u.img)}" alt="">`:(u.e||CONFIG.emoji)}</div>
       <div class="ci-t"><h4>${u.n}</h4><div class="cfg">${u.orcamento?"sob orçamento":brl(u.p)+" "+(CONFIG.porEvento?(W.porEvento||"por evento"):"por dia")}</div></div>
       <div class="ci-r"><span class="lp">${u.orcamento?"—":brl(precoUnid(u)*q)}</span><span class="qtc"><button onclick="decU('${u.id}')">−</button><span>${q}</span><button onclick="addU('${u.id}')">+</button></span></div></div>`).join("");
   else topo=`<div class="field" style="margin-top:6px"><label>${W.unidade||"Escolhido"}</label>
       <select class="txt" onchange="escolher(this.value)">${Object.values(ALL).map(u=>`<option value="${u.id}" ${u.id===u0.id?'selected':''}>${u.n}${u.orcamento?" — sob orçamento":" — "+brl(u.p)}</option>`).join("")}</select>
-      <div class="rsel"><div class="ri">${u0.img?`<img src="img/${u0.img}.webp" alt="">`:(u0.e||CONFIG.emoji)}</div><div><h4>${u0.n}</h4><small>${u0.cap?`até ${u0.cap} ${W.pessoaUn||"pessoas"}, `:""}${(u0.com||[]).slice(0,3).join(", ")}</small></div></div></div>`;
+      <div class="rsel"><div class="ri">${u0.img?`<img src="${imgUrl(u0.img)}" alt="">`:(u0.e||CONFIG.emoji)}</div><div><h4>${u0.n}</h4><small>${u0.cap?`até ${u0.cap} ${W.pessoaUn||"pessoas"}, `:""}${(u0.com||[]).slice(0,3).join(", ")}</small></div></div></div>`;
   body.innerHTML=topo;
 
   // datas: já escolhidas no topo da página; aqui só o resumo (e os horários, se faltar)

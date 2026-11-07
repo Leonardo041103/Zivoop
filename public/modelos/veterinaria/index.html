@@ -690,6 +690,7 @@ footer{background:var(--c1d);font-size:14px}
    modoDia: true = reserva do dia inteiro (sem escolher horário)
    ===================================================================== */
 const DADOS = window.DADOS||{};
+const imgUrl=v=>/^(https?:)?\/\//.test(v)?v:"img/"+v+".webp";
 const CONFIG = Object.assign({
  "slug": "veterinaria",
  "nome": "Clínica Veterinária Amigo Fiel",
@@ -977,7 +978,7 @@ function render(){
 }
 function cardEl(it){
   const el=document.createElement("div"); el.className="card"; el.id="card-"+it.id;
-  const thumb=it.img?`<img class="thumb" loading="lazy" src="img/${it.img}.webp" alt="${esc(it.n)}">`:`<div class="ph">${it.e||CONFIG.emoji}</div>`;
+  const thumb=it.img?`<img class="thumb" loading="lazy" src="${imgUrl(it.img)}" alt="${esc(it.n)}">`:`<div class="ph">${it.e||CONFIG.emoji}</div>`;
   const preco=it.consulta?`<span class="price" style="font-size:14px;color:var(--c2d)">${it.consultaTxt||"Consulte"}</span>`
     :`<span class="price" ${it.orcamento||it.aPartir||typeof it.p==="object"||it.precoLabel?'style="font-size:15px"':''}>${precoTxt(it)}</span>`;
   el.innerHTML=`${thumb}<div class="txt"><h3>${it.n}</h3><div class="desc">${it.d||""}</div>
@@ -1065,7 +1066,7 @@ function renderCart(){
   const body=document.getElementById("shBody"), foot=document.getElementById("shFoot");
   if(!cart.length){ body.innerHTML=`<div class="empty"><div class="em">${CONFIG.emoji}</div>Nada escolhido ainda.<br>${W.vazio}</div>`; foot.innerHTML=""; return; }
   body.innerHTML=cart.map(l=>{ const it=ALL[l.id];
-    const img=it.img?`<img src="img/${it.img}.webp" alt="">`:`<div class="ni">${it.e||CONFIG.emoji}</div>`;
+    const img=it.img?`<img src="${imgUrl(it.img)}" alt="">`:`<div class="ni">${it.e||CONFIG.emoji}</div>`;
     return `<div class="citem">${img}<div class="ci-t"><h4>${l.nome}</h4><div class="cfg">${l.dur&&!CONFIG.modoDia?"🕐 "+durTxt(l.dur):it.d||""}</div></div>
       <div class="ci-r"><span class="lp" ${it.orcamento||precoOf(it)==null?'style="font-size:12.5px"':''}>${precoTxt(it)}</span>${CONFIG.qtdServicos
         ?`<span class="qtc"><button onclick="incQ('${l.id}',-1)">−</button><span>${l.qty||1}</span><button onclick="incQ('${l.id}',1)">+</button></span>`
