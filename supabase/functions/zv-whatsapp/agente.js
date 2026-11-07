@@ -233,7 +233,7 @@ const FERRAMENTAS = [
 async function porIA(C, texto, ia, historico) {
   const itens = C.menu().flatMap(c => (c.items || []).map(i => `${c.cat} > ${i.n}: ${i.v ? i.v.map(v => v.l + " " + brl(v.p)).join(" / ") : brl(i.p)}${i.oculto ? " (oculto)" : ""}`)).slice(0, 180).join("\n");
   const cfg = C.cfg();
-  const sistema = `Você é o assistente da Zivoop que administra o site e o painel de "${C.neg.nome}" (${C.neg.nicho}, ${C.neg.tipo === "agenda" ? "agendamentos" : "pedidos"}). Hoje é ${hojeSP()}.
+  const sistema = `Você é o assistente da Zivoop que administra o site e o painel de "${C.neg.nome}" (${C.neg.nicho}, ${C.neg.tipo === "agenda" ? "agendamentos" : C.neg.tipo === "reserva" ? "reservas" : "pedidos"}). Hoje é ${hojeSP()}.
 Fale português do Brasil, curto e direto, como um funcionário eficiente. Use as ferramentas para qualquer mudança ou consulta; nunca diga que mudou algo sem chamar a ferramenta.
 Se o pedido for ambíguo (ex.: item com tamanhos), pergunte. Não invente itens nem números.
 Site: ${C.neg.slug} · WhatsApp ${cfg.whatsapp || "não definido"} · Endereço ${cfg.endereco || "—"}
