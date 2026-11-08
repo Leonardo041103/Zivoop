@@ -287,10 +287,11 @@ const IC = {
   clientes: '<path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8"/>',
   catalogo: '<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>', estoque: '<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',
   financeiro: '<path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/>', site: '<path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
-  assistente: '<path d="M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01"/>'
+  assistente: '<path d="M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01"/>',
+  vender: '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>'
 };
 function abas() { const a = [["inicio", "Início"], ehAgenda() ? ["agenda", W().ped] : ["pedidos", "Pedidos"], ["clientes", "Clientes"], ["catalogo", W().itens]];
-  if (!ehAgenda()) a.push(["estoque", "Estoque"]); a.push(["financeiro", "Caixa"], ["site", "Meu site"], ["assistente", "Assistente"]); return a; }
+  if (!ehAgenda()) a.push(["estoque", "Estoque"]); a.push(["financeiro", "Caixa"]); if (!ehRes()) a.push(["vender", "Vender mais"]); a.push(["site", "Meu site"], ["assistente", "Assistente"]); return a; }
 function montarNav() { const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
   const h = abas().map(([k, l]) => `<a href="#${k}" data-k="${k}">${svg(k)}<span>${l}</span>${k === "pedidos" || k === "agenda" ? '<span class="n" id="n-' + k + '" hidden></span>' : ""}</a>`).join("");
   $("nav").innerHTML = h;
@@ -301,7 +302,7 @@ function montarNav() { const svg = k => `<svg viewBox="0 0 24 24" fill="none" st
 function maisMenu() { const curtas = ["inicio", "pedidos", "agenda", "clientes", "assistente"];
   abrirSheet(`<h2>Mais</h2><nav class="lst" style="margin-top:10px">${abas().filter(([k]) => !curtas.includes(k)).map(([k, l]) => `<a class="r" style="text-decoration:none;color:inherit;font-weight:700" href="#${k}" onclick="fecharSheet()">${l}<span aria-hidden="true">›</span></a>`).join("")}<a class="r" style="text-decoration:none;color:inherit;font-weight:700" href="${siteURL()}" target="_blank" rel="noopener">Ver meu site<span aria-hidden="true">↗</span></a><a class="r" style="text-decoration:none;color:var(--red);font-weight:700" href="#" onclick="sair();return false">Sair</a></nav>`); }
 function ir(k) { if (!abas().some(a => a[0] === k)) k = "inicio"; TAB = k; document.querySelectorAll(".nav a,.tabbar a").forEach(a => a.setAttribute("aria-current", a.dataset.k === k ? "page" : "false"));
-  window.scrollTo(0, 0); ({ inicio: telaInicio, pedidos: telaPedidos, agenda: telaAgenda, clientes: telaClientes, catalogo: telaCatalogo, estoque: telaEstoque, financeiro: telaFinanceiro, site: telaSite, assistente: telaAssistente })[k](); }
+  window.scrollTo(0, 0); ({ inicio: telaInicio, pedidos: telaPedidos, agenda: telaAgenda, clientes: telaClientes, catalogo: telaCatalogo, estoque: telaEstoque, financeiro: telaFinanceiro, site: telaSite, assistente: telaAssistente, vender: telaVender })[k](); }
 window.addEventListener("hashchange", () => { if (NEG) ir(location.hash.slice(1)); });
 function topo(t, acts = "") { return `<div class="top"><h1>${t}</h1><div class="acts">${acts}</div></div>`; }
 
@@ -479,6 +480,41 @@ async function verCliente(id) { const c = CLI.find(x => x.id === id); if (!c) re
     <h3 style="margin:20px 0 6px;font-size:16px">Histórico</h3><div class="lst">${(h.data || []).map(x => `<div class="r"><span>nº ${x.numero} · ${new Date(x.inicio || x.criado_em).toLocaleDateString("pt-BR")}</span><span>${brl(x.total)} ${x.status ? pillStatus(x.status) : pillEtapa(x.etapa)}</span></div>`).join("") || '<p class="vazio">Sem histórico.</p>'}</div>`); }
 async function salvarCliente(id) { const { error } = await sb.from("zv_clientes").update({ etapa: $("cEt").value, notas: $("cNt").value, tags: $("cTg").value.split(",").map(s => s.trim()).filter(Boolean) }).eq("id", id);
   if (error) return toast(erro(error)); toast("Cliente salvo."); fecharSheet(); telaClientes(); }
+
+/* ---------------- vender mais: o que sai junto ---------------- */
+let venModo = "pedido";
+const MSG_OFERTA = "Oi, {nome}! Aqui é da {loja}. Vi que você curte {comprou}. Quem pede {comprou} costuma levar {sugestao} também. Que tal experimentar no próximo? {link}";
+const msgOferta = () => (NEG.dados && NEG.dados.msgOferta) || MSG_OFERTA;
+function textoOferta(o) { const v = { nome: (o.nome || "").split(" ")[0], loja: NEG.nome, comprou: o.porque_nome, sugestao: o.item_nome, link: siteURL() };
+  return msgOferta().replace(/\{(\w+)\}/g, (m, k) => k in v ? v[k] : m); }
+async function telaVender() { const m = $("main"); m.innerHTML = topo("Vender mais") + '<p class="muted">Calculando…</p>';
+  const [of, cb] = await Promise.all([sb.rpc("zv_ofertas_clientes", { p_negocio: NEG.id }), sb.rpc("zv_combinacoes", { p_negocio: NEG.id, p_modo: venModo })]);
+  if (of.error || cb.error) { m.innerHTML = topo("Vender mais") + `<div class="card"><p class="vazio">${esc(erro(of.error || cb.error))}</p></div>`; return; }
+  const O = of.data || [], C = (cb.data || []).filter(x => x.confianca >= 10 && x.base >= 3), it = W().item, pd = ehAgenda() ? "agendamento" : "pedido";
+  window._VEN = O;
+  const pares = C.slice(0, 40);
+  m.innerHTML = topo("Vender mais") +
+    `<p class="muted" style="margin:-8px 0 16px;font-size:14px;max-width:70ch">A Zivoop olha tudo o que seus clientes já ${ehAgenda() ? "agendaram" : "pediram"} e descobre o que costuma sair junto. Use isso para oferecer o ${it} certo para cada cliente. O “Leve junto” do seu site já usa essas combinações sozinho.</p>` +
+    `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="font-size:18px">Para oferecer agora</h2><button class="b sec sm" onclick="editarMsgOferta()">Editar mensagem</button></div>
+      <p class="muted" style="font-size:13.5px;margin:6px 0 10px">Cada cliente aparece com o ${it} que ele ainda não ${ehAgenda() ? "fez" : "comprou"} e que mais combina com o que ele já ${ehAgenda() ? "faz" : "compra"}.</p>
+      ${O.length ? `<div class="lst">${O.slice(0, 60).map((o, i) => `<div class="r" style="align-items:flex-start;gap:10px 12px;flex-wrap:wrap"><div style="min-width:0;flex:1 1 220px"><b>${esc(o.nome)}</b> <span class="muted" style="font-size:12.5px">${o.qtd}× · ${o.ultimo_em ? desde(o.ultimo_em) : ""}</span>
+          <div style="font-size:14px;margin-top:3px">Oferecer <b>${esc(o.item_nome)}</b></div>
+          <div class="muted" style="font-size:12.5px">${Math.round(o.confianca)}% de quem ${ehAgenda() ? "faz" : "compra"} ${esc(o.porque_nome)} também ${ehAgenda() ? "faz" : "leva"} (${o.juntos} de ${o.base} clientes)</div></div>
+          <a class="b ok sm" style="flex:none" target="_blank" rel="noopener" href="${zapLink(o.whatsapp, textoOferta(o))}">Oferecer no WhatsApp</a></div>`).join("")}</div>`
+        : `<p class="vazio">Ainda não dá para sugerir. Aparece quando pelo menos 3 clientes ${ehAgenda() ? "fizeram" : "compraram"} o mesmo ${it} e alguns deles também ${ehAgenda() ? "fizeram" : "levaram"} outro.</p>`}</div>` +
+    `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="font-size:18px">O que sai junto</h2>
+      <div class="seg" role="group" style="min-width:260px"><button aria-pressed="${venModo === "pedido"}" onclick="venModo='pedido';telaVender()">No mesmo ${pd}</button><button aria-pressed="${venModo === "cliente"}" onclick="venModo='cliente';telaVender()">O mesmo cliente</button></div></div>
+      <p class="muted" style="font-size:13.5px;margin:6px 0 10px">${venModo === "pedido" ? `De quem ${ehAgenda() ? "agendou" : "pediu"} o primeiro, quantos levaram o segundo no mesmo ${pd}. Bom para montar combos.` : "De quem já comprou o primeiro alguma vez, quantos também compraram o segundo, em qualquer dia. Bom para saber o que oferecer depois."}</p>
+      ${pares.length ? `<div class="lst">${pares.map(x => `<div class="r" style="gap:12px"><div style="min-width:0;flex:1"><div style="font-size:14.5px">Quem ${ehAgenda() ? "faz" : "pede"} <b>${esc(x.a_nome)}</b> também ${ehAgenda() ? "faz" : "leva"} <b>${esc(x.b_nome)}</b></div>
+          <div style="height:6px;border-radius:9px;background:rgba(20,22,43,.08);margin-top:6px;overflow:hidden"><div style="height:100%;width:${Math.min(100, x.confianca)}%;background:var(--mint,#19B37A)"></div></div></div>
+          <div style="text-align:right;flex:none"><b>${Math.round(x.confianca)}%</b><div class="muted" style="font-size:12px">${x.juntos} de ${x.base}${x.lift >= 1.5 ? " · forte" : ""}</div></div></div>`).join("")}</div>`
+        : `<p class="vazio">Nada ainda. As combinações aparecem quando dois ${it}s saem juntos pelo menos duas vezes.</p>`}</div>`; }
+function editarMsgOferta() {
+  abrirSheet(`<h2>Mensagem da oferta</h2><p class="muted" style="font-size:13.5px">Vai pronta no WhatsApp, e você ainda pode mudar antes de enviar. Use {nome}, {loja}, {comprou}, {sugestao} e {link}.</p>
+    <textarea class="t" id="vMsg" style="min-height:140px;margin-top:10px">${esc(msgOferta())}</textarea>
+    <button class="b pri wide" style="margin-top:12px" onclick="salvarMsgOferta()">Salvar</button><button class="b sec wide" style="margin-top:8px" onclick="$('vMsg').value=MSG_OFERTA">Voltar ao texto padrão</button>`); }
+async function salvarMsgOferta() { const v = $("vMsg").value.trim(); if (!v) return toast("Escreva a mensagem.");
+  if (await salvarDados(d => { d.msgOferta = v; }, "Mensagem salva.")) { fecharSheet(); telaVender(); } }
 
 /* ---------------- catálogo ---------------- */
 let CAT = null, sujo = false;

@@ -45,7 +45,10 @@ module.exports = async (req, res) => {
   if (site.tipo === "agenda") ocupados = (await rpc("zv_ocupados", { p_slug: slug, p_de: hojeSP(), p_dias: 62 }).catch(() => null)) || [];
   let ocupReserva = [];
   if (site.tipo === "reserva") ocupReserva = ((await rpc("zv_reservas_ocupadas", { p_slug: slug }).catch(() => null)) || []).map(x => (x && x.zv_reservas_ocupadas) || x).filter(Boolean);
-  const zv = { slug, id: site.id, tipo: site.tipo, nicho: site.nicho, api: SB, key: KEY, ocupados, ocupReserva };
+  // o que mais sai junto em cada item, aprendido com os pedidos deste negócio (vazio até ter vendas suficientes)
+  let combos = {};
+  if (site.tipo !== "reserva") { const c = await rpc("zv_combos_site", { p_slug: slug }).catch(() => null); combos = (c && (c.zv_combos_site || c)) || {}; if (typeof combos !== "object" || Array.isArray(combos)) combos = {}; }
+  const zv = { slug, id: site.id, tipo: site.tipo, nicho: site.nicho, api: SB, key: KEY, ocupados, ocupReserva, combos };
   const seguro = o => JSON.stringify(o).replace(/</g, "\\u003c");
   html = trocarTextos(html, pad.textos || {}, textos)
     .replace(/<script src="\/demo\.js"><\/script>\s*/g, "")

@@ -126,6 +126,17 @@ export const ACOES = {
     await C.db.ins("zv_bloqueios", { negocio: C.neg.id, profissional: profissional || "", inicio: dia + "T" + a + ":00-03:00", fim: dia + "T" + b + ":00-03:00", motivo: motivo || null });
     return `Bloqueado ${dia.split("-").reverse().join("/")} das ${a} às ${b}${profissional ? " para " + profissional : ""}. Ninguém consegue marcar nesse intervalo.`;
   },
+  async vendas_juntas(C, { item }) {
+    const pares = await C.db.rpc("zv_combinacoes", { p_negocio: C.neg.id, p_modo: "pedido", p_dias: 365 }).catch(() => []);
+    const L = (pares || []).filter(x => x.confianca >= 10), ag = C.neg.tipo !== "pedido", ped = ag ? "faz" : "pede", lev = ag ? "faz" : "leva";
+    if (!L.length) return `Ainda não tenho ${ag ? "agendamentos" : "pedidos"} suficientes para ver o que sai junto. Aparece quando duas coisas saírem juntas pelo menos duas vezes.`;
+    if (item) {
+      const alvo = sem(item), doItem = L.filter(x => sem(x.a_nome).includes(alvo) || alvo.includes(sem(x.a_nome)));
+      if (!doItem.length) return `Ainda não vi nada saindo junto com “${item}”.`;
+      return `Quem ${ped} ${doItem[0].a_nome} também ${lev}:\n` + doItem.slice(0, 5).map(x => `• ${x.b_nome}: ${Math.round(x.confianca)}% (${x.juntos} de ${x.base})`).join("\n");
+    }
+    return "O que mais sai junto:\n" + L.slice(0, 6).map(x => `• ${x.a_nome} + ${x.b_nome}: ${Math.round(x.confianca)}% de quem ${ped} ${x.a_nome} (${x.juntos}×)`).join("\n") + "\n\nEm “Vender mais” você vê para qual cliente oferecer cada um.";
+  },
   async resumo(C, { periodo }) {
     const p = sem(periodo || "hoje"), hoje = hojeSP();
     const ini = /mes/.test(p) ? hoje.slice(0, 8) + "01" : /semana/.test(p) ? new Date(Date.now() - 3 * 3600e3 - 6 * 864e5).toISOString().slice(0, 10) : hoje;
@@ -203,6 +214,8 @@ export async function porFrases(C, texto) {
   if ((m = s.match(/(confirma|cancela|atendido|faltou)\s+(?:o )?(?:agendamento|horario)?\s*(?:n |numero |nº )?(\d+)/)) && C.neg.tipo !== "pedido") return ACOES.status_agendamento(C, { numero: m[2], status: m[1] });
   if (/agenda|quem (vem|esta marcado)|horarios? (de )?(hoje|amanha)|marcad/.test(s)) return ACOES.listar_agenda(C, { data: /amanha/.test(s) ? "amanha" : (s.match(/(\d{1,2} \d{1,2})/) || [])[1] || "hoje" });
   if (/pedidos? (em )?aberto|quais pedidos|tem pedido/.test(s)) return ACOES.listar_pedidos(C, {});
+  if ((m = s.match(/(?:o que|oq|que)\s+(?:mais\s+)?(?:sai|vende|vendem|pedem|levam|combina|compram)\s+(?:mais\s+)?(?:junto|com)\s*(?:com\s+)?(?:o |a |os |as )?(.*)$/)) || /vendas? juntas|combina[cç]oes|combos? que (?:mais )?saem|o que oferecer/.test(s))
+    return ACOES.vendas_juntas(C, { item: m && m[1] && m[1].trim() && !/^(o que|isso)$/.test(m[1].trim()) ? m[1].trim() : "" });
   if (/vend|fatur|entrou|caixa|resumo|como (foi|esta|ta)|quanto/.test(s)) return ACOES.resumo(C, { periodo: /mes/.test(s) ? "mes" : /semana/.test(s) ? "semana" : "hoje" });
   return null;
 }
@@ -225,6 +238,7 @@ const FERRAMENTAS = [
   ["mudar_horario", "Muda o horário de funcionamento. dias: nomes dos dias em português", { dias: "array", abre: "string|HH:MM", fecha: "string|HH:MM", fechado: "boolean" }, ["dias"]],
   ["bloquear", "Bloqueia a agenda num intervalo (data: hoje, amanhã, AAAA-MM-DD)", { data: "string", de: "string|HH:MM", ate: "string|HH:MM", profissional: "string", motivo: "string" }, ["data"]],
   ["resumo", "Resumo de vendas, pedidos, agendamentos e caixa", { periodo: "string|hoje, semana ou mes" }, []],
+  ["vendas_juntas", "O que os clientes costumam comprar junto (de um item específico, ou no geral)", { item: "string|nome do item, opcional" }, []],
   ["listar_agenda", "Lista a agenda de um dia", { data: "string" }, []],
   ["listar_pedidos", "Lista pedidos em aberto", { etapa: "string" }, []],
   ["mover_pedido", "Muda a etapa de um pedido pelo número", { numero: "number", etapa: "string|novo, preparo, pronto, entregue ou cancelado" }, ["numero", "etapa"]],

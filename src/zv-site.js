@@ -84,5 +84,39 @@
           Z.rpc("zv_reservas_ocupadas", { p_slug: Z.slug }).then(function (l) { OCUP.length = 0; (l || []).forEach(function (x) { x = (x && x.zv_reservas_ocupadas) || x; if (x) OCUP.push(x); }); if (typeof render === "function") render(); }).catch(function () {}); });
     };
   }
+  /* "Leve junto" aprendido: o que os clientes deste negócio mais levam com os itens do carrinho.
+     Sem vendas suficientes, fica a sugestão fixa do modelo. */
+  function ligarCombos() {
+    var C = Z.combos || {}; if (!Object.keys(C).length || typeof cart === "undefined" || typeof ALL === "undefined") return;
+    var aprendidos = function (base, fora) {
+      var sc = {}, motivo = {};
+      base.forEach(function (id) { (C[id] || []).forEach(function (p) { var b = p[0], pc = +p[1] || 0;
+        if (!ALL[b] || ALL[b].consulta || fora.indexOf(b) >= 0) return; if (!(b in sc) || pc > sc[b]) { sc[b] = pc; motivo[b] = id; } }); });
+      return Object.keys(sc).sort(function (x, y) { return sc[y] - sc[x]; }).slice(0, 4).map(function (b) { return { id: b, pc: sc[b], de: motivo[b] }; });
+    };
+    var nomeDe = function (id) { return ALL[id] ? ALL[id].n : ""; }, V = Z.tipo === "agenda" ? ["faz", "faz"] : ["pede", "leva"];
+    var botao = typeof chip === "function" ? function (i) { return chip(i); }
+      : function (i) { var x = ALL[i]; return '<button class="sug-chip" onclick="addServ(\'' + i + '\')">+ ' + x.n + (typeof precoTxt === "function" ? " <b>" + precoTxt(x) + "</b>" : "") + "</button>"; };
+    var bloco = function (lista, titulo) {
+      return '<div class="suggest"><b>' + titulo + '</b><div class="sug-row">' + lista.map(function (s) { return botao(s.id); }).join("") + "</div>" +
+        '<small style="display:block;margin-top:6px;opacity:.7">' + lista[0].pc + "% de quem " + V[0] + " " + nomeDe(lista[0].de) + " também " + V[1] + " " + nomeDe(lista[0].id) + "</small></div>";
+    };
+    if (typeof suggestBlock === "function") {
+      var origSug = suggestBlock;
+      suggestBlock = function () {
+        try { if (CONFIG.unico) return origSug(); var ids = cart.map(function (l) { return l.id; }), l = aprendidos(ids, ids);
+          return l.length ? bloco(l, Z.tipo === "agenda" ? "Quem faz isso também faz" : "Quem pede isso também leva") : origSug(); } catch (e) { return origSug(); }
+      };
+    }
+    if (typeof leveJunto === "function") {
+      var origLeve = leveJunto;
+      leveJunto = function () {
+        try { var id = modal.item.id, l = aprendidos([id], [id].concat(cart.map(function (x) { return x.id; })));
+          if (!l.length) return origLeve();
+          return '<div class="opt-group"><label>' + (Z.tipo === "agenda" ? "Quem faz este também faz" : "Quem pede este também leva") + '</label><div class="sug-row">' + l.slice(0, 3).map(function (s) { return botao(s.id); }).join("") + "</div></div>"; } catch (e) { return origLeve(); }
+      };
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function () { ligarCombos(); });
   document.addEventListener("DOMContentLoaded", function () { if (Z.tipo === "reserva") ligarReserva(); if (Z.tipo === "agenda") ligarAgenda(); else if (Z.tipo === "pedido") ligarPedido(); });
 })();

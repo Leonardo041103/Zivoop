@@ -151,7 +151,7 @@ drop policy if exists dono_muda on fl_grupos;   create policy dono_muda on fl_gr
 drop policy if exists dono_cria on fl_comandos; create policy dono_cria on fl_comandos for insert to authenticated with check (dono = auth.uid() and status = 'pendente');
 
 -- O cliente não muda o próprio plano, nem status de número/agendamento que é do robô
-create or replace function fl_protege_conta() returns trigger language plpgsql as $$
+create or replace function fl_protege_conta() returns trigger language plpgsql set search_path = public as $$
 begin
   if current_user = 'authenticated' then
     new.plano := old.plano; new.ativo_ate := old.ativo_ate; new.limite_numeros := old.limite_numeros;
@@ -160,7 +160,7 @@ begin
 drop trigger if exists fl_protege_conta on fl_contas;
 create trigger fl_protege_conta before update on fl_contas for each row execute function fl_protege_conta();
 
-create or replace function fl_protege_numero() returns trigger language plpgsql as $$
+create or replace function fl_protege_numero() returns trigger language plpgsql set search_path = public as $$
 begin
   if current_user = 'authenticated' then
     if tg_op = 'INSERT' then
@@ -173,7 +173,7 @@ drop trigger if exists fl_protege_numero on fl_numeros;
 create trigger fl_protege_numero before insert or update on fl_numeros for each row execute function fl_protege_numero();
 
 -- Grupo: o cliente só liga/desliga; limite de grupos ativos do plano
-create or replace function fl_protege_grupo() returns trigger language plpgsql as $$
+create or replace function fl_protege_grupo() returns trigger language plpgsql set search_path = public as $$
 begin
   if current_user = 'authenticated' then
     new.jid := old.jid; new.nome := old.nome; new.membros := old.membros; new.admin := old.admin; new.numero_id := old.numero_id;
@@ -185,7 +185,7 @@ begin
 drop trigger if exists fl_protege_grupo on fl_grupos;
 create trigger fl_protege_grupo before update on fl_grupos for each row execute function fl_protege_grupo();
 
-create or replace function fl_protege_agendamento() returns trigger language plpgsql as $$
+create or replace function fl_protege_agendamento() returns trigger language plpgsql set search_path = public as $$
 begin
   if current_user = 'authenticated' then
     if tg_op = 'INSERT' then new.status := 'pendente'; new.enviados := 0; new.total := 0; new.erro := null;
