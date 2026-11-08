@@ -1,0 +1,11 @@
+services:
+  robo:
+    build: .
+    container_name: zivoop-ofertas
+    restart: always
+    env_file: .env
+    volumes:
+      - ./dados:/app/dados      # sessões do WhatsApp: não apague, senão todos os números precisam ler o QR de novo
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }

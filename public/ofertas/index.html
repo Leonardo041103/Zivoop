@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zivoop Ofertas</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#14162B">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+:root{--ink:#14162B;--ink2:#4A4E6A;--soft:#7A7F9A;--paper:#F5F6FA;--card:#fff;--cobalt:#2E4BFF;--cobalt-d:#1F36D6;--tang:#FF7A1A;--mint:#19B37A;--red:#E5484D;--amber:#F2A33A;
+  --zap:#E7FFDB;--zapbg:#EFE7DD;--line:rgba(20,22,43,.1);--line2:rgba(20,22,43,.18);--f:'Archivo',system-ui,sans-serif;--r:16px;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}button:disabled{opacity:.45;cursor:not-allowed}
+a{color:var(--cobalt)}
+:focus-visible{outline:3px solid var(--tang);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h1,h2,h3{font-stretch:118%;font-weight:850;letter-spacing:-.02em;line-height:1.05;margin:0}
+h1{font-size:clamp(24px,3.4vw,32px)}h2{font-size:19px}h3{font-size:16px}
+.b{min-height:42px;padding:0 16px;border-radius:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;white-space:nowrap}
+.b.pri{background:var(--cobalt);color:#fff}.b.pri:hover:not(:disabled){background:var(--cobalt-d)}
+.b.sec{background:var(--card);border:1px solid var(--line2);color:var(--ink)}.b.sec:hover{border-color:var(--ink2)}
+.b.ok{background:var(--mint);color:#fff}.b.no{color:var(--red);border:1px solid rgba(229,72,77,.35);background:#fff}
+.b.sm{min-height:34px;padding:0 11px;font-size:13.5px;border-radius:10px}.b.wide{width:100%}
+input.t,select.t,textarea.t{width:100%;background:#fff;border:1px solid var(--line2);border-radius:11px;padding:10px 12px;font-size:15px}
+textarea.t{min-height:90px;resize:vertical}input.t:focus,select.t:focus,textarea.t:focus{border-color:var(--cobalt);outline:none}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:650;color:var(--ink2)}
+.grid2{display:grid;gap:12px}@media (min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:12px}@media (min-width:720px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.err{color:var(--red);font-size:14px;min-height:1em;margin:0}.muted{color:var(--soft)}.small{font-size:13px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:750;border-radius:999px;padding:3px 9px;background:rgba(20,22,43,.06);color:var(--ink2);white-space:nowrap}
+.pill.ok{background:rgba(25,179,122,.12);color:#0e7c54}.pill.no{background:rgba(229,72,77,.1);color:#b32a2f}.pill.am{background:rgba(242,163,58,.16);color:#9a5a00}.pill.bl{background:rgba(46,75,255,.1);color:var(--cobalt-d)}
+.pill.shopee{background:#FFE9E2;color:#C2410C}.pill.mercadolivre{background:#FFF6C2;color:#5c4a00}.pill.amazon{background:#E8EEF6;color:#1d2b3f}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:650;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (min-width:980px){.toast{bottom:28px}}
+
+/* entrar */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.auth .box{width:min(440px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px -30px rgba(20,22,43,.35)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-stretch:125%;font-size:19px;letter-spacing:-.02em;color:inherit;text-decoration:none}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--mint);display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
+.logo small{font-weight:650;font-stretch:100%;font-size:13px;opacity:.6;letter-spacing:0}
+.seg{display:flex;background:rgba(20,22,43,.06);border-radius:12px;padding:3px}
+.seg button{flex:1;min-height:38px;border-radius:9px;font-weight:700;color:var(--ink2)}.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* casca */
+.app{display:grid;min-height:100vh}
+@media (min-width:980px){.app{grid-template-columns:236px 1fr}}
+.side{background:var(--ink);color:#fff;padding:18px 12px;display:none;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh}
+@media (min-width:980px){.side{display:flex}}
+.side .logo{padding:4px 8px 16px}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:rgba(255,255,255,.72);font-weight:650;text-align:left;width:100%}
+.nav:hover{background:rgba(255,255,255,.06);color:#fff}.nav[aria-current="page"]{background:rgba(255,255,255,.12);color:#fff}
+.nav svg{width:19px;height:19px;flex:none}.nav .n{margin-left:auto;font-size:12px;background:var(--tang);color:#fff;border-radius:99px;padding:1px 7px}
+.side .fim{margin-top:auto;font-size:13px;color:rgba(255,255,255,.6);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.side .fim button{color:rgba(255,255,255,.8);text-align:left;font-weight:650}
+main{min-width:0;padding-bottom:calc(84px + env(safe-area-inset-bottom))}@media (min-width:980px){main{padding-bottom:30px}}
+.top{position:sticky;top:0;z-index:20;background:rgba(245,246,250,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:10px;align-items:center}
+.top .logo{display:flex}@media (min-width:980px){.top .logo{display:none}}
+.colar{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);border-radius:12px;padding:0 6px 0 12px;max-width:620px;margin-left:auto}
+@media (min-width:980px){.colar{margin-left:0}}
+.colar input{border:0;outline:0;flex:1;min-width:0;min-height:40px;background:none}
+.colar svg{width:18px;height:18px;color:var(--soft);flex:none}
+.wrap{max-width:1140px;margin:0 auto;padding:22px 16px}
+.cab{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+.cab p{margin:6px 0 0;color:var(--ink2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+@media (min-width:980px){.tabbar{display:none}}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;color:var(--soft);padding:6px 0;border-radius:10px}
+.tabbar button svg{width:22px;height:22px}.tabbar button[aria-current="page"]{color:var(--cobalt)}
+.tabbar .mais{position:fixed;inset:0;z-index:40;background:rgba(20,22,43,.4);display:flex;align-items:flex-end}
+.folha{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.folha button{display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;background:var(--paper);font-weight:700;text-align:left}.folha svg{width:20px;height:20px}
+
+/* números do topo */
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (min-width:860px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi span{font-size:13px;color:var(--ink2);font-weight:650}
+.kpi b{font-size:clamp(22px,3vw,28px);font-weight:850;font-stretch:112%;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi small{font-size:12.5px;color:var(--soft)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:#fff;font-weight:700;font-size:13.5px;color:var(--ink2)}
+.chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.grafico{width:100%;height:190px;display:block}
+.vazio{text-align:center;padding:34px 16px;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:10px}
+.vazio b{color:var(--ink);font-size:16px}
+
+/* listas */
+.lista{display:flex;flex-direction:column}
+.item{display:flex;gap:12px;align-items:center;padding:12px 2px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .th{width:54px;height:54px;border-radius:12px;object-fit:cover;background:var(--paper);flex:none;border:1px solid var(--line)}
+.item .tx{flex:1;min-width:0}.item .tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tx small{color:var(--soft);font-size:13px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:3px}
+.item .ac{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.sw{position:relative;width:46px;height:28px;border-radius:99px;background:rgba(20,22,43,.18);transition:.2s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
+.sw[aria-checked="true"]{background:var(--mint)}.sw[aria-checked="true"]::after{left:21px}
+table.tb{width:100%;border-collapse:collapse;font-size:14px}
+.tb th{text-align:left;font-size:12.5px;color:var(--soft);font-weight:700;padding:8px 6px;border-bottom:1px solid var(--line)}
+.tb td{padding:10px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tb td.r,.tb th.r{text-align:right}
+.rol{overflow-x:auto}
+@media (max-width:600px){.tb .so-pc{display:none}.colar .lg{display:none}}@media (min-width:601px){.colar .cu{display:none}}
+
+/* número e QR */
+.num{display:grid;gap:14px}@media (min-width:760px){.num{grid-template-columns:1fr 260px}}
+.qr{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;place-items:center;aspect-ratio:1}
+.qr svg,.qr img{width:100%;height:auto}
+ol.passos{margin:0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
+
+/* nova oferta: a prévia do WhatsApp é o destaque */
+.nova{display:grid;gap:16px}@media (min-width:980px){.nova{grid-template-columns:1fr 360px;align-items:start}}
+.zap{background:var(--zapbg);border-radius:20px;padding:18px 14px;position:sticky;top:76px;
+  background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1px);background-size:14px 14px}
+.zap .cab2{display:flex;align-items:center;gap:10px;margin:-4px 0 12px;font-size:13px;color:#54656F;font-weight:650}
+.zap .cab2 i{width:30px;height:30px;border-radius:50%;background:#25D366;display:grid;place-items:center;color:#fff;font-style:normal}
+.bolha{background:var(--zap);border-radius:4px 14px 14px 14px;padding:5px 5px 8px;max-width:300px;box-shadow:0 1px .5px rgba(0,0,0,.13);font-size:14.2px;line-height:1.38;color:#111B21}
+.bolha img{width:100%;border-radius:10px;display:block;aspect-ratio:1;object-fit:cover;background:#fff}
+.bolha .txt{padding:6px 6px 0;white-space:pre-wrap;word-wrap:break-word}
+.bolha .txt a{color:#027EB5}.bolha .hora{text-align:right;font-size:11px;color:#667781;padding:0 6px}
+.quando{display:grid;gap:8px}@media (min-width:600px){.quando{grid-template-columns:repeat(3,1fr)}}
+.op{border:1px solid var(--line2);border-radius:13px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:3px;background:#fff}
+.op b{font-size:14.5px}.op small{color:var(--soft);font-size:12.5px}
+.op[aria-pressed="true"]{border-color:var(--cobalt);box-shadow:inset 0 0 0 1px var(--cobalt)}
+.vars{display:flex;gap:6px;flex-wrap:wrap}.vars button{font-size:12.5px;font-weight:700;padding:4px 9px;border-radius:8px;background:rgba(46,75,255,.08);color:var(--cobalt-d)}
+.aviso{background:rgba(242,163,58,.12);border:1px solid rgba(242,163,58,.35);border-radius:12px;padding:10px 12px;font-size:14px;color:#6b4300}
+.faixa{background:var(--ink);color:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin-bottom:14px}
+.faixa.vencida{background:var(--red)}
+.carregando{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .7s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+dialog{border:0;border-radius:20px;padding:0;width:min(520px,calc(100% - 24px));box-shadow:0 30px 80px -20px rgba(20,22,43,.5)}
+dialog::backdrop{background:rgba(20,22,43,.45)}
+dialog .in{padding:20px;display:flex;flex-direction:column;gap:12px}
+</style>
+</head>
+<body>
+
+<!-- entrar -->
+<section class="auth" id="telaAuth" hidden>
+  <form class="box" id="fAuth">
+    <a class="logo" href="#"><i>Z</i><span>Zivoop <small>Ofertas</small></span></a>
+    <div>
+      <h1 style="font-size:26px">Suas ofertas postadas sozinhas nos grupos</h1>
+      <p class="muted" style="margin:8px 0 0">Cole o link da Shopee, do Mercado Livre ou da Amazon. A gente posta em todos os seus grupos de WhatsApp no horário certo.</p>
+    </div>
+    <div class="seg" role="group"><button type="button" id="sEntrar" aria-pressed="true">Entrar</button><button type="button" id="sCriar" aria-pressed="false">Criar conta</button></div>
+    <label class="f">E-mail<input class="t" id="aEmail" type="email" autocomplete="email" required></label>
+    <label class="f">Senha<input class="t" id="aSenha" type="password" autocomplete="current-password" minlength="6" required></label>
+    <p class="err" id="aErr"></p>
+    <button class="b pri wide" id="aBtn">Entrar</button>
+    <button type="button" class="muted small" id="aEsqueci">Esqueci a senha</button>
+    <p class="small muted" id="aTeste" hidden style="margin:0">7 dias grátis, sem cartão.</p>
+  </form>
+</section>
+
+<!-- painel -->
+<div class="app" id="telaApp" hidden>
+  <aside class="side">
+    <a class="logo" href="#inicio"><i>Z</i><span>Zivoop <small>Ofertas</small></span></a>
+    <nav id="navSide"></nav>
+    <div class="fim"><span id="sideEmail"></span><button id="sair">Sair</button></div>
+  </aside>
+  <main>
+    <div class="top">
+      <a class="logo" href="#inicio"><i>Z</i></a>
+      <form class="colar" id="fColar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+        <input id="colarIn" placeholder="Colar link do produto…" aria-label="Link do produto" inputmode="url">
+        <button class="b pri sm"><span class="lg">Criar oferta</span><span class="cu">Criar</span></button>
+      </form>
+    </div>
+    <div class="wrap" id="tela"></div>
+  </main>
+  <nav class="tabbar" id="tabbar"></nav>
+</div>
+
+<dialog id="dlg"><div class="in" id="dlgIn"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const SB_URL = window.ZV_SB_URL || "https://phswqjkytnkukqpbtoqd.supabase.co";
+const SB_KEY = window.ZV_SB_KEY || "sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8";
+const SUPORTE_WHATS = window.ZV_OFERTAS_SUPORTE || "";   // número que aparece em "Assinar" (ex.: 5511999999999)
+const sb = supabase.createClient(SB_URL, SB_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const brl = v => (+v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const int = v => (+v || 0).toLocaleString("pt-BR");
+const pct = v => (isFinite(v) ? v : 0).toLocaleString("pt-BR", { maximumFractionDigits: v > 0 && v < 1 ? 2 : 1 }) + "%";
+const dataHora = d => new Date(d).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", " ·");
+const diaSP = d => new Date(d).toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+let tT; function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tT); tT = setTimeout(() => t.classList.remove("on"), 3200); }
+const ERROS = { limite_grupos: "Você chegou ao limite de grupos do seu plano. Desligue outro grupo ou mude de plano.", limite_numeros: "Você chegou ao limite de números do seu plano.",
+  ja_enviado: "Essa oferta já foi enviada.", "Invalid login credentials": "E-mail ou senha errados.", "User already registered": "Esse e-mail já tem conta. Use Entrar." };
+const erro = e => { const m = (e && (e.message || e.error_description || e.msg)) || String(e); for (const k in ERROS) if (m.includes(k)) return ERROS[k]; return m; };
+const LOJAS = { shopee: "Shopee", mercadolivre: "Mercado Livre", amazon: "Amazon", outra: "Outra loja" };
+
+const IC = {
+  inicio: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  nova: '<path d="M12 5v14M5 12h14"/>',
+  agenda: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',
+  grupos: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/>',
+  numeros: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18h2"/>',
+  comissao: '<path d="M12 2v20M17 6.5c-1-1.5-3-2.5-5-2.5-3 0-5 1.5-5 3.8C7 13 17 10.5 17 16c0 2.3-2.2 4-5 4-2.2 0-4.2-1-5.2-2.6"/>',
+  membros: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  config: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
+  mais: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+};
+const ic = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+const TELAS = [["inicio", "Visão geral"], ["nova", "Nova oferta"], ["agenda", "Agendamentos"], ["grupos", "Grupos"], ["numeros", "Números"], ["comissao", "Comissões"], ["membros", "Membros"], ["config", "Configurações"]];
+const ABAS = ["inicio", "nova", "agenda", "grupos"];
+
+let USER = null, CONTA = null, NUMS = [], GRUPOS = [], parar = [];
+const limpar = () => { parar.forEach(f => f()); parar = []; };
+const cada = (ms, f) => { const i = setInterval(f, ms); parar.push(() => clearInterval(i)); };
+
+/* ---------- entrar ---------- */
+let modo = "entrar";
+function modoAuth(m) { modo = m; $("sEntrar").setAttribute("aria-pressed", m === "entrar"); $("sCriar").setAttribute("aria-pressed", m === "criar");
+  $("aBtn").textContent = m === "entrar" ? "Entrar" : "Criar conta grátis"; $("aTeste").hidden = m === "entrar"; $("aSenha").autocomplete = m === "entrar" ? "current-password" : "new-password"; $("aErr").textContent = ""; }
+$("sEntrar").onclick = () => modoAuth("entrar"); $("sCriar").onclick = () => modoAuth("criar");
+$("fAuth").onsubmit = async e => { e.preventDefault(); $("aBtn").disabled = true; $("aErr").textContent = "";
+  const email = $("aEmail").value.trim(), password = $("aSenha").value;
+  try { const r = modo === "entrar" ? await sb.auth.signInWithPassword({ email, password }) : await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + "/ofertas/" } });
+    if (r.error) throw r.error; if (!r.data.session) { $("aErr").style.color = "var(--mint)"; $("aErr").textContent = "Conta criada. Confirme pelo link que mandamos no seu e-mail."; return; }
+    await abrir(); } catch (err) { $("aErr").style.color = ""; $("aErr").textContent = erro(err); } finally { $("aBtn").disabled = false; } };
+$("aEsqueci").onclick = async () => { const email = $("aEmail").value.trim(); if (!email) { $("aErr").textContent = "Escreva seu e-mail primeiro."; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "/ofertas/" }); $("aErr").style.color = error ? "" : "var(--mint)"; $("aErr").textContent = error ? erro(error) : "Mandamos um link para trocar a senha."; };
+$("sair").onclick = async () => { await sb.auth.signOut(); location.hash = ""; location.reload(); };
+
+async function abrir() {
+  const { data } = await sb.auth.getSession(); if (!data.session) { $("telaAuth").hidden = false; $("telaApp").hidden = true; return; }
+  USER = data.session.user; const c = await sb.rpc("fl_minha_conta"); if (c.error) { toast(erro(c.error)); return; }
+  CONTA = Array.isArray(c.data) ? c.data[0] : c.data;
+  $("telaAuth").hidden = true; $("telaApp").hidden = false; $("sideEmail").textContent = USER.email;
+  montarNav(); rota();
+}
+
+/* ---------- navegação ---------- */
+function montarNav() {
+  $("navSide").innerHTML = TELAS.map(([k, n]) => `<button class="nav" data-t="${k}">${ic(k)}<span>${n}</span>${k === "agenda" ? '<span class="n" id="nPend" hidden></span>' : ""}</button>`).join("");
+  $("tabbar").innerHTML = ABAS.map(k => `<button data-t="${k}">${ic(k)}<span>${TELAS.find(x => x[0] === k)[1].split(" ")[0]}</span></button>`).join("") + `<button id="bMais">${ic("mais")}<span>Mais</span></button>`;
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { location.hash = b.dataset.t; });
+  $("bMais").onclick = () => { const d = document.createElement("div"); d.className = "mais";
+    d.innerHTML = `<div class="folha">${TELAS.filter(t => !ABAS.includes(t[0])).map(([k, n]) => `<button data-m="${k}">${ic(k)}${n}</button>`).join("")}<button data-m="sair">Sair</button></div>`;
+    d.onclick = e => { const b = e.target.closest("[data-m]"); d.remove(); if (!b) return; if (b.dataset.m === "sair") $("sair").click(); else location.hash = b.dataset.m; };
+    $("tabbar").appendChild(d); };
+}
+window.addEventListener("hashchange", () => USER && rota());
+function rota() {
+  limpar(); const [t, extra] = (location.hash.slice(1) || "inicio").split("/");
+  const tela = TELAS.find(x => x[0] === t) ? t : "inicio";
+  document.querySelectorAll("[data-t]").forEach(b => b.dataset.t === tela ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  window.scrollTo(0, 0); $("tela").innerHTML = '<p class="muted">Carregando…</p>';
+  ({ inicio: telaInicio, nova: telaNova, agenda: telaAgenda, grupos: telaGrupos, numeros: telaNumeros, comissao: telaComissao, membros: telaMembros, config: telaConfig })[tela](extra ? decodeURIComponent(extra) : "");
+  pendentes();
+}
+async function pendentes() { const { count } = await sb.from("fl_agendamentos").select("id", { count: "exact", head: true }).eq("status", "pendente");
+  const n = $("nPend"); if (n) { n.hidden = !count; n.textContent = count; } }
+$("fColar").onsubmit = e => { e.preventDefault(); const v = $("colarIn").value.trim(); if (!v) { location.hash = "nova"; return; } $("colarIn").value = ""; location.hash = "nova/" + encodeURIComponent(v); };
+
+function faixaPlano() {
+  if (!CONTA) return ""; const dias = Math.ceil((new Date(CONTA.ativo_ate) - Date.now()) / 86400000);
+  const assinar = SUPORTE_WHATS ? `<a class="b sm sec" target="_blank" rel="noopener" href="https://wa.me/${SUPORTE_WHATS}?text=${encodeURIComponent("Quero assinar a Zivoop Ofertas. Meu e-mail: " + USER.email)}">Assinar</a>` : "";
+  if (dias <= 0) return `<div class="faixa vencida"><span><b>Seu acesso venceu.</b> As ofertas pararam de ser postadas.</span>${assinar}</div>`;
+  if (CONTA.plano === "teste") return `<div class="faixa"><span>Teste grátis: falta${dias > 1 ? "m" : ""} <b>${dias} dia${dias > 1 ? "s" : ""}</b>.</span>${assinar}</div>`;
+  return "";
+}
+
+/* ---------- períodos ---------- */
+const PER = [["hoje", "Hoje"], ["ontem", "Ontem"], ["7", "Últimos 7 dias"], ["mes", "Mês atual"], ["mesant", "Mês anterior"], ["30", "Últimos 30 dias"]];
+function periodo(k) {
+  const hoje = new Date(diaSP(Date.now()) + "T00:00:00-03:00"), d = 86400000, agora = new Date();
+  const ini = s => new Date(s + "T00:00:00-03:00"), [y, m] = diaSP(Date.now()).split("-").map(Number);
+  if (k === "hoje") return [hoje, agora];
+  if (k === "ontem") return [new Date(hoje - d), hoje];
+  if (k === "7") return [new Date(hoje - 6 * d), agora];
+  if (k === "30") return [new Date(hoje - 29 * d), agora];
+  if (k === "mes") return [ini(`${y}-${String(m).padStart(2, "0")}-01`), agora];
+  const pm = m === 1 ? 12 : m - 1, py = m === 1 ? y - 1 : y; return [ini(`${py}-${String(pm).padStart(2, "0")}-01`), ini(`${y}-${String(m).padStart(2, "0")}-01`)];
+}
+const chips = (id, atual) => `<div class="chips" id="${id}">${PER.map(([k, n]) => `<button data-p="${k}" aria-pressed="${k === atual}">${n}</button>`).join("")}</div>`;
+function ligarChips(id, f) { $(id).onclick = e => { const b = e.target.closest("[data-p]"); if (!b) return; $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); f(b.dataset.p); }; }
+function dias(de, ate) { const out = []; for (let t = new Date(diaSP(de) + "T12:00:00-03:00"); t < ate; t = new Date(+t + 86400000)) out.push(diaSP(t)); return out.length ? out : [diaSP(de)]; }
+
+function barras(pontos, cor = "var(--cobalt)") {
+  const W = 640, H = 190, pb = 24, max = Math.max(1, ...pontos.map(p => p.v)), bw = W / pontos.length;
+  const rot = pontos.length > 16 ? Math.ceil(pontos.length / 8) : 1;
+  return `<svg class="grafico" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Mensagens por dia">
+    ${pontos.map((p, i) => { const h = (H - pb - 10) * p.v / max; return `<rect x="${i * bw + bw * .18}" y="${H - pb - h}" width="${bw * .64}" height="${Math.max(h, p.v ? 2 : 0)}" rx="3" fill="${cor}"><title>${p.r}: ${p.v}</title></rect>
+      ${i % rot === 0 ? `<text x="${i * bw + bw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#7A7F9A">${p.r}</text>` : ""}`; }).join("")}
+    <line x1="0" y1="${H - pb}" x2="${W}" y2="${H - pb}" stroke="rgba(20,22,43,.12)"/></svg>`;
+}
+function linha(pontos) {
+  const W = 640, H = 190, pb = 24, vs = pontos.map(p => p.v), max = Math.max(...vs, 1), min = Math.min(...vs, max), amp = Math.max(1, max - min);
+  const x = i => pontos.length === 1 ? W / 2 : 8 + i * (W - 16) / (pontos.length - 1), y = v => 12 + (H - pb - 24) * (1 - (v - min) / amp);
+  const rot = Math.max(1, Math.ceil(pontos.length / 8)), d = pontos.map((p, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ");
+  return `<svg class="grafico" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Evolução de membros">
+    <path d="${d} L${x(pontos.length - 1)} ${H - pb} L${x(0)} ${H - pb}Z" fill="rgba(25,179,122,.12)"/>
+    <path d="${d}" fill="none" stroke="var(--mint)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+    ${pontos.map((p, i) => `${i % rot === 0 ? `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#7A7F9A">${p.r}</text>` : ""}`).join("")}</svg>`;
+}
+
+/* ---------- conversa com o robô ---------- */
+async function comando(tipo, numero_id, dados, espera = 60) {
+  const { data, error } = await sb.from("fl_comandos").insert({ tipo, numero_id: numero_id || null, dados: dados || {} }).select().single();
+  if (error) throw error;
+  for (let i = 0; i < espera; i++) {
+    await new Promise(r => setTimeout(r, 1000));
+    const r = await sb.from("fl_comandos").select("status,resposta").eq("id", data.id).single();
+    if (r.data && r.data.status === "ok") return r.data.resposta || {};
+    if (r.data && r.data.status === "erro") throw new Error((r.data.resposta && r.data.resposta.erro) || "Não deu certo.");
+  }
+  throw new Error("O robô não respondeu. Confira se ele está ligado no servidor.");
+}
+
+/* ---------- visão geral ---------- */
+async function telaInicio() {
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Visão geral</h1><p>Quanto as suas ofertas rodaram no período.</p></div>${chips("per", "7")}</div>
+    <div class="kpis" id="k"></div>
+    <div class="grid2" style="margin-top:14px"><div class="card"><h3>Mensagens enviadas por dia</h3><div id="gr"></div></div>
+    <div class="card"><div class="row" style="justify-content:space-between"><h3>Próximas ofertas</h3><a href="#agenda" class="small">Ver todas</a></div><div class="lista" id="prox"></div></div></div>`;
+  ligarChips("per", carregar); carregar("7");
+  async function carregar(k) {
+    const [de, ate] = periodo(k);
+    const [res, nums, com, prox] = await Promise.all([
+      sb.rpc("fl_resumo", { p_de: de.toISOString(), p_ate: ate.toISOString() }),
+      sb.from("fl_numeros").select("status"),
+      sb.from("fl_comissoes").select("comissao,status").gte("data", de.toISOString()).lt("data", ate.toISOString()),
+      sb.from("fl_agendamentos").select("*").eq("status", "pendente").order("quando").limit(5).then(comOfertas)]);
+    const r = res.data || {}, n = nums.data || [], conect = n.filter(x => x.status === "conectado").length;
+    const comTot = (com.data || []).filter(c => !["cancelado", "nao_pago"].includes(c.status)).reduce((s, c) => s + +c.comissao, 0);
+    $("k").innerHTML = `<div class="kpi"><span>Mensagens enviadas</span><b>${int(r.enviadas)}</b><small>${r.falhas ? int(r.falhas) + " falharam" : "nenhuma falha"}</small></div>
+      <div class="kpi"><span>Números conectados</span><b>${conect}/${CONTA.limite_numeros}</b><small>${n.length - conect ? n.length - conect + " desconectado(s)" : "tudo certo"}</small></div>
+      <div class="kpi"><span>Ofertas na fila</span><b>${int(r.pendentes)}</b><small>esperando o horário</small></div>
+      <div class="kpi"><span>Comissão Shopee</span><b>${brl(comTot)}</b><small>no período</small></div>`;
+    const pd = Object.fromEntries((r.por_dia || []).map(x => [x.dia, x.n]));
+    $("gr").innerHTML = barras(dias(de, ate).map(d => ({ r: d.slice(8) + "/" + d.slice(5, 7), v: pd[d] || 0 })));
+    const p = prox.data || [];
+    $("prox").innerHTML = p.length ? p.map(a => itemAg(a, false)).join("") : `<div class="vazio"><b>Nada na fila</b><span>Cole um link lá em cima para criar a primeira oferta.</span></div>`;
+    if (!n.length) $("k").insertAdjacentHTML("afterend", `<div class="aviso" style="margin-top:14px">Primeiro passo: <a href="#numeros">conecte o seu WhatsApp</a> e escolha os grupos que vão receber as ofertas.</div>`);
+  }
+}
+// junta a oferta em cada agendamento
+async function comOfertas(r) {
+  if (r.error || !r.data || !r.data.length) return r;
+  const { data } = await sb.from("fl_ofertas").select("id,titulo,imagem,loja").in("id", [...new Set(r.data.map(a => a.oferta_id))]);
+  const por = Object.fromEntries((data || []).map(o => [o.id, o])); r.data.forEach(a => { a.fl_ofertas = por[a.oferta_id] || {}; }); return r;
+}
+function itemAg(a, acoes = true) {
+  const o = a.fl_ofertas || {}, st = { pendente: ["am", "Pendente"], enviando: ["bl", "Enviando"], enviado: ["ok", "Enviado"], erro: ["no", "Erro"], cancelado: ["", "Cancelado"] }[a.status] || ["", a.status];
+  return `<div class="item" data-id="${a.id}">${o.imagem ? `<img class="th" src="${esc(o.imagem)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="th"></div>'}
+    <div class="tx"><b>${esc(o.titulo || "Oferta")}</b><small>${o.loja ? `<span class="pill ${o.loja}">${LOJAS[o.loja]}</span>` : ""}<span>${dataHora(a.quando)}</span>${a.total ? `<span>${a.enviados}/${a.total} grupos</span>` : a.grupos && a.grupos.length ? `<span>${a.grupos.length} grupos</span>` : ""}</small>
+    ${a.erro && acoes ? `<small style="color:var(--red)">${esc(a.erro)}</small>` : ""}</div>
+    <div class="ac"><span class="pill ${st[0]}">${st[1]}</span>${acoes ? botoesAg(a) : ""}</div></div>`;
+}
+const botoesAg = a => a.status === "pendente" ? `<button class="b sm sec" data-a="agora">Postar agora</button><button class="b sm sec" data-a="remarcar">Remarcar</button><button class="b sm no" data-a="cancelar">Cancelar</button>`
+  : `<button class="b sm sec" data-a="repetir">Postar de novo</button>`;
+
+/* ---------- nova oferta ---------- */
+let OF = null, QUANDO = "fila";
+async function telaNova(link) {
+  OF = { loja: "outra", link: "", link_afiliado: "", titulo: "", preco_de: "", preco_por: "", imagem: "", cupom: "", texto: "" }; QUANDO = "fila";
+  const { data: gs } = await sb.from("fl_grupos").select("id,nome,membros,ativo").eq("ativo", true).order("nome"); GRUPOS = gs || [];
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Nova oferta</h1><p>Cole o link. A gente lê o produto, monta a mensagem e posta nos seus grupos.</p></div>
+      <div class="seg" style="min-width:250px"><button type="button" id="mUma" aria-pressed="true">Um link</button><button type="button" id="mVarios" aria-pressed="false">Vários links</button></div></div>
+    <div id="uma" class="nova">
+      <div class="stack">
+        <form class="card stack" id="fLer"><label class="f">Link do produto (Shopee, Mercado Livre, Amazon ou outra loja)
+          <div class="row" style="flex-wrap:nowrap"><input class="t" id="nLink" inputmode="url" placeholder="https://s.shopee.com.br/…" required><button class="b pri" id="nLer">Ler link</button></div></label>
+          <div id="nAvisos"></div></form>
+        <div class="card stack" id="nForm">
+          <div class="grid2">
+            <label class="f">Loja<select class="t" id="nLoja">${Object.entries(LOJAS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
+            <label class="f">Cupom (opcional)<input class="t" id="nCupom" placeholder="Ex.: ACHADO10"></label></div>
+          <label class="f">Nome do produto<input class="t" id="nTitulo" required></label>
+          <div class="grid2"><label class="f">Preço antes (opcional)<input class="t" id="nDe" inputmode="decimal" placeholder="399,90"></label>
+            <label class="f">Preço agora<input class="t" id="nPor" inputmode="decimal" placeholder="219,90"></label></div>
+          <label class="f">Link que vai na mensagem (o seu link de afiliado)<input class="t" id="nAfi" inputmode="url"></label>
+          <label class="f">Foto (endereço da imagem)<input class="t" id="nImg" inputmode="url" placeholder="https://…"></label>
+          <details><summary class="small" style="cursor:pointer;font-weight:700">Escrever uma mensagem diferente só para esta oferta</summary>
+            <label class="f" style="margin-top:10px">Mensagem<textarea class="t" id="nTexto" placeholder="Deixe vazio para usar o seu modelo"></textarea></label>${varsHtml("nTexto")}</details>
+          <div><h3 style="margin-bottom:8px">Quando postar</h3><div class="quando">
+            <button type="button" class="op" data-q="agora" aria-pressed="false"><b>Agora</b><small>Começa em segundos</small></button>
+            <button type="button" class="op" data-q="fila" aria-pressed="true"><b>Na fila</b><small id="qFila">Próximo horário livre</small></button>
+            <button type="button" class="op" data-q="hora" aria-pressed="false"><b>Escolher horário</b><small>Data e hora</small></button></div>
+            <input class="t" type="datetime-local" id="nHora" hidden style="margin-top:8px"></div>
+          <div><div class="row" style="justify-content:space-between"><h3>Grupos</h3><label class="row small" style="gap:6px"><input type="checkbox" id="nTodos" checked> Todos os ${GRUPOS.length} grupos ligados</label></div>
+            <div id="nGrupos" hidden style="margin-top:8px;display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">${GRUPOS.map(g => `<label class="row small" style="gap:6px;flex-wrap:nowrap"><input type="checkbox" value="${g.id}" checked> ${esc(g.nome)}</label>`).join("")}</div>
+            ${GRUPOS.length ? "" : `<p class="aviso" style="margin:8px 0 0">Nenhum grupo ligado ainda. <a href="#grupos">Escolha os grupos</a> que recebem ofertas.</p>`}</div>
+          <p class="err" id="nErr"></p>
+          <button class="b pri wide" id="nSalvar">Agendar oferta</button>
+        </div>
+      </div>
+      <aside class="zap" aria-label="Prévia no WhatsApp"><div class="cab2"><i>✓</i>Como vai aparecer no grupo</div><div class="bolha" id="prev"></div></aside>
+    </div>
+    <div id="varios" hidden class="card stack">
+      <label class="f">Um link por linha<textarea class="t" id="vLinks" style="min-height:180px" placeholder="https://s.shopee.com.br/…&#10;https://mercadolivre.com/sec/…&#10;https://amzn.to/…"></textarea></label>
+      <p class="muted small" style="margin:0">Cada link vira uma oferta e entra na fila, com ${CONTA.espaco_fila} minutos entre uma e outra, entre ${CONTA.janela_ini}h e ${CONTA.janela_fim}h. Vai para todos os grupos ligados. Você muda esses horários em Configurações.</p>
+      <p class="err" id="vErr"></p><button class="b pri" id="vBtn">Colocar tudo na fila</button><div class="lista" id="vRes"></div></div>`;
+  $("mUma").onclick = () => { $("mUma").setAttribute("aria-pressed", true); $("mVarios").setAttribute("aria-pressed", false); $("uma").hidden = false; $("varios").hidden = true; };
+  $("mVarios").onclick = () => { $("mVarios").setAttribute("aria-pressed", true); $("mUma").setAttribute("aria-pressed", false); $("uma").hidden = true; $("varios").hidden = false; };
+  const campos = { nLoja: "loja", nCupom: "cupom", nTitulo: "titulo", nDe: "preco_de", nPor: "preco_por", nAfi: "link_afiliado", nImg: "imagem", nTexto: "texto" };
+  for (const id in campos) $(id).oninput = () => { OF[campos[id]] = $(id).value; previa(); };
+  document.querySelectorAll(".vars [data-v]").forEach(b => b.onclick = () => inserirVar(b));
+  document.querySelectorAll("[data-q]").forEach(b => b.onclick = () => { QUANDO = b.dataset.q; document.querySelectorAll("[data-q]").forEach(x => x.setAttribute("aria-pressed", x === b)); $("nHora").hidden = QUANDO !== "hora"; if (QUANDO === "hora" && !$("nHora").value) $("nHora").value = localSP(Date.now() + 3600000); });
+  $("nTodos").onchange = () => { $("nGrupos").hidden = $("nTodos").checked; };
+  $("fLer").onsubmit = e => { e.preventDefault(); ler($("nLink").value.trim()); };
+  $("nSalvar").onclick = salvarOferta; $("vBtn").onclick = loteFila;
+  sb.rpc("fl_proximo_horario").then(r => { if (r.data) $("qFila").textContent = dataHora(r.data); });
+  previa();
+  if (link) { $("nLink").value = link; ler(link); }
+}
+const localSP = t => new Date(t).toLocaleString("sv-SE", { timeZone: "America/Sao_Paulo" }).slice(0, 16).replace(" ", "T");
+const varsHtml = alvo => `<div class="vars" data-alvo="${alvo}">${["titulo", "de", "por", "desconto", "cupom", "link", "loja"].map(v => `<button type="button" data-v="${v}">{${v}}</button>`).join("")}</div>`;
+function inserirVar(b) { const t = $(b.parentElement.dataset.alvo), v = "{" + b.dataset.v + "}", i = t.selectionStart ?? t.value.length;
+  t.value = t.value.slice(0, i) + v + t.value.slice(t.selectionEnd ?? i); t.focus(); t.selectionStart = t.selectionEnd = i + v.length; t.dispatchEvent(new Event("input")); }
+const numBR = v => { if (v === "" || v == null) return null; let s = String(v).replace(/[^\d.,]/g, ""); if (s.includes(",")) s = s.replace(/\./g, "").replace(",", "."); const n = parseFloat(s); return isFinite(n) ? n : null; };
+const precoTxt = v => v == null ? "" : "R$ " + Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// mesma regra do robô (robo/index.js: montar)
+function montarMsg(modelo, o) {
+  const de = numBR(o.preco_de), por = numBR(o.preco_por), temDe = de && por && de > por, pc = temDe ? Math.round((1 - por / de) * 100) : 0;
+  const v = { titulo: o.titulo || "", por: precoTxt(por), de: temDe ? `~De ${precoTxt(de)}~\n` : "", desconto: pc ? pc + "% OFF" : "", cupom: o.cupom ? `🎟️ Cupom: *${o.cupom}*` : "", link: o.link_afiliado || o.link || "", loja: { shopee: "Shopee", mercadolivre: "Mercado Livre", amazon: "Amazon" }[o.loja] || "" };
+  return (((o.texto || "").trim()) || modelo).replace(/\{(\w+)\}/g, (m, k) => k in v ? v[k] : m).replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+const zapFmt = t => esc(t).replace(/\*([^*\n]+)\*/g, "<b>$1</b>").replace(/~([^~\n]+)~/g, "<s>$1</s>").replace(/_([^_\n]+)_/g, "<i>$1</i>").replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+function previa(alvo = "prev", o = OF, modelo = CONTA.modelo) {
+  const el = $(alvo); if (!el) return;
+  el.innerHTML = `${o.imagem ? `<img src="${esc(o.imagem)}" alt="" onerror="this.remove()">` : ""}<div class="txt">${zapFmt(montarMsg(modelo, o)) || '<span style="color:#667781">A mensagem aparece aqui.</span>'}</div><div class="hora">${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</div>`;
+}
+function preencher(r) {
+  Object.assign(OF, { loja: r.loja || "outra", link: r.link || "", link_afiliado: r.link_afiliado || r.link || "", titulo: r.titulo || "", imagem: r.imagem || "",
+    preco_de: r.preco_de ? Number(r.preco_de).toFixed(2).replace(".", ",") : "", preco_por: r.preco_por ? Number(r.preco_por).toFixed(2).replace(".", ",") : "" });
+  $("nLoja").value = OF.loja; $("nTitulo").value = OF.titulo; $("nDe").value = OF.preco_de; $("nPor").value = OF.preco_por; $("nAfi").value = OF.link_afiliado; $("nImg").value = OF.imagem; previa();
+}
+async function ler(link) {
+  if (!link) return; const b = $("nLer"); b.disabled = true; b.innerHTML = '<span class="carregando"></span> Lendo'; $("nAvisos").innerHTML = "";
+  OF.link = link; OF.link_afiliado = link; $("nAfi").value = link;
+  try { const r = await comando("ler_link", null, { link }, 45); preencher(r);
+    $("nAvisos").innerHTML = (r.avisos || []).map(a => `<p class="aviso" style="margin:0">${esc(a)}</p>`).join("");
+    if (!r.titulo) $("nTitulo").focus(); }
+  catch (e) { $("nAvisos").innerHTML = `<p class="aviso" style="margin:0">${esc(erro(e))} Preencha os dados abaixo à mão.</p>`; }
+  finally { b.disabled = false; b.textContent = "Ler link"; }
+}
+async function salvarOferta() {
+  $("nErr").textContent = ""; const link = OF.link || $("nLink").value.trim() || OF.link_afiliado;
+  if (!OF.titulo.trim()) { $("nErr").textContent = "Escreva o nome do produto."; $("nTitulo").focus(); return; }
+  if (!OF.link_afiliado && !link) { $("nErr").textContent = "Coloque o link do produto."; return; }
+  if (!numBR(OF.preco_por) && !(OF.texto || "").trim()) { $("nErr").textContent = "Coloque o preço de agora."; $("nPor").focus(); return; }
+  let grupos = null; if (!$("nTodos").checked) { grupos = [...$("nGrupos").querySelectorAll("input:checked")].map(i => i.value); if (!grupos.length) { $("nErr").textContent = "Marque pelo menos um grupo."; return; } }
+  let quando = new Date().toISOString();
+  if (QUANDO === "fila") { const r = await sb.rpc("fl_proximo_horario"); if (r.data) quando = r.data; }
+  if (QUANDO === "hora") { if (!$("nHora").value) { $("nErr").textContent = "Escolha o dia e a hora."; return; } quando = new Date($("nHora").value + ":00-03:00").toISOString(); }
+  $("nSalvar").disabled = true;
+  try {
+    const o = await sb.from("fl_ofertas").insert({ loja: OF.loja, link: link || OF.link_afiliado, link_afiliado: OF.link_afiliado || link, titulo: OF.titulo.trim(), preco_de: numBR(OF.preco_de), preco_por: numBR(OF.preco_por),
+      imagem: OF.imagem || null, cupom: OF.cupom.trim(), texto: (OF.texto || "").trim() || null }).select().single();
+    if (o.error) throw o.error;
+    const a = await sb.from("fl_agendamentos").insert({ oferta_id: o.data.id, quando, grupos }); if (a.error) throw a.error;
+    toast(QUANDO === "agora" ? "Oferta enviada para a fila. Começa em segundos." : "Oferta agendada para " + dataHora(quando) + ".");
+    location.hash = "agenda";
+  } catch (e) { $("nErr").textContent = erro(e); } finally { $("nSalvar").disabled = false; }
+}
+async function loteFila() {
+  const links = [...new Set($("vLinks").value.split(/\s+/).map(s => s.trim()).filter(s => /^https?:\/\//.test(s)))];
+  if (!links.length) { $("vErr").textContent = "Cole pelo menos um link que comece com http."; return; }
+  $("vErr").textContent = ""; $("vBtn").disabled = true; $("vRes").innerHTML = ""; let ok = 0;
+  for (const link of links) {
+    const linhaId = "v" + Math.random().toString(36).slice(2);
+    $("vRes").insertAdjacentHTML("beforeend", `<div class="item" id="${linhaId}"><div class="th"></div><div class="tx"><b>${esc(link)}</b><small><span class="carregando"></span> lendo…</small></div></div>`);
+    const el = $(linhaId);
+    try {
+      const r = await comando("ler_link", null, { link }, 45);
+      if (!r.titulo || !r.preco_por) throw new Error("não deu para ler nome e preço. Crie essa oferta pelo modo Um link.");
+      const o = await sb.from("fl_ofertas").insert({ loja: r.loja, link: r.link || link, link_afiliado: r.link_afiliado || link, titulo: r.titulo, preco_de: r.preco_de, preco_por: r.preco_por, imagem: r.imagem }).select().single();
+      if (o.error) throw o.error;
+      const q = await sb.rpc("fl_proximo_horario"); const a = await sb.from("fl_agendamentos").insert({ oferta_id: o.data.id, quando: q.data || new Date().toISOString() }); if (a.error) throw a.error;
+      ok++; el.innerHTML = `${r.imagem ? `<img class="th" src="${esc(r.imagem)}" alt="">` : '<div class="th"></div>'}<div class="tx"><b>${esc(r.titulo)}</b><small><span class="pill ${r.loja}">${LOJAS[r.loja]}</span>${brl(r.preco_por)} · ${dataHora(q.data)}</small></div><span class="pill ok">Na fila</span>`;
+    } catch (e) { el.querySelector("small").innerHTML = `<span style="color:var(--red)">${esc(erro(e))}</span>`; }
+  }
+  $("vBtn").disabled = false; toast(ok + " de " + links.length + " ofertas na fila."); pendentes();
+}
+
+/* ---------- agendamentos ---------- */
+async function telaAgenda() {
+  let filtro = "pendente";
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Agendamentos</h1><p>O que vai sair, o que já saiu e o que deu erro.</p></div><a class="b pri" href="#nova">Nova oferta</a></div>
+    <div class="chips" id="fAg" style="margin-bottom:12px">${[["pendente", "Na fila"], ["enviado", "Enviados"], ["erro", "Com erro"], ["cancelado", "Cancelados"]].map(([k, n]) => `<button data-p="${k}" aria-pressed="${k === filtro}">${n}</button>`).join("")}</div>
+    <div class="card"><div class="lista" id="ags"></div></div>`;
+  ligarChips("fAg", k => { filtro = k; carregar(); });
+  $("ags").onclick = async e => { const b = e.target.closest("[data-a]"); if (!b) return; const id = b.closest("[data-id]").dataset.id; b.disabled = true;
+    try { await acaoAg(b.dataset.a, id); } finally { b.disabled = false; } carregar(); };
+  async function carregar() {
+    const q = sb.from("fl_agendamentos").select("*").limit(100);
+    const { data, error } = await comOfertas(filtro === "pendente" ? await q.in("status", ["pendente", "enviando"]).order("quando") : await q.eq("status", filtro).order("quando", { ascending: false }));
+    if (error) { $("ags").innerHTML = `<p class="err">${esc(erro(error))}</p>`; return; }
+    $("ags").innerHTML = data.length ? data.map(a => itemAg(a)).join("") : `<div class="vazio"><b>${{ pendente: "Fila vazia", enviado: "Nada enviado ainda", erro: "Nenhum erro", cancelado: "Nada cancelado" }[filtro]}</b>${filtro === "pendente" ? '<a class="b sec sm" href="#nova">Criar oferta</a>' : ""}</div>`;
+  }
+  carregar(); cada(5000, () => { if (filtro === "pendente") carregar(); });
+}
+async function acaoAg(a, id) {
+  if (a === "agora") { const r = await sb.from("fl_agendamentos").update({ quando: new Date().toISOString() }).eq("id", id); if (r.error) return toast(erro(r.error)); toast("Vai sair em segundos."); }
+  if (a === "cancelar") { const r = await sb.from("fl_agendamentos").update({ status: "cancelado" }).eq("id", id); if (r.error) return toast(erro(r.error)); toast("Agendamento cancelado."); }
+  if (a === "remarcar") {
+    const { data } = await sb.from("fl_agendamentos").select("quando").eq("id", id).single();
+    const v = await pedir(`<h2>Remarcar</h2><label class="f">Novo dia e hora<input class="t" type="datetime-local" id="dq" value="${localSP(data.quando)}"></label>`, "Remarcar", () => $("dq").value);
+    if (!v) return; const r = await sb.from("fl_agendamentos").update({ quando: new Date(v + ":00-03:00").toISOString() }).eq("id", id); toast(r.error ? erro(r.error) : "Remarcado.");
+  }
+  if (a === "repetir") {
+    const { data } = await sb.from("fl_agendamentos").select("oferta_id,grupos").eq("id", id).single(); const q = await sb.rpc("fl_proximo_horario");
+    const r = await sb.from("fl_agendamentos").insert({ oferta_id: data.oferta_id, grupos: data.grupos, quando: q.data }); toast(r.error ? erro(r.error) : "Entrou na fila para " + dataHora(q.data) + ".");
+  }
+  pendentes();
+}
+function pedir(html, ok, valor) {
+  return new Promise(res => { const d = $("dlg"); $("dlgIn").innerHTML = html + `<div class="row" style="justify-content:flex-end"><button class="b sec" id="dNao">Voltar</button><button class="b pri" id="dSim">${ok}</button></div>`;
+    $("dNao").onclick = () => { d.close(); res(null); }; $("dSim").onclick = () => { const v = valor(); d.close(); res(v); }; d.showModal(); });
+}
+
+/* ---------- grupos ---------- */
+async function telaGrupos() {
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Grupos</h1><p>Ligue os grupos que recebem ofertas. Seu plano permite ${CONTA.limite_grupos} grupos ligados.</p></div><button class="b sec" id="gSync">Sincronizar grupos</button></div>
+    <div class="kpis" id="gk" style="margin-bottom:14px"></div><div class="card rol"><div id="gl"></div></div>`;
+  $("gSync").onclick = async () => { const b = $("gSync"); const ns = (await sb.from("fl_numeros").select("id").eq("status", "conectado")).data || [];
+    if (!ns.length) { toast("Conecte um número primeiro."); location.hash = "numeros"; return; }
+    b.disabled = true; b.innerHTML = '<span class="carregando"></span> Sincronizando';
+    try { let t = 0; for (const n of ns) t += (await comando("sincronizar", n.id)).grupos || 0; toast(t + " grupos encontrados."); } catch (e) { toast(erro(e)); }
+    b.disabled = false; b.textContent = "Sincronizar grupos"; carregar(); };
+  $("gl").onclick = async e => { const s = e.target.closest(".sw"); if (!s) return; const novo = s.getAttribute("aria-checked") !== "true"; s.disabled = true;
+    const r = await sb.from("fl_grupos").update({ ativo: novo }).eq("id", s.dataset.id); s.disabled = false;
+    if (r.error) return toast(erro(r.error)); s.setAttribute("aria-checked", novo); carregar(true); };
+  async function carregar(soNumeros) {
+    const [{ data: gs }, { data: ns }] = await Promise.all([sb.from("fl_grupos").select("*").order("nome"), sb.from("fl_numeros").select("id,nome,telefone")]);
+    const nome = Object.fromEntries((ns || []).map(n => [n.id, n.nome])), at = gs.filter(g => g.ativo);
+    $("gk").innerHTML = `<div class="kpi"><span>Total de grupos</span><b>${gs.length}</b></div><div class="kpi"><span>Ligados / limite</span><b>${at.length}/${CONTA.limite_grupos}</b></div>
+      <div class="kpi"><span>Pessoas alcançadas</span><b>${int(at.reduce((s, g) => s + g.membros, 0))}</b><small>somando os grupos ligados</small></div><div class="kpi"><span>Números</span><b>${(ns || []).length}</b></div>`;
+    if (soNumeros) return;
+    $("gl").innerHTML = gs.length ? `<table class="tb"><thead><tr><th>Grupo</th><th class="r">Membros</th><th class="so-pc">Número</th><th class="r">Enviar ofertas?</th></tr></thead><tbody>
+      ${gs.map(g => `<tr><td><b>${esc(g.nome)}</b>${g.admin ? "" : '<br><small style="color:#9a5a00">Só admins mandam mensagem aqui. Peça para ser admin.</small>'}</td><td class="r">${int(g.membros)}</td><td class="small muted so-pc">${esc(nome[g.numero_id] || "")}</td>
+      <td class="r"><button class="sw" role="switch" aria-checked="${g.ativo}" aria-label="Enviar ofertas para ${esc(g.nome)}" data-id="${g.id}"></button></td></tr>`).join("")}</tbody></table>`
+      : `<div class="vazio"><b>Nenhum grupo ainda</b><span>Conecte seu WhatsApp e clique em Sincronizar grupos.</span><a class="b sec sm" href="#numeros">Conectar número</a></div>`;
+  }
+  carregar();
+}
+
+/* ---------- números ---------- */
+async function telaNumeros() {
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Números</h1><p>O WhatsApp que posta as ofertas. Seu plano permite ${CONTA.limite_numeros} números.</p></div><button class="b pri" id="nAdd">Adicionar número</button></div>
+    <p class="aviso" style="margin:0 0 14px">Use um número só para as ofertas, não o seu pessoal. O WhatsApp pode bloquear números que mandam muitas mensagens iguais.</p>
+    <div class="stack" id="nl"></div>`;
+  $("nAdd").onclick = async () => { const nome = await pedir(`<h2>Novo número</h2><label class="f">Apelido<input class="t" id="dn" placeholder="Ex.: Chip das ofertas" value="Número ${NUMS.length + 1}"></label>`, "Adicionar", () => $("dn").value.trim());
+    if (nome === null) return; const r = await sb.from("fl_numeros").insert({ nome: nome || "Meu número" }).select().single(); if (r.error) return toast(erro(r.error));
+    carregar(); conectarNum(r.data.id); };
+  $("nl").onclick = async e => { const b = e.target.closest("[data-a]"); if (!b) return; const id = b.closest("[data-id]").dataset.id;
+    if (b.dataset.a === "conectar") conectarNum(id);
+    if (b.dataset.a === "sync") { b.disabled = true; try { toast((await comando("sincronizar", id)).grupos + " grupos encontrados."); } catch (e) { toast(erro(e)); } b.disabled = false; }
+    if (b.dataset.a === "sair") { if (!confirm("Desconectar esse WhatsApp? As ofertas param de sair por ele.")) return; b.disabled = true; try { await comando("desconectar", id); toast("Desconectado."); } catch (e) { toast(erro(e)); } carregar(); }
+    if (b.dataset.a === "apagar") { if (!confirm("Apagar esse número e os grupos dele do painel?")) return; await comando("desconectar", id, {}, 10).catch(() => {}); const r = await sb.from("fl_numeros").delete().eq("id", id); toast(r.error ? erro(r.error) : "Número apagado."); carregar(); } };
+  async function conectarNum(id) { try { await sb.from("fl_comandos").insert({ tipo: "conectar", numero_id: id }); toast("Gerando o QR code…"); } catch (e) { toast(erro(e)); } }
+  let assinatura = "";
+  async function carregar() {
+    const { data } = await sb.from("fl_numeros").select("*").order("criado", { ascending: true }); NUMS = data || [];
+    const ass = JSON.stringify(NUMS.map(n => [n.id, n.status, n.qr, n.telefone, n.nome])); if (ass === assinatura) return; assinatura = ass;
+    $("nl").innerHTML = NUMS.length ? NUMS.map(n => `<div class="card num" data-id="${n.id}"><div class="stack">
+        <div class="row" style="justify-content:space-between"><div><h2>${esc(n.nome)}</h2><p class="muted" style="margin:4px 0 0">${n.telefone ? "+" + esc(n.telefone) : "Sem WhatsApp conectado"}</p></div>
+          <span class="pill ${n.status === "conectado" ? "ok" : n.status === "aguardando_qr" ? "am" : "no"}">${{ conectado: "Conectado", aguardando_qr: "Esperando o QR", desconectado: "Desconectado" }[n.status]}</span></div>
+        ${n.status === "aguardando_qr" ? `<ol class="passos"><li>Abra o WhatsApp no celular desse número.</li><li>Toque em <b>Mais opções</b> (⋮) ou <b>Configurações</b> e depois em <b>Dispositivos conectados</b>.</li><li>Toque em <b>Conectar dispositivo</b> e aponte para o código ao lado.</li></ol>` : ""}
+        <div class="row">${n.status === "conectado" ? `<button class="b sec sm" data-a="sync">Sincronizar grupos</button><button class="b no sm" data-a="sair">Desconectar</button>`
+          : n.status === "aguardando_qr" ? `<button class="b sec sm" data-a="conectar">Gerar outro QR</button>` : `<button class="b pri sm" data-a="conectar">Conectar com QR code</button>`}
+          <button class="b sm" style="color:var(--soft)" data-a="apagar">Apagar</button></div></div>
+        ${n.status === "aguardando_qr" && n.qr ? `<div class="qr" aria-label="QR code para conectar">${qrSvg(n.qr)}</div>` : n.status === "aguardando_qr" ? `<div class="qr"><span class="carregando" style="color:var(--soft)"></span></div>` : ""}</div>`).join("")
+      : `<div class="card vazio"><b>Nenhum número conectado</b><span>Conecte o WhatsApp que vai postar nos grupos. Leva um minuto.</span></div>`;
+  }
+  carregar(); cada(2000, carregar);
+}
+function qrSvg(t) { try { const q = qrcode(0, "L"); q.addData(t); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return '<p class="small">QR indisponível</p>'; } }
+
+/* ---------- comissões ---------- */
+async function telaComissao() {
+  const tem = CONTA.shopee_app_id && CONTA.shopee_segredo; let per = "7", st = "todos";
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Comissões Shopee</h1><p>Suas vendas e comissões, direto da API de afiliados da Shopee.</p></div>
+      <div class="row"><select class="t" id="cSt" style="width:auto"><option value="todos">Todos os status</option><option value="concluido">Concluídos</option><option value="pendente">Pendentes</option><option value="cancelado">Cancelados</option><option value="nao_pago">Não pagos</option></select>
+      <button class="b sec" id="cAt">Atualizar agora</button></div></div>
+    ${tem ? "" : `<div class="aviso" style="margin-bottom:14px">Para ver suas comissões aqui, pegue o <b>App ID</b> e a <b>Senha</b> da API no <a href="https://affiliate.shopee.com.br/open_api" target="_blank" rel="noopener">Portal de Afiliados da Shopee</a> (menu Open API) e cole em <a href="#config">Configurações</a>.</div>`}
+    ${chips("cPer", per)}<div class="kpis" id="ck" style="margin-top:14px"></div>
+    <div class="card rol" style="margin-top:14px"><h3 style="margin-bottom:8px">Pedidos</h3><div id="cl"></div></div>
+    <p class="small muted">Mercado Livre e Amazon não liberam comissões por API. Para eles, acompanhe no painel de afiliado de cada loja.</p>`;
+  ligarChips("cPer", k => { per = k; carregar(); }); $("cSt").onchange = () => { st = $("cSt").value; carregar(); };
+  $("cAt").onclick = async () => { if (!tem) { location.hash = "config"; return; } const b = $("cAt"); b.disabled = true; b.innerHTML = '<span class="carregando"></span> Buscando';
+    try { const r = await comando("comissoes", null, {}, 90); toast(int(r.novas) + " itens atualizados."); carregar(); } catch (e) { toast(erro(e)); } b.disabled = false; b.textContent = "Atualizar agora"; };
+  async function carregar() {
+    const [de, ate] = periodo(per); let q = sb.from("fl_comissoes").select("*").gte("data", de.toISOString()).lt("data", ate.toISOString()).order("data", { ascending: false }).limit(1000);
+    if (st !== "todos") q = q.eq("status", st); const { data } = await q; const L = data || [];
+    const validos = L.filter(c => !["cancelado", "nao_pago"].includes(c.status)), ped = new Set(validos.map(c => c.pedido)), inval = new Set(L.filter(c => ["cancelado", "nao_pago"].includes(c.status)).map(c => c.pedido));
+    const com = validos.reduce((s, c) => s + +c.comissao, 0), gmv = validos.reduce((s, c) => s + +c.valor, 0), todos = new Set(L.map(c => c.pedido));
+    const conc = new Set(L.filter(c => c.status === "concluido").map(c => c.pedido)).size, pend = new Set(L.filter(c => c.status === "pendente").map(c => c.pedido)).size;
+    $("ck").innerHTML = `<div class="kpi"><span>Comissão total</span><b>${brl(com)}</b><small>sem cancelados</small></div><div class="kpi"><span>Valor vendido</span><b>${brl(gmv)}</b></div>
+      <div class="kpi"><span>Pedidos válidos</span><b>${int(ped.size)}</b><small>${conc} concluídos · ${pend} pendentes</small></div><div class="kpi"><span>Ticket médio</span><b>${brl(ped.size ? gmv / ped.size : 0)}</b></div>
+      <div class="kpi"><span>Comissão média</span><b>${pct(gmv ? com / gmv * 100 : 0)}</b><small>do valor vendido</small></div><div class="kpi"><span>Taxa de aprovação</span><b>${pct(todos.size ? ped.size / todos.size * 100 : 0)}</b><small>pedidos que não foram cancelados</small></div>
+      <div class="kpi"><span>Pedidos inválidos</span><b>${int(inval.size)}</b><small>cancelados ou não pagos</small></div><div class="kpi"><span>Comissão por pedido</span><b>${brl(ped.size ? com / ped.size : 0)}</b></div>`;
+    const ST = { concluido: ["ok", "Concluído"], pendente: ["am", "Pendente"], cancelado: ["no", "Cancelado"], nao_pago: ["", "Não pago"] };
+    $("cl").innerHTML = L.length ? `<table class="tb"><thead><tr><th>Data</th><th>Produto</th><th class="r">Valor</th><th class="r">Comissão</th><th>Status</th></tr></thead><tbody>${L.slice(0, 200).map(c => `<tr><td class="small">${dataHora(c.data)}</td><td>${esc(c.produto || "Pedido " + c.pedido)}</td><td class="r">${brl(c.valor)}</td><td class="r"><b>${brl(c.comissao)}</b></td><td><span class="pill ${ST[c.status][0]}">${ST[c.status][1]}</span></td></tr>`).join("")}</tbody></table>`
+      : `<div class="vazio"><b>Nenhum pedido no período</b><span>${tem ? "Clique em Atualizar agora para buscar na Shopee." : "Cadastre a API da Shopee em Configurações."}</span></div>`;
+  }
+  carregar();
+}
+
+/* ---------- membros ---------- */
+async function telaMembros() {
+  const { data: gs } = await sb.from("fl_grupos").select("id,nome,membros").order("nome"); let per = "7", grupo = "";
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Membros</h1><p>Quantas pessoas entram e saem dos seus grupos.</p></div>
+      <select class="t" id="mG" style="width:auto"><option value="">Todos os grupos</option>${(gs || []).map(g => `<option value="${g.id}">${esc(g.nome)}</option>`).join("")}</select></div>
+    ${chips("mPer", per)}<div class="kpis" id="mk" style="margin-top:14px"></div>
+    <div class="card" style="margin-top:14px"><h3>Evolução de membros</h3><div id="mg"></div></div>
+    <div class="card rol" style="margin-top:14px"><div id="mt"></div></div>`;
+  ligarChips("mPer", k => { per = k; carregar(); }); $("mG").onchange = () => { grupo = $("mG").value; carregar(); };
+  async function carregar() {
+    const [de, ate] = periodo(per); let q = sb.from("fl_membros_dia").select("*").gte("dia", diaSP(de)).lte("dia", diaSP(ate)); if (grupo) q = q.eq("grupo_id", grupo);
+    const { data } = await q; const L = data || [], gsel = (gs || []).filter(g => !grupo || g.id === grupo);
+    const ent = L.reduce((s, x) => s + x.entradas, 0), sai = L.reduce((s, x) => s + x.saidas, 0), total = gsel.reduce((s, g) => s + g.membros, 0);
+    const porDia = {}; L.forEach(x => { const d = String(x.dia).slice(0, 10); porDia[d] = (porDia[d] || 0) + x.membros; });
+    const ds = dias(de, ate), nd = Math.max(1, ds.length), churn = total ? sai / nd / total * 100 : 0;
+    $("mk").innerHTML = `<div class="kpi"><span>Total de grupos</span><b>${gsel.length}</b></div><div class="kpi"><span>Total de participantes</span><b>${int(total)}</b></div>
+      <div class="kpi"><span>Saldo do período</span><b style="color:${ent - sai >= 0 ? "var(--mint)" : "var(--red)"}">${ent - sai >= 0 ? "+" : ""}${int(ent - sai)}</b><small>${int(ent)} entraram · ${int(sai)} saíram</small></div>
+      <div class="kpi"><span>Saída diária</span><b>${pct(churn)}</b><small>média de quem sai por dia</small></div>`;
+    let ult = null; const pts = ds.map(d => { if (porDia[d] != null) ult = porDia[d]; return { r: d.slice(8) + "/" + d.slice(5, 7), v: ult }; }).filter(p => p.v != null);
+    $("mg").innerHTML = pts.length > 1 ? linha(pts) : `<div class="vazio"><span>${pts.length ? "Hoje: <b>" + int(pts[0].v) + "</b> participantes. " : ""}O gráfico aparece a partir do segundo dia com o WhatsApp conectado.</span></div>`;
+    const pg = {}; L.forEach(x => { const p = pg[x.grupo_id] = pg[x.grupo_id] || { e: 0, s: 0 }; p.e += x.entradas; p.s += x.saidas; });
+    $("mt").innerHTML = gsel.length ? `<table class="tb"><thead><tr><th>Grupo</th><th class="r">Membros</th><th class="r">Entraram</th><th class="r">Saíram</th><th class="r">Saldo</th></tr></thead><tbody>
+      ${gsel.map(g => { const p = pg[g.id] || { e: 0, s: 0 }; return `<tr><td>${esc(g.nome)}</td><td class="r">${int(g.membros)}</td><td class="r">${int(p.e)}</td><td class="r">${int(p.s)}</td><td class="r"><b>${p.e - p.s >= 0 ? "+" : ""}${int(p.e - p.s)}</b></td></tr>`; }).join("")}</tbody></table>`
+      : `<div class="vazio"><b>Sem grupos ainda</b><a class="b sec sm" href="#numeros">Conectar número</a></div>`;
+  }
+  carregar();
+}
+
+/* ---------- configurações ---------- */
+async function telaConfig() {
+  const c = CONTA, ex = { loja: "shopee", titulo: "Fone Bluetooth com Estojo", preco_de: "159,90", preco_por: "79,90", cupom: "", link_afiliado: "https://s.shopee.com.br/exemplo", imagem: "" };
+  $("tela").innerHTML = `${faixaPlano()}<div class="cab"><div><h1>Configurações</h1><p>Como as mensagens saem e as suas contas de afiliado.</p></div></div>
+    <form id="fc" class="stack">
+      <div class="nova"><div class="card stack"><h2>Modelo da mensagem</h2>
+        <label class="f">Texto que vai em toda oferta<textarea class="t" id="cMod" style="min-height:170px">${esc(c.modelo)}</textarea></label>${varsHtml("cMod")}
+        <p class="small muted" style="margin:0">Use *texto* para negrito e ~texto~ para riscado, como no WhatsApp. {de} só aparece quando a oferta tem preço antes.</p></div>
+        <aside class="zap"><div class="cab2"><i>✓</i>Exemplo</div><div class="bolha" id="cPrev"></div></aside></div>
+      <div class="card stack"><h2>Ritmo de envio</h2>
+        <div class="grid2"><label class="f">Espera mínima entre um grupo e outro (segundos)<input class="t" id="cMin" type="number" min="5" value="${c.intervalo_min}"></label>
+          <label class="f">Espera máxima (segundos)<input class="t" id="cMax" type="number" min="5" value="${c.intervalo_max}"></label></div>
+        <p class="small muted" style="margin:0">Uma espera variada entre os grupos deixa o envio parecido com o de uma pessoa e reduz o risco de bloqueio.</p>
+        <div class="grid3"><label class="f">Espaço entre ofertas da fila (minutos)<input class="t" id="cEsp" type="number" min="1" value="${c.espaco_fila}"></label>
+          <label class="f">Fila começa às (hora)<input class="t" id="cIni" type="number" min="0" max="23" value="${c.janela_ini}"></label>
+          <label class="f">Fila para às (hora)<input class="t" id="cFim" type="number" min="1" max="24" value="${c.janela_fim}"></label></div></div>
+      <div class="card stack"><h2>Contas de afiliado</h2>
+        <div class="grid2"><label class="f">Shopee: App ID<input class="t" id="cApp" value="${esc(c.shopee_app_id)}" autocomplete="off"></label>
+          <label class="f">Shopee: Senha da API<input class="t" id="cSeg" type="password" value="${esc(c.shopee_segredo)}" autocomplete="new-password"></label></div>
+        <p class="small muted" style="margin:0">Com a API da Shopee, a gente puxa nome, foto e preço do produto, gera seu link de afiliado e mostra as comissões. Pegue os dados no <a href="https://affiliate.shopee.com.br/open_api" target="_blank" rel="noopener">Portal de Afiliados</a>, menu Open API.</p>
+        <label class="f">Amazon: seu ID de associado (tag)<input class="t" id="cAmz" placeholder="seunome-20" value="${esc(c.amazon_tag)}"></label>
+        <p class="small muted" style="margin:0">No Mercado Livre, cole o link que você gerou no programa de afiliados. Ele vai como está.</p></div>
+      <div class="card stack"><h2>Seu nome</h2><label class="f">Como você quer ser chamado<input class="t" id="cNome" value="${esc(c.nome)}"></label>
+        <p class="small muted" style="margin:0">Plano: <b>${c.plano === "teste" ? "Teste grátis" : esc(c.plano)}</b> · vale até ${new Date(c.ativo_ate).toLocaleDateString("pt-BR")} · até ${c.limite_numeros} números, ${c.limite_grupos} grupos e ${c.limite_dia} mensagens por número por dia.</p></div>
+      <p class="err" id="cErr"></p><div><button class="b pri">Salvar configurações</button></div>
+    </form>`;
+  const prev = () => previa("cPrev", ex, $("cMod").value); prev(); $("cMod").oninput = prev;
+  document.querySelectorAll(".vars [data-v]").forEach(b => b.onclick = () => inserirVar(b));
+  $("fc").onsubmit = async e => { e.preventDefault(); $("cErr").textContent = "";
+    const v = { nome: $("cNome").value.trim(), modelo: $("cMod").value, intervalo_min: +$("cMin").value, intervalo_max: +$("cMax").value, espaco_fila: +$("cEsp").value, janela_ini: +$("cIni").value, janela_fim: +$("cFim").value,
+      shopee_app_id: $("cApp").value.trim(), shopee_segredo: $("cSeg").value.trim(), amazon_tag: $("cAmz").value.trim() };
+    if (!v.modelo.includes("{link}")) { $("cErr").textContent = "O modelo precisa ter {link}, senão a mensagem vai sem o link do produto."; return; }
+    if (v.intervalo_min < 5 || v.intervalo_max < v.intervalo_min) { $("cErr").textContent = "A espera mínima é 5 segundos, e a máxima não pode ser menor que a mínima."; return; }
+    if (v.janela_fim <= v.janela_ini) { $("cErr").textContent = "A hora de parar precisa ser depois da hora de começar."; return; }
+    const r = await sb.from("fl_contas").update(v).eq("dono", USER.id).select().single(); if (r.error) { $("cErr").textContent = erro(r.error); return; }
+    CONTA = r.data; toast("Configurações salvas."); };
+}
+
+sb.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") { const p = prompt("Nova senha (mínimo 6 caracteres):"); if (p) sb.auth.updateUser({ password: p }).then(r => toast(r.error ? erro(r.error) : "Senha trocada.")); } });
+abrir();
+</script>
+</body>
+</html>
