@@ -19,7 +19,7 @@ function pagina(res, cod, tit, txt) {
 // troca os textos do modelo pelos do dono, onde quer que apareçam (título, cabeçalho, rodapé, SEO)
 function trocarTextos(html, pad, meus) {
   const pares = [];
-  for (const k of ["title", "desc", "ogdesc", "tagline", "foot", "endereco", "cidade", "nome"]) {
+  for (const k of ["title", "desc", "ogdesc", "tagline", "foot", "endereco", "cidade", "nome", "palco_t2", "palco_s2", "palco_t3", "palco_s3"]) {
     const a = pad[k], b = meus[k];
     if (typeof a === "string" && typeof b === "string" && a && b && a !== b) pares.push([a, b]);
   }

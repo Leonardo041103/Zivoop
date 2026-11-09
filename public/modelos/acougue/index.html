@@ -626,6 +626,165 @@ footer{background:var(--c1d);font-size:14px}
 </style>
 </head>
 <body>
+<style>/* ===== Palco: abertura com rolagem. O produto se monta enquanto a pessoa rola. ===== */
+.palco{position:relative;height:250vh;background:var(--pbg);color:#fff;--pbg:color-mix(in srgb,var(--c1d) 32%,#0b0908);--pl:0}
+.palco-fix{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid}
+.palco-luz{position:absolute;inset:-10%;pointer-events:none;
+  background:radial-gradient(42% 46% at calc(68% - var(--pl)*10%) calc(46% - var(--pl)*4%),color-mix(in srgb,var(--c2) 46%,transparent) 0%,transparent 70%),
+             radial-gradient(70% 60% at 30% 110%,color-mix(in srgb,var(--c1) 40%,transparent) 0%,transparent 70%);
+  opacity:calc(.55 + var(--pl)*.45)}
+.palco-grao{position:absolute;inset:0;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.palco-pts{position:absolute;inset:0;pointer-events:none}
+.palco-pts i{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;background:color-mix(in srgb,var(--c2) 70%,#fff);
+  opacity:0;animation:palcoSobe linear infinite;filter:blur(.3px)}
+@keyframes palcoSobe{0%{transform:translate3d(0,0,0);opacity:0}12%{opacity:.8}100%{transform:translate3d(var(--dx),-105vh,0);opacity:0}}
+
+/* cena: o produto fica à direita no computador e em cima no celular */
+.palco-cena{position:absolute;inset:0;perspective:1400px;pointer-events:none}
+.palco-obj{position:absolute;left:64%;top:50%;height:min(76svh,1000px);aspect-ratio:var(--pr);transform-style:preserve-3d;
+  transform:translate(-50%,-50%) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));will-change:transform}
+.palco-obj img{position:absolute;display:block;max-width:none;will-change:transform;user-select:none;-webkit-user-drag:none;
+  filter:drop-shadow(0 calc(10px + var(--pl)*16px) calc(18px + var(--pl)*14px) rgba(0,0,0,.45))}
+.palco-sombra{position:absolute;left:64%;top:calc(50% + min(33svh,440px));width:min(40svh,520px);height:7svh;transform:translate(-50%,-50%) scale(calc(.55 + var(--pl)*.45));
+  background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);opacity:calc(.3 + var(--pl)*.6);pointer-events:none}
+
+/* textos em capítulos */
+.palco-txt{position:relative;align-self:center;width:min(1180px,100%);margin:0 auto;padding:0 clamp(18px,5vw,64px)}
+.palco-cap{position:absolute;left:clamp(18px,5vw,64px);top:50%;width:min(44%,520px);transform:translateY(calc(-50% + var(--y,0px)));opacity:var(--o,0);
+  pointer-events:none;transition:none}
+.palco-cap.vivo{pointer-events:auto}
+.palco-cap .k{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:color-mix(in srgb,var(--c2) 70%,#fff);margin-bottom:14px;letter-spacing:.02em}
+.palco-cap .k b{width:22px;height:2px;background:currentColor;border-radius:2px}
+.palco-cap h1,.palco-cap h2{font-family:var(--fd);font-weight:800;line-height:.98;letter-spacing:-.025em;text-wrap:balance}
+.palco-cap h1{font-size:clamp(44px,6.6vw,92px)}
+.palco-cap h2{font-size:clamp(34px,4.6vw,64px)}
+.palco-cap p{font-size:clamp(16px,1.5vw,19px);line-height:1.5;color:rgba(255,255,255,.78);margin-top:16px;max-width:42ch}
+.palco-bts{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.palco-bt{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border-radius:999px;font-weight:700;font-size:16px;
+  text-decoration:none;background:var(--c2);color:var(--c2ink,#111);box-shadow:0 12px 30px -10px color-mix(in srgb,var(--c2) 70%,transparent)}
+.palco-bt.sec{background:rgba(255,255,255,.1);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(8px)}
+.palco-bt:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+.palco-dica{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:12.5px;color:rgba(255,255,255,.62);opacity:calc(1 - var(--pl)*4);pointer-events:none}
+.palco-dica i{width:22px;height:34px;border:2px solid rgba(255,255,255,.4);border-radius:12px;position:relative}
+.palco-dica i::after{content:"";position:absolute;left:50%;top:6px;width:3px;height:7px;border-radius:2px;background:#fff;transform:translateX(-50%);animation:palcoRoda 1.6s ease-in-out infinite}
+@keyframes palcoRoda{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}100%{opacity:0;transform:translate(-50%,10px)}}
+.palco-barra{position:absolute;right:clamp(14px,2.4vw,30px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+.palco-barra i{width:3px;height:26px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;position:relative}
+.palco-barra i::after{content:"";position:absolute;inset:0;background:var(--c2);transform:scaleY(var(--f,0));transform-origin:top}
+.palco-pular{position:absolute;top:14px;right:16px;z-index:3;font-size:13px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;
+  padding:8px 14px;border-radius:999px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px)}
+
+/* celular: produto em cima, texto embaixo sobre um degradê */
+@media (max-width:820px){
+  .palco{height:230vh}
+  .palco-obj{left:50%;top:35%;height:auto;width:min(80vw,46svh * var(--pr));max-height:58svh}
+  .palco-sombra{left:50%;top:calc(35% + 27svh);width:56vw}
+  .palco-txt{align-self:end;padding-bottom:calc(34px + env(safe-area-inset-bottom))}
+  .palco-txt::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62svh;background:linear-gradient(transparent,var(--pbg) 52%);pointer-events:none}
+  .palco-cap{position:relative;left:auto;top:auto;width:auto;transform:translateY(var(--y,0px));grid-area:1/1}
+  .palco-caps{display:grid}
+  .palco-cap h1{font-size:clamp(38px,11vw,54px)}
+  .palco-cap h2{font-size:clamp(30px,8.6vw,42px)}
+  .palco-cap p{margin-top:10px}
+  .palco-bts{margin-top:18px}.palco-bt{min-height:50px;flex:1}
+  .palco-barra{display:none}.palco-dica{bottom:auto;top:16px;left:18px;transform:none;flex-direction:row}
+}
+@media (prefers-reduced-motion:reduce){
+  .palco{height:auto}.palco-fix{position:relative;min-height:100svh}
+  .palco-pts,.palco-dica,.palco-barra{display:none}
+  .palco-cap{--o:0}.palco-cap.c1{--o:1}
+}
+</style>
+<section class="palco" id="palco" style="--pr:0.6667" data-pecas='{&quot;nicho&quot;: &quot;acougue&quot;, &quot;proporcao&quot;: 0.6667, &quot;pecas&quot;: [{&quot;img&quot;: &quot;p0.webp&quot;, &quot;x&quot;: 0.3181, &quot;y&quot;: 0.1996, &quot;w&quot;: 0.5188, &quot;h&quot;: 0.3092}, {&quot;img&quot;: &quot;p1.webp&quot;, &quot;x&quot;: 0.7381, &quot;y&quot;: 0.2775, &quot;w&quot;: 0.4288, &quot;h&quot;: 0.3467}, {&quot;img&quot;: &quot;p2.webp&quot;, &quot;x&quot;: 0.7469, &quot;y&quot;: 0.5308, &quot;w&quot;: 0.3662, &quot;h&quot;: 0.2483}, {&quot;img&quot;: &quot;p3.webp&quot;, &quot;x&quot;: 0.2925, &quot;y&quot;: 0.5204, &quot;w&quot;: 0.4925, &quot;h&quot;: 0.2608}, {&quot;img&quot;: &quot;p4.webp&quot;, &quot;x&quot;: 0.8319, &quot;y&quot;: 0.6196, &quot;w&quot;: 0.1988, &quot;h&quot;: 0.1625}, {&quot;img&quot;: &quot;p5.webp&quot;, &quot;x&quot;: 0.4806, &quot;y&quot;: 0.8212, &quot;w&quot;: 0.8712, &quot;h&quot;: 0.2942}], &quot;modo&quot;: &quot;nuvem&quot;, &quot;base&quot;: &quot;img/palco/&quot;}' aria-label="Apresentação">
+ <div class="palco-fix">
+  <div class="palco-luz"></div><div class="palco-pts"></div><div class="palco-grao"></div>
+  <div class="palco-cena"><div class="palco-sombra"></div><div class="palco-obj" role="img" aria-label="Casa de Carnes Boi Bravo"></div></div>
+  <div class="palco-txt"><div class="palco-caps">
+   <div class="palco-cap c1"><div class="k"><b></b>Vila Nova</div><h1>Casa de Carnes Boi Bravo</h1><p>Açougue de bairro, corte do jeito que você pedir</p><div class="palco-bts"><a class="palco-bt" href="#menu">Ver cardápio</a></div></div>
+   <div class="palco-cap c2"><h2>Corte do jeito que você pedir</h2><p>Carne selecionada, cortada na hora pelo açougueiro.</p></div>
+   <div class="palco-cap c3"><h2>Kit churrasco pronto</h2><p>Monte o pedido e receba embalado a vácuo.</p><div class="palco-bts"><a class="palco-bt" href="#menu">Ver cardápio</a></div></div>
+  </div></div>
+  <div class="palco-barra" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="palco-dica" aria-hidden="true"><i></i>Role para ver</div>
+  <a class="palco-pular" href="#menu">Pular</a>
+ </div>
+</section>
+<script>/* Palco: as peças começam soltas, flutuando, e se encaixam conforme a rolagem; os textos trocam em 3 capítulos. */
+(function () {
+  var el = document.getElementById("palco"); if (!el) return;
+  var obj = el.querySelector(".palco-obj"), caps = [].slice.call(el.querySelectorAll(".palco-cap")), barras = [].slice.call(el.querySelectorAll(".palco-barra i"));
+  var D = JSON.parse(el.getAttribute("data-pecas")), parado = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var pilha = D.modo === "pilha", P = D.pecas, n = P.length;
+  // centro de massa das peças (no espaço da foto, 0 a 1)
+  var cx = 0, cy = 0, tot = 0;
+  P.forEach(function (p) { var a = p.w * p.h; cx += p.x * a; cy += p.y * a; tot += a; }); cx /= tot; cy /= tot;
+  var imgs = P.map(function (p, i) {
+    var im = new Image(); im.src = D.base + p.img; im.alt = ""; im.decoding = "async"; if (i < 3) im.fetchPriority = "high";
+    im.style.width = p.w * 100 + "%"; im.style.left = (p.x - p.w / 2) * 100 + "%"; im.style.top = (p.y - p.h / 2) * 100 + "%";
+    obj.appendChild(im);
+    // cada peça ganha um jeito próprio de flutuar e girar
+    var s = Math.sin(i * 12.9898 + n) * 43758.5453; s -= Math.floor(s);
+    return { el: im, p: p, rot: (s - .5) * (pilha ? 14 : 34), fase: s * 6.28, z: (i - (n - 1) / 2) * (pilha ? -26 : 34),
+             dx: p.x - cx, dy: p.y - cy, sx: (s - .5) * .18 };
+  });
+  // partículas (brasa, poeira de luz) — poucas, só transform e opacity
+  var pts = el.querySelector(".palco-pts");
+  if (pts && !parado) for (var k = 0; k < 18; k++) {
+    var b = document.createElement("i"); b.style.left = Math.random() * 100 + "%"; b.style.setProperty("--dx", (Math.random() - .5) * 120 + "px");
+    b.style.animationDuration = 7 + Math.random() * 9 + "s"; b.style.animationDelay = -Math.random() * 14 + "s";
+    var t = 2 + Math.random() * 3; b.style.width = b.style.height = t + "px"; pts.appendChild(b);
+  }
+  var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  var cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var faixa = function (p, a, b) { return cl((p - a) / (b - a), 0, 1); };
+  var mx = 0, my = 0, tmx = 0, tmy = 0, prog = 0, alvo = 0, t0 = performance.now(), cel = matchMedia("(max-width:820px)");
+
+  function medir() {
+    var r = el.getBoundingClientRect(), h = el.offsetHeight - innerHeight;
+    alvo = parado ? 1 : cl(-r.top / Math.max(h, 1), 0, 1);
+  }
+  function quadro(t) {
+    prog += (alvo - prog) * .14;                      // segue a rolagem com suavidade
+    mx += (tmx - mx) * .06; my += (tmy - my) * .06;
+    var junta = ease(faixa(prog, .08, .58));           // 0 = peças soltas, 1 = montado
+    var fim = ease(faixa(prog, .66, 1));               // depois de montado, o produto se acomoda
+    var seg = (t - t0) / 1000, solto = 1 - junta;
+    el.style.setProperty("--pl", junta.toFixed(3));
+    // pilha: espreme na vertical; nuvem: aproxima de todos os lados
+    var ky = pilha ? 1.08 - .5 * junta : 1.16 - .46 * junta, kx = pilha ? 1 : 1.16 - .46 * junta;
+    for (var i = 0; i < imgs.length; i++) {
+      var q = imgs[i], H = obj.offsetHeight, W = obj.offsetWidth;
+      var bob = parado ? 0 : Math.sin(seg * 1.1 + q.fase) * 9 * solto;
+      var ty = (q.dy * ky - q.dy) * H + bob, tx = (q.dx * kx - q.dx) * W + q.sx * W * solto * (pilha ? 1 : 0);
+      var r = q.rot * solto + (parado ? 0 : Math.sin(seg * .7 + q.fase) * 2.5 * solto);
+      q.el.style.transform = "translate3d(" + tx.toFixed(1) + "px," + ty.toFixed(1) + "px," + (q.z * (.4 + solto)).toFixed(1) + "px) rotate(" + r.toFixed(2) + "deg)";
+    }
+    var ry = mx * 14 + (1 - junta) * -8 + fim * 6, rx = -my * 10 + (pilha ? (1 - junta) * 10 : 0);
+    obj.style.setProperty("--ry", ry.toFixed(2) + "deg"); obj.style.setProperty("--rx", rx.toFixed(2) + "deg");
+    var esc = cel.matches ? 1 - fim * .1 : 1 - fim * .08, dx = cel.matches ? 0 : fim * 2;
+    obj.style.translate = dx + "% " + (cel.matches ? -fim * 3 : 0) + "%"; obj.style.scale = esc;
+    // capítulos: 1 até 30%, 2 de 32% a 62%, 3 do fim
+    var janelas = [[-1, 0, .15, .23], [.27, .35, .53, .61], [.65, .73, 2, 2]];
+    caps.forEach(function (c, k) {
+      var j = janelas[k] || janelas[2], o = Math.min(faixa(prog, j[0], j[1]), 1 - faixa(prog, j[2], j[3]));
+      if (parado) o = k === 0 ? 1 : 0;
+      c.style.setProperty("--o", o.toFixed(3)); c.style.setProperty("--y", ((1 - o) * (prog < j[1] ? 26 : -26)).toFixed(1) + "px");
+      c.classList.toggle("vivo", o > .5); c.setAttribute("aria-hidden", o > .5 ? "false" : "true");
+    });
+    barras.forEach(function (b, k) { var j = janelas[k]; b.style.setProperty("--f", faixa(prog, j[0] < 0 ? 0 : j[0], j[2] > 1 ? 1 : j[2]).toFixed(3)); });
+    if (!parado && visivel) requestAnimationFrame(quadro); else rodando = false;
+  }
+  addEventListener("scroll", medir, { passive: true }); addEventListener("resize", medir);
+  if (!cel.matches) addEventListener("pointermove", function (e) { tmx = e.clientX / innerWidth - .5; tmy = e.clientY / innerHeight - .5; }, { passive: true });
+  // só anima enquanto a abertura está na tela (economiza bateria)
+  var visivel = true, rodando = true;
+  new IntersectionObserver(function (es) { visivel = es[0].isIntersecting; if (visivel && !rodando && !parado) { rodando = true; requestAnimationFrame(quadro); } }).observe(el);
+  medir(); prog = alvo; requestAnimationFrame(quadro);
+})();
+</script>
 
 <header class="hero">
   <div class="hero-bg img"><img src="img/capa.jpg" alt="" onerror="this.parentNode.className='hero-bg';this.remove()"></div>
