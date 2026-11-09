@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-estilo="refugio" data-palco="claro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -65,12 +65,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --c1:#3E7D52; --c1d:#2E6040; --c2:#B4703F; --c2d:#8F5629; --c2ink:#FFFFFF;
   --bg:#F3F1E9; --soft:#F3E8E0; --paper:#FFFFFF; --c1ink:#FFFFFF; color-scheme:light; --ink:#2A2E22; --ink-soft:#726F5F; --line:#DDDBD4;
-  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Fraunces',Georgia,serif;
+  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Gloock',Georgia,serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -670,9 +670,59 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* ===== Identidade por grupo: base comum =====
+   Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
+   e as formas. Grupos de fundo claro usam a abertura clara. */
+[data-palco=claro] .palco{color:var(--ink)}
+[data-palco=claro] .palco-cap p{color:var(--ink-soft)}
+[data-palco=claro] .palco-cap .k{color:var(--c1)}
+[data-palco=claro] .palco-dica{color:var(--ink-soft)}
+[data-palco=claro] .palco-dica i{border-color:color-mix(in srgb,var(--ink) 35%,transparent)}
+[data-palco=claro] .palco-dica i::after{background:var(--ink)}
+[data-palco=claro] .palco-pular{color:var(--ink);background:color-mix(in srgb,var(--paper) 70%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-barra i{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+[data-palco=claro] .palco-bt.sec{color:var(--ink);background:color-mix(in srgb,var(--paper) 60%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-obj img{filter:drop-shadow(0 calc(8px + var(--pl)*12px) calc(14px + var(--pl)*10px) rgba(40,30,20,.22))}
+[data-palco=claro] .palco-sombra{background:radial-gradient(closest-side,rgba(40,30,20,.28),transparent)}
+[data-palco=claro] .palco-grao{opacity:.05;mix-blend-mode:multiply}
+[data-palco=claro] .palco-pts i{background:color-mix(in srgb,var(--c1) 60%,transparent)}
+
+
+/* REFÚGIO — cartão-postal. Serifa de viagem, selo com borda picotada, papel quente, carimbo. */
+[data-estilo=refugio]{--pbgs:#E6D8C3;--bg:#F1EADF;--paper:#FBF7F0;--soft:#E8DECE;--ink:#2A2620;--ink-soft:#6C6355;--line:#DCCFBC;--radius:6px;color-scheme:light;
+  --pbg:linear-gradient(180deg,#F4ECE0 0%,#E6D8C3 100%)}
+[data-estilo=refugio] .palco{background:var(--pbg)}
+[data-estilo=refugio] :is(.palco-cap h1,.palco-cap h2,.brand h1,.sec-h h2,.sobre h2,footer .fb){font-weight:400;letter-spacing:-.015em;line-height:1}
+[data-estilo=refugio] .palco-cap h1{font-size:clamp(50px,7vw,104px)}
+/* carimbo girando de leve atrás do texto */
+[data-estilo=refugio] .palco-cap.c1::before{content:"";position:absolute;right:-30px;top:-70px;width:120px;height:120px;border-radius:50%;border:2px dashed color-mix(in srgb,var(--c1) 55%,transparent);
+  box-shadow:inset 0 0 0 8px var(--pbgs),inset 0 0 0 9px color-mix(in srgb,var(--c1) 35%,transparent);transform:rotate(-14deg);opacity:.7}
+[data-estilo=refugio] .palco-bt{border-radius:6px;background:var(--c1);color:var(--c1ink);box-shadow:none}
+[data-estilo=refugio] .palco-pts i{background:color-mix(in srgb,var(--c1) 50%,#fff)}
+[data-estilo=refugio] .brand h1{font-size:clamp(42px,10vw,84px)}
+[data-estilo=refugio] .nav{background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:1px solid var(--line)}
+[data-estilo=refugio] .nav-in a{border-radius:6px;background:var(--paper);border:1px solid var(--line)}
+[data-estilo=refugio] .nav-in a.active{background:var(--c1);border-color:var(--c1);color:var(--c1ink)}
+[data-estilo=refugio] .sec-h h2{font-size:clamp(34px,5vw,54px)}
+[data-estilo=refugio] .sec-h .sub{font-style:italic;font-size:15px}
+/* selo postal: borda picotada em volta da foto */
+[data-estilo=refugio] .card{background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:0 14px 30px -24px rgba(60,40,20,.45)}
+[data-estilo=refugio] .card .thumb{border-radius:0;padding:6px;background:#fff;
+  -webkit-mask:radial-gradient(circle 4px,transparent 97%,#000) -5px -5px/12px 12px round,linear-gradient(#000,#000) content-box;
+  mask:radial-gradient(circle 4px,transparent 97%,#000) -5px -5px/12px 12px round,linear-gradient(#000,#000) content-box}
+[data-estilo=refugio] .card h3{font-family:var(--fd);font-weight:400;font-size:22px}
+[data-estilo=refugio] .card .price{font-family:var(--fd);font-weight:400;font-size:21px}
+[data-estilo=refugio] .add{border-radius:6px;background:var(--c1);color:var(--c1ink)}
+[data-estilo=refugio] .fab{border-radius:10px}
+[data-estilo=refugio] .sobre{background:var(--paper);border:1px solid var(--line);border-radius:6px;margin-top:30px;
+  background-image:repeating-linear-gradient(transparent 0 31px,color-mix(in srgb,var(--line) 70%,transparent) 31px 32px)}
+[data-estilo=refugio] .sobre p{font-size:15.5px;line-height:2;margin-bottom:0}
+[data-estilo=refugio] footer{background:var(--ink);color:#d8cfc0}
+
 </style>
 </head>
 <body>
+
 
 <header class="hero">
   <div class="hero-bg img"><img src="img/hero-serra.webp" alt="" onerror="this.parentNode.className='hero-bg';this.remove()"></div>
@@ -856,8 +906,8 @@ const CONFIG = Object.assign({
   },
   {
    "u": "suite-familia",
-   "de": "2026-11-11",
-   "ate": "2026-11-13"
+   "de": "2026-11-13",
+   "ate": "2026-11-15"
   }
  ],
  "sinal": "A reserva fica garantida com <b>sinal de 30% no Pix</b>. O restante é pago na chegada.",

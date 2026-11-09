@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-estilo="feira" data-palco="claro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -72,12 +72,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --c1:#C62828; --c1d:#8E1C1C; --c2:#FFC107; --c2d:#D49B00; --c2ink:#3a2a00;
   --bg:#FBF6EF; --soft:#FFF5D7; --paper:#FFFFFF; --c1ink:#FFFFFF; color-scheme:light; --ink:#24221F; --ink-soft:#6E6A62; --line:#E4E0D9;
-  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Nunito',system-ui,sans-serif;
+  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Bricolage Grotesque',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -616,11 +616,58 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* ===== Identidade por grupo: base comum =====
+   Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
+   e as formas. Grupos de fundo claro usam a abertura clara. */
+[data-palco=claro] .palco{color:var(--ink)}
+[data-palco=claro] .palco-cap p{color:var(--ink-soft)}
+[data-palco=claro] .palco-cap .k{color:var(--c1)}
+[data-palco=claro] .palco-dica{color:var(--ink-soft)}
+[data-palco=claro] .palco-dica i{border-color:color-mix(in srgb,var(--ink) 35%,transparent)}
+[data-palco=claro] .palco-dica i::after{background:var(--ink)}
+[data-palco=claro] .palco-pular{color:var(--ink);background:color-mix(in srgb,var(--paper) 70%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-barra i{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+[data-palco=claro] .palco-bt.sec{color:var(--ink);background:color-mix(in srgb,var(--paper) 60%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-obj img{filter:drop-shadow(0 calc(8px + var(--pl)*12px) calc(14px + var(--pl)*10px) rgba(40,30,20,.22))}
+[data-palco=claro] .palco-sombra{background:radial-gradient(closest-side,rgba(40,30,20,.28),transparent)}
+[data-palco=claro] .palco-grao{opacity:.05;mix-blend-mode:multiply}
+[data-palco=claro] .palco-pts i{background:color-mix(in srgb,var(--c1) 60%,transparent)}
+
+
+/* FEIRA — etiqueta de preço da feira. Papel kraft, etiqueta pendurada no barbante, sublinhado feito à mão. */
+[data-estilo=feira]{--pbgs:#EFE3CF;--bg:#F4EDE1;--paper:#FFFCF6;--soft:#EFE4D0;--ink:#2B241C;--ink-soft:#6E6255;--line:#E2D6C2;--radius:18px;color-scheme:light;
+  --pbg:radial-gradient(90% 80% at 68% 45%,#FFF8EC 0%,#EFE3CF 75%)}
+[data-estilo=feira] body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[data-estilo=feira] .palco{background:var(--pbg)}
+[data-estilo=feira] :is(.palco-cap h1,.palco-cap h2,.brand h1,.sec-h h2,.sobre h2,footer .fb){font-weight:800;letter-spacing:-.035em}
+/* sublinhado à mão em cor do nicho */
+[data-estilo=feira] :is(.palco-cap h2,.sec-h h2){background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8c40-6 90-7 196-3' fill='none' stroke='%23000' stroke-width='5' stroke-linecap='round' opacity='.9'/%3E%3C/svg%3E") left 100%/100% .2em no-repeat;
+  -webkit-background-clip:border-box;padding-bottom:.12em;display:inline;filter:none}
+[data-estilo=feira] .sec-h h2{background-image:linear-gradient(transparent 70%,color-mix(in srgb,var(--c2) 55%,transparent) 70%);background-size:100% 100%}
+[data-estilo=feira] .palco-bt{border-radius:999px;border:2.5px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+[data-estilo=feira] .hero-bg.img::after{background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.2) 45%,color-mix(in srgb,var(--c1d) 92%,#000) 100%)}
+[data-estilo=feira] .nav{background:color-mix(in srgb,var(--bg) 90%,transparent)}
+[data-estilo=feira] .nav-in a{border:2px solid var(--line);background:var(--paper);font-weight:600}
+[data-estilo=feira] .nav-in a.active{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+[data-estilo=feira] .card{background:var(--paper);border:2px dashed var(--line);border-radius:22px}
+[data-estilo=feira] .card h3{font-family:var(--fd);font-weight:800;font-size:18px;letter-spacing:-.02em}
+/* etiqueta pendurada: furo + barbante */
+[data-estilo=feira] .card .price{position:relative;background:var(--c2);color:var(--c2ink);padding:6px 12px 6px 22px;border-radius:6px 12px 12px 6px;font-family:var(--fd);font-weight:800;font-size:18px;
+  clip-path:polygon(10px 0,100% 0,100% 100%,10px 100%,0 50%);transform:rotate(-2deg)}
+[data-estilo=feira] .card .price::before{content:"";position:absolute;left:9px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--paper)}
+[data-estilo=feira] .card .price small,[data-estilo=feira] .card .price .from,[data-estilo=feira] .card .price .de{color:inherit;opacity:.75}
+[data-estilo=feira] .card .thumb,[data-estilo=feira] .card .ph{border-radius:18px}
+[data-estilo=feira] .add{border-radius:999px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-weight:700}
+[data-estilo=feira] .add.alt{background:var(--ink);color:var(--paper)}
+[data-estilo=feira] .fab{border-radius:999px;border:2.5px solid var(--ink);box-shadow:0 5px 0 var(--ink)}
+[data-estilo=feira] .sobre{background:var(--paper);border:2px dashed var(--line);border-radius:26px;margin-top:30px}
+[data-estilo=feira] footer{background:var(--ink);color:color-mix(in srgb,var(--paper) 80%,transparent)}
+
 </style>
 </head>
 <body>
 <style>/* ===== Palco: abertura com rolagem. O produto se monta enquanto a pessoa rola. ===== */
-.palco{position:relative;height:250vh;background:var(--pbg);color:#fff;--pbg:color-mix(in srgb,var(--c1d) 32%,#0b0908);--pl:0}
+.palco{position:relative;height:250vh;background:var(--pbg,var(--pbgs,color-mix(in srgb,var(--c1d) 32%,#0b0908)));color:#fff;--pl:0}
 .palco-fix{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid}
 .palco-luz{position:absolute;inset:-10%;pointer-events:none;
   background:radial-gradient(42% 46% at calc(68% - var(--pl)*10%) calc(46% - var(--pl)*4%),color-mix(in srgb,var(--c2) 46%,transparent) 0%,transparent 70%),
@@ -676,7 +723,7 @@ footer{background:var(--c1d);font-size:14px}
   .palco-obj{left:50%;top:35%;height:auto;width:min(80vw,46svh * var(--pr));max-height:58svh}
   .palco-sombra{left:50%;top:calc(35% + 27svh);width:56vw}
   .palco-txt{align-self:end;padding-bottom:calc(34px + env(safe-area-inset-bottom))}
-  .palco-txt::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62svh;background:linear-gradient(transparent,var(--pbg) 52%);pointer-events:none}
+  .palco-txt::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62svh;background:linear-gradient(transparent,var(--pbgs,color-mix(in srgb,var(--c1d) 32%,#0b0908)) 52%);pointer-events:none}
   .palco-cap{position:relative;left:auto;top:auto;width:auto;transform:translateY(var(--y,0px));grid-area:1/1}
   .palco-caps{display:grid}
   .palco-cap h1{font-size:clamp(38px,11vw,54px)}

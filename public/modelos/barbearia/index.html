@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-estilo="nobre" data-palco="escuro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -63,12 +63,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --c1:#C79A5B; --c1d:#1A150F; --c2:#9B2D20; --c2d:#E0B57A; --c2ink:#FFFFFF;
   --bg:#16130F; --soft:#321E17; --paper:#211C15; --c1ink:#1a1208; color-scheme:dark; --ink:#F1E7D8; --ink-soft:#b3a284; --line:#39301f;
-  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Oswald',system-ui,sans-serif;
+  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Cormorant',Georgia,serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -618,9 +618,71 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* ===== Identidade por grupo: base comum =====
+   Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
+   e as formas. Grupos de fundo claro usam a abertura clara. */
+[data-palco=claro] .palco{color:var(--ink)}
+[data-palco=claro] .palco-cap p{color:var(--ink-soft)}
+[data-palco=claro] .palco-cap .k{color:var(--c1)}
+[data-palco=claro] .palco-dica{color:var(--ink-soft)}
+[data-palco=claro] .palco-dica i{border-color:color-mix(in srgb,var(--ink) 35%,transparent)}
+[data-palco=claro] .palco-dica i::after{background:var(--ink)}
+[data-palco=claro] .palco-pular{color:var(--ink);background:color-mix(in srgb,var(--paper) 70%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-barra i{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+[data-palco=claro] .palco-bt.sec{color:var(--ink);background:color-mix(in srgb,var(--paper) 60%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-obj img{filter:drop-shadow(0 calc(8px + var(--pl)*12px) calc(14px + var(--pl)*10px) rgba(40,30,20,.22))}
+[data-palco=claro] .palco-sombra{background:radial-gradient(closest-side,rgba(40,30,20,.28),transparent)}
+[data-palco=claro] .palco-grao{opacity:.05;mix-blend-mode:multiply}
+[data-palco=claro] .palco-pts i{background:color-mix(in srgb,var(--c1) 60%,transparent)}
+
+
+/* NOBRE — cardápio de casa antiga. Preto e latão, letras espaçadas, lista com pontilhado até o preço, moldura de fio duplo. */
+[data-estilo=nobre]{--pbgs:#0b0a09;--bg:#0E0D0C;--paper:#151311;--soft:#1D1A17;--ink:#EDE6DA;--ink-soft:#A39A8C;--line:#2E2924;--latao:#C9A35B;--radius:0px;color-scheme:dark;
+  --pbg:radial-gradient(80% 70% at 66% 45%,#221c15 0%,#0b0a09 72%)}
+[data-estilo=nobre] .palco{background:var(--pbg)}
+[data-estilo=nobre] :is(.palco-cap h1,.palco-cap h2,.brand h1,.sec-h h2,.sobre h2,footer .fb){font-weight:500;text-transform:uppercase;letter-spacing:.14em;line-height:1.02}
+[data-estilo=nobre] .palco-cap h1{font-size:clamp(44px,6.4vw,96px)}
+[data-estilo=nobre] .palco-cap h2{font-size:clamp(30px,4.2vw,58px);letter-spacing:.1em}
+[data-estilo=nobre] .palco-cap .k{color:var(--latao);letter-spacing:.3em;text-transform:uppercase;font-size:11.5px}
+[data-estilo=nobre] .palco-cap .k b{background:var(--latao)}
+[data-estilo=nobre] .palco-bt{border-radius:0;background:none;color:var(--latao);border:1px solid var(--latao);box-shadow:inset 0 0 0 3px var(--bg),inset 0 0 0 4px color-mix(in srgb,var(--latao) 50%,transparent);letter-spacing:.18em;text-transform:uppercase;font-size:13px}
+[data-estilo=nobre] .palco-bt:hover{background:var(--latao);color:#0e0d0c}
+[data-estilo=nobre] .palco-pts i{background:var(--latao)}
+[data-estilo=nobre] .palco-luz{filter:saturate(.4)}
+[data-estilo=nobre] .hero-bg.img img{filter:grayscale(.85) contrast(1.1)}
+[data-estilo=nobre] .brand h1{font-size:clamp(34px,8vw,64px)}
+[data-estilo=nobre] :is(.chip,.perk){border-radius:0;border:1px solid color-mix(in srgb,var(--latao) 40%,transparent);background:none}
+[data-estilo=nobre] .nav{background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:1px solid var(--line)}
+[data-estilo=nobre] .nav-in a{border-radius:0;background:none;text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--ink-soft)}
+[data-estilo=nobre] .nav-in a.active{background:none;color:var(--latao);box-shadow:inset 0 -1px 0 var(--latao)}
+[data-estilo=nobre] .sec-h{text-align:center;display:block;padding:26px 0 8px}
+[data-estilo=nobre] .sec-h h2{font-size:clamp(26px,4vw,40px);color:var(--latao)}
+[data-estilo=nobre] .sec-h h2::before,[data-estilo=nobre] .sec-h h2::after{content:"";display:inline-block;width:38px;height:1px;background:var(--latao);vertical-align:middle;margin:0 14px;opacity:.6}
+[data-estilo=nobre] .sec-h .sub{display:block;font-family:var(--fd);font-style:italic;font-size:17px;margin-top:6px}
+/* lista de cardápio: nome .......... preço */
+[data-estilo=nobre] .grid{grid-template-columns:1fr!important;gap:0;max-width:760px;margin:0 auto}
+[data-estilo=nobre] .card{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:18px 2px;flex-direction:row;align-items:center}
+[data-estilo=nobre] .card .thumb,[data-estilo=nobre] .card .ph{width:68px;height:68px;border-radius:50%;filter:grayscale(.6)}
+[data-estilo=nobre] .card .txt{display:grid;grid-template-columns:1fr auto;column-gap:10px}
+[data-estilo=nobre] .card h3{font-family:var(--fd);font-weight:700;font-size:21px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:baseline;gap:10px}
+[data-estilo=nobre] .card h3::after{content:"";flex:1;border-bottom:1px dotted color-mix(in srgb,var(--latao) 55%,transparent);transform:translateY(-5px)}
+[data-estilo=nobre] .card .desc,[data-estilo=nobre] .card .info,[data-estilo=nobre] .card .tag,[data-estilo=nobre] .card .dots{grid-column:1/-1}
+[data-estilo=nobre] .card .bot{grid-column:2;grid-row:1;margin:0;flex-direction:column;align-items:flex-end;gap:6px}
+[data-estilo=nobre] .card .price{font-family:var(--fd);font-weight:700;font-size:22px;color:var(--latao)}
+[data-estilo=nobre] .card .tag{background:none;color:var(--latao);border:0;padding:0;font-style:italic;font-family:var(--fd);font-size:15px}
+[data-estilo=nobre] .add{border-radius:0;background:none;color:var(--ink);border:1px solid var(--line);letter-spacing:.12em;text-transform:uppercase;font-size:11px;font-weight:600}
+[data-estilo=nobre] .add:hover,[data-estilo=nobre] .add.alt{border-color:var(--latao);color:var(--latao)}
+[data-estilo=nobre] .fab{border-radius:0;background:var(--latao);color:#0e0d0c}
+[data-estilo=nobre] .sobre{text-align:center;max-width:640px}
+[data-estilo=nobre] .sobre h2{color:var(--latao);font-size:24px}
+[data-estilo=nobre] .sobre p{font-family:var(--fd);font-size:19px;line-height:1.6;color:var(--ink-soft)}
+[data-estilo=nobre] footer{background:#090807;border-top:1px solid var(--line);color:var(--ink-soft)}
+[data-estilo=nobre] footer .fb{color:var(--latao)}
+
 </style>
 </head>
 <body>
+
 
 <header class="hero">
   <div class="hero-bg img"><img src="img/hero.webp" alt="" onerror="this.parentNode.className='hero-bg';this.remove()"></div>

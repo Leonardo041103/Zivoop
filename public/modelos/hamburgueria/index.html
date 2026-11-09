@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-estilo="brasa" data-palco="escuro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -69,7 +69,7 @@
 :root{
   --c1:#E8A33D; --c1d:#120E0B; --c2:#C0392B; --c2d:#F0B860; --c2ink:#FFFFFF;
   --bg:#17130F; --soft:#371F18; --paper:#211B15; --c1ink:#1f1405; color-scheme:dark; --ink:#F3ECE2; --ink-soft:#B3A491; --line:#3A2E22;
-  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Anton',system-ui,sans-serif;
+  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Anton',Impact,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -608,11 +608,63 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* ===== Identidade por grupo: base comum =====
+   Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
+   e as formas. Grupos de fundo claro usam a abertura clara. */
+[data-palco=claro] .palco{color:var(--ink)}
+[data-palco=claro] .palco-cap p{color:var(--ink-soft)}
+[data-palco=claro] .palco-cap .k{color:var(--c1)}
+[data-palco=claro] .palco-dica{color:var(--ink-soft)}
+[data-palco=claro] .palco-dica i{border-color:color-mix(in srgb,var(--ink) 35%,transparent)}
+[data-palco=claro] .palco-dica i::after{background:var(--ink)}
+[data-palco=claro] .palco-pular{color:var(--ink);background:color-mix(in srgb,var(--paper) 70%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-barra i{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+[data-palco=claro] .palco-bt.sec{color:var(--ink);background:color-mix(in srgb,var(--paper) 60%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-obj img{filter:drop-shadow(0 calc(8px + var(--pl)*12px) calc(14px + var(--pl)*10px) rgba(40,30,20,.22))}
+[data-palco=claro] .palco-sombra{background:radial-gradient(closest-side,rgba(40,30,20,.28),transparent)}
+[data-palco=claro] .palco-grao{opacity:.05;mix-blend-mode:multiply}
+[data-palco=claro] .palco-pts i{background:color-mix(in srgb,var(--c1) 60%,transparent)}
+
+
+/* BRASA — cartaz de lanchonete. Letra condensada gigante, preço de pôster, ticket picotado, papel queimado. */
+[data-estilo=brasa]{--pbgs:#0e0a09;--bg:#141110;--paper:#1F1A17;--soft:#2A2320;--ink:#F6EEE4;--ink-soft:#B9AC9C;--line:#3A302A;--radius:4px;color-scheme:dark;
+  --pbg:radial-gradient(120% 90% at 70% 40%,color-mix(in srgb,var(--c1) 30%,#140f0c) 0%,#0d0a09 70%)}
+[data-estilo=brasa] body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E")}
+[data-estilo=brasa] .palco{background:var(--pbg)}
+[data-estilo=brasa] :is(.palco-cap h1,.palco-cap h2,.brand h1,.sec-h h2,.sobre h2,footer .fb){text-transform:uppercase;letter-spacing:.005em;font-weight:400;line-height:.92}
+[data-estilo=brasa] .palco-cap h1{font-size:clamp(56px,8.6vw,128px)}
+[data-estilo=brasa] .palco-cap h2{font-size:clamp(42px,6vw,88px)}
+[data-estilo=brasa] .palco-bt{border-radius:4px;box-shadow:5px 5px 0 #000;transform:rotate(-1.5deg)}
+[data-estilo=brasa] .palco-bt:hover{transform:rotate(0) translate(-2px,-2px);box-shadow:7px 7px 0 #000}
+[data-estilo=brasa] .hero{background:#0d0a09}
+[data-estilo=brasa] .brand h1{font-size:clamp(46px,11vw,92px)}
+[data-estilo=brasa] .chip,[data-estilo=brasa] .perk{border-radius:3px}
+[data-estilo=brasa] .nav{background:color-mix(in srgb,var(--bg) 88%,transparent);border-bottom:1px solid var(--line)}
+[data-estilo=brasa] .nav-in a{border-radius:3px;font-weight:700}
+[data-estilo=brasa] .nav-in a.active{background:var(--c2);color:var(--c2ink);transform:rotate(-2deg)}
+/* título de seção: palavra gigante vazada atrás do título real */
+[data-estilo=brasa] .sec-h{position:relative;padding-top:18px}
+[data-estilo=brasa] .sec-h h2{font-size:clamp(40px,7vw,72px);color:var(--ink)}
+[data-estilo=brasa] .sec-h .sub{font-family:var(--fm);font-size:13px;color:var(--c2)}
+/* ticket: borda picotada embaixo, número grande no preço */
+[data-estilo=brasa] .card{background:var(--paper);border-radius:4px;position:relative;
+  -webkit-mask:radial-gradient(circle 6px at 50% 100%,transparent 98%,#000) 0 0/16px 100%;mask:radial-gradient(circle 6px at 50% 100%,transparent 98%,#000) 0 0/16px 100%;padding-bottom:22px}
+[data-estilo=brasa] .card h3{font-family:var(--fd);text-transform:uppercase;font-weight:400;font-size:22px;letter-spacing:.01em;line-height:1}
+[data-estilo=brasa] .card .price{font-family:var(--fd);font-weight:400;font-size:30px;color:var(--c2);letter-spacing:.01em}
+[data-estilo=brasa] .card .price small,[data-estilo=brasa] .card .price .from{color:var(--ink-soft)}
+[data-estilo=brasa] .card .thumb{border-radius:3px;filter:saturate(1.15) contrast(1.05)}
+[data-estilo=brasa] .card .tag{transform:rotate(-3deg);border-radius:2px;background:var(--c2);color:var(--c2ink)}
+[data-estilo=brasa] .add{border-radius:3px;background:var(--c1);color:var(--c1ink);box-shadow:3px 3px 0 #000;font-weight:800}
+[data-estilo=brasa] .fab{border-radius:4px;box-shadow:6px 6px 0 #000}
+[data-estilo=brasa] .sobre h2{font-size:clamp(36px,6vw,60px);color:var(--c2)}
+[data-estilo=brasa] footer{background:#0a0807;border-top:3px dashed var(--c2)}
+[data-estilo=brasa] footer .fb{font-size:34px}
+
 </style>
 </head>
 <body>
 <style>/* ===== Palco: abertura com rolagem. O produto se monta enquanto a pessoa rola. ===== */
-.palco{position:relative;height:250vh;background:var(--pbg);color:#fff;--pbg:color-mix(in srgb,var(--c1d) 32%,#0b0908);--pl:0}
+.palco{position:relative;height:250vh;background:var(--pbg,var(--pbgs,color-mix(in srgb,var(--c1d) 32%,#0b0908)));color:#fff;--pl:0}
 .palco-fix{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid}
 .palco-luz{position:absolute;inset:-10%;pointer-events:none;
   background:radial-gradient(42% 46% at calc(68% - var(--pl)*10%) calc(46% - var(--pl)*4%),color-mix(in srgb,var(--c2) 46%,transparent) 0%,transparent 70%),
@@ -668,7 +720,7 @@ footer{background:var(--c1d);font-size:14px}
   .palco-obj{left:50%;top:35%;height:auto;width:min(80vw,46svh * var(--pr));max-height:58svh}
   .palco-sombra{left:50%;top:calc(35% + 27svh);width:56vw}
   .palco-txt{align-self:end;padding-bottom:calc(34px + env(safe-area-inset-bottom))}
-  .palco-txt::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62svh;background:linear-gradient(transparent,var(--pbg) 52%);pointer-events:none}
+  .palco-txt::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62svh;background:linear-gradient(transparent,var(--pbgs,color-mix(in srgb,var(--c1d) 32%,#0b0908)) 52%);pointer-events:none}
   .palco-cap{position:relative;left:auto;top:auto;width:auto;transform:translateY(var(--y,0px));grid-area:1/1}
   .palco-caps{display:grid}
   .palco-cap h1{font-size:clamp(38px,11vw,54px)}

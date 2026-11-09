@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-estilo="movimento" data-palco="escuro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -79,12 +79,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --c1:#111827; --c1d:#05080F; --c2:#E11D48; --c2d:#B0102F; --c2ink:#ffffff;
   --bg:#F4F4F5; --soft:#FADBE2; --paper:#FFFFFF; --c1ink:#FFFFFF; color-scheme:light; --ink:#24221F; --ink-soft:#6E6A62; --line:#DEDEDF;
-  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Bebas Neue',system-ui,sans-serif;
+  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Big Shoulders Display',Impact,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -634,9 +634,56 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* ===== Identidade por grupo: base comum =====
+   Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
+   e as formas. Grupos de fundo claro usam a abertura clara. */
+[data-palco=claro] .palco{color:var(--ink)}
+[data-palco=claro] .palco-cap p{color:var(--ink-soft)}
+[data-palco=claro] .palco-cap .k{color:var(--c1)}
+[data-palco=claro] .palco-dica{color:var(--ink-soft)}
+[data-palco=claro] .palco-dica i{border-color:color-mix(in srgb,var(--ink) 35%,transparent)}
+[data-palco=claro] .palco-dica i::after{background:var(--ink)}
+[data-palco=claro] .palco-pular{color:var(--ink);background:color-mix(in srgb,var(--paper) 70%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-barra i{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+[data-palco=claro] .palco-bt.sec{color:var(--ink);background:color-mix(in srgb,var(--paper) 60%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-obj img{filter:drop-shadow(0 calc(8px + var(--pl)*12px) calc(14px + var(--pl)*10px) rgba(40,30,20,.22))}
+[data-palco=claro] .palco-sombra{background:radial-gradient(closest-side,rgba(40,30,20,.28),transparent)}
+[data-palco=claro] .palco-grao{opacity:.05;mix-blend-mode:multiply}
+[data-palco=claro] .palco-pts i{background:color-mix(in srgb,var(--c1) 60%,transparent)}
+
+
+/* MOVIMENTO — placar esportivo. Itálico condensado pesado, cortes em diagonal, faixa neon, número de placar. */
+[data-estilo=movimento]{--pbgs:#0B0D10;--bg:#0B0D10;--paper:#14171C;--soft:#1C2027;--ink:#F2F5F8;--ink-soft:#9AA4B0;--line:#262B33;--radius:6px;color-scheme:dark;
+  --pbg:linear-gradient(115deg,#0b0d10 0%,#0b0d10 52%,color-mix(in srgb,var(--c1) 40%,#0b0d10) 52.2%,#0b0d10 100%)}
+[data-estilo=movimento] .palco{background:var(--pbg)}
+[data-estilo=movimento] :is(.palco-cap h1,.palco-cap h2,.brand h1,.sec-h h2,.sobre h2,footer .fb){font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.005em;line-height:.88}
+[data-estilo=movimento] .palco-cap h1{font-size:clamp(60px,9vw,140px)}
+[data-estilo=movimento] .palco-cap h2{font-size:clamp(44px,6.4vw,96px)}
+[data-estilo=movimento] .palco-cap h2{-webkit-text-stroke:1.5px var(--ink);color:transparent}
+[data-estilo=movimento] .palco-bt{border-radius:0;transform:skewX(-12deg);background:var(--c2);color:var(--c2ink);font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+[data-estilo=movimento] .palco-pts i{width:2px!important;height:22px!important;border-radius:2px}
+[data-estilo=movimento] .hero{clip-path:polygon(0 0,100% 0,100% 92%,0 100%)}
+[data-estilo=movimento] .brand h1{font-size:clamp(48px,12vw,104px)}
+[data-estilo=movimento] :is(.chip,.perk){border-radius:0;transform:skewX(-10deg)}
+[data-estilo=movimento] .nav{background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:2px solid var(--c2)}
+[data-estilo=movimento] .nav-in a{border-radius:0;transform:skewX(-10deg);background:var(--soft);font-weight:800;text-transform:uppercase;font-size:13px}
+[data-estilo=movimento] .nav-in a.active{background:var(--c2);color:var(--c2ink)}
+[data-estilo=movimento] .sec-h h2{font-size:clamp(44px,7.4vw,80px)}
+[data-estilo=movimento] .sec-h .sub{font-weight:700;color:var(--c2);text-transform:uppercase;font-size:12.5px;letter-spacing:.06em}
+[data-estilo=movimento] .card{background:var(--paper);border-radius:0;border-left:4px solid var(--c2);clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%)}
+[data-estilo=movimento] .card h3{font-family:var(--fd);font-weight:900;font-style:italic;text-transform:uppercase;font-size:26px;line-height:.95}
+[data-estilo=movimento] .card .thumb,[data-estilo=movimento] .card .ph{border-radius:0;clip-path:polygon(12% 0,100% 0,88% 100%,0 100%)}
+[data-estilo=movimento] .card .price{font-family:var(--fd);font-weight:900;font-size:30px;font-style:italic;color:var(--c2);font-variant-numeric:tabular-nums}
+[data-estilo=movimento] .card .tag{border-radius:0;transform:skewX(-10deg);background:var(--c1);color:var(--c1ink)}
+[data-estilo=movimento] .add{border-radius:0;transform:skewX(-10deg);background:var(--c2);color:var(--c2ink);font-weight:900;text-transform:uppercase}
+[data-estilo=movimento] .fab{border-radius:0;clip-path:polygon(3% 0,100% 0,97% 100%,0 100%)}
+[data-estilo=movimento] .sobre h2{font-size:clamp(40px,6vw,64px);color:var(--c2)}
+[data-estilo=movimento] footer{background:#07080a;border-top:4px solid var(--c2)}
+
 </style>
 </head>
 <body>
+
 
 <header class="hero">
   <div class="hero-bg img"><img src="img/capa.jpg" alt="" onerror="this.parentNode.className='hero-bg';this.remove()"></div>

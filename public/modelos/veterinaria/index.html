@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-estilo="clinica" data-palco="claro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -71,12 +71,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --c1:#2C7A7B; --c1d:#1A5354; --c2:#F6AD55; --c2d:#D08A2C; --c2ink:#2a1700;
   --bg:#F3F8F8; --soft:#FEF2E4; --paper:#FFFFFF; --c1ink:#FFFFFF; color-scheme:light; --ink:#24221F; --ink-soft:#6E6A62; --line:#DDE2E2;
-  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Quicksand',system-ui,sans-serif;
+  --green:#25D366; --shadow:0 8px 26px rgba(30,30,30,.09); --radius:16px; --fd:'Outfit',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -626,9 +626,60 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* ===== Identidade por grupo: base comum =====
+   Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
+   e as formas. Grupos de fundo claro usam a abertura clara. */
+[data-palco=claro] .palco{color:var(--ink)}
+[data-palco=claro] .palco-cap p{color:var(--ink-soft)}
+[data-palco=claro] .palco-cap .k{color:var(--c1)}
+[data-palco=claro] .palco-dica{color:var(--ink-soft)}
+[data-palco=claro] .palco-dica i{border-color:color-mix(in srgb,var(--ink) 35%,transparent)}
+[data-palco=claro] .palco-dica i::after{background:var(--ink)}
+[data-palco=claro] .palco-pular{color:var(--ink);background:color-mix(in srgb,var(--paper) 70%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-barra i{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+[data-palco=claro] .palco-bt.sec{color:var(--ink);background:color-mix(in srgb,var(--paper) 60%,transparent);border-color:var(--line)}
+[data-palco=claro] .palco-obj img{filter:drop-shadow(0 calc(8px + var(--pl)*12px) calc(14px + var(--pl)*10px) rgba(40,30,20,.22))}
+[data-palco=claro] .palco-sombra{background:radial-gradient(closest-side,rgba(40,30,20,.28),transparent)}
+[data-palco=claro] .palco-grao{opacity:.05;mix-blend-mode:multiply}
+[data-palco=claro] .palco-pts i{background:color-mix(in srgb,var(--c1) 60%,transparent)}
+
+
+/* CLÍNICA — precisão calma. Branco, cantos macios, números como leitura de aparelho, nada grita. */
+[data-estilo=clinica]{--pbgs:#E8F1F0;--bg:#F5F8F8;--paper:#FFFFFF;--soft:#EAF2F1;--ink:#14262A;--ink-soft:#5B6E72;--line:#DDE7E7;--radius:26px;color-scheme:light;
+  --pbg:radial-gradient(70% 65% at 66% 45%,#FFFFFF 0%,#E8F1F0 80%)}
+[data-estilo=clinica] .palco{background:var(--pbg)}
+[data-estilo=clinica] :is(.palco-cap h1,.palco-cap h2,.brand h1,.sec-h h2,.sobre h2,footer .fb){font-weight:600;letter-spacing:-.035em}
+[data-estilo=clinica] .palco-cap h1{font-size:clamp(46px,6.2vw,88px)}
+[data-estilo=clinica] .palco-luz{opacity:.35}
+[data-estilo=clinica] .palco-pts{display:none}
+/* anéis de pulso atrás do produto, como um monitor calmo */
+[data-estilo=clinica] .palco-cena::before{content:"";position:absolute;left:64%;top:50%;width:min(70svh,820px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:repeating-radial-gradient(circle,transparent 0 46px,color-mix(in srgb,var(--c1) 10%,transparent) 46px 47px);opacity:calc(.5 + var(--pl)*.5)}
+@media (max-width:820px){[data-estilo=clinica] .palco-cena::before{left:50%;top:35%;width:110vw}}
+[data-estilo=clinica] .palco-bt{border-radius:16px;background:var(--c1);color:var(--c1ink);box-shadow:0 12px 30px -12px color-mix(in srgb,var(--c1) 70%,transparent)}
+[data-estilo=clinica] .hero-bg.img::after{background:linear-gradient(180deg,rgba(255,255,255,0),color-mix(in srgb,var(--c1d) 88%,#000) 100%)}
+[data-estilo=clinica] :is(.chip,.perk){border-radius:14px}
+[data-estilo=clinica] .nav{background:color-mix(in srgb,var(--paper) 90%,transparent);border-bottom:1px solid var(--line)}
+[data-estilo=clinica] .nav-in a{border-radius:12px;background:var(--soft);color:var(--ink);font-weight:500}
+[data-estilo=clinica] .nav-in a.active{background:var(--c1);color:var(--c1ink)}
+[data-estilo=clinica] .sec-h h2{font-size:clamp(26px,3.6vw,36px)}
+[data-estilo=clinica] .sec-h .sub{font-family:var(--fm);font-size:12.5px;color:var(--c1);background:var(--soft);padding:3px 9px;border-radius:8px}
+[data-estilo=clinica] .card{background:var(--paper);border:1px solid var(--line);border-radius:26px;box-shadow:0 1px 0 var(--line),0 18px 40px -30px rgba(20,38,42,.35)}
+[data-estilo=clinica] .card h3{font-family:var(--fd);font-weight:600;font-size:18px}
+[data-estilo=clinica] .card .thumb,[data-estilo=clinica] .card .ph{border-radius:20px}
+[data-estilo=clinica] .card .info{font-family:var(--fm);font-size:12px;color:var(--c1)}
+[data-estilo=clinica] .card .price{font-family:var(--fm);font-weight:600;font-size:17px}
+[data-estilo=clinica] .add{border-radius:14px;background:var(--soft);color:var(--ink);font-weight:600}
+[data-estilo=clinica] .add:hover,[data-estilo=clinica] .add.alt{background:var(--c1);color:var(--c1ink)}
+[data-estilo=clinica] .fab{border-radius:20px;background:var(--c1);color:var(--c1ink)}
+[data-estilo=clinica] .sobre{background:var(--paper);border:1px solid var(--line);border-radius:30px;margin-top:30px}
+[data-estilo=clinica] footer{background:var(--paper);color:var(--ink-soft);border-top:1px solid var(--line)}
+[data-estilo=clinica] footer .fb{color:var(--ink)}
+
 </style>
 </head>
 <body>
+
 
 <header class="hero">
   <div class="hero-bg img"><img src="img/capa.jpg" alt="" onerror="this.parentNode.className='hero-bg';this.remove()"></div>
