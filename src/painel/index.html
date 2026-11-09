@@ -168,7 +168,7 @@ table.tb{width:100%;border-collapse:collapse;font-size:14px}
 .envio button{width:48px;height:48px;border-radius:14px;background:var(--cobalt);color:#fff;display:grid;place-items:center;flex:none}
 
 /* folha lateral */
-.sheet{position:fixed;inset:0;z-index:60;background:rgb(var(--inkrgb) / .45);display:none;justify-content:flex-end}
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(10,12,20,.5);display:none;justify-content:flex-end}
 .sheet.on{display:flex}
 .sheet .w{background:var(--card);width:min(520px,100%);height:100%;overflow-y:auto;padding:20px 18px calc(24px + env(safe-area-inset-bottom));animation:entra .2s ease-out}
 @keyframes entra{from{transform:translateX(30px);opacity:0}}
@@ -182,6 +182,35 @@ table.tb{width:100%;border-collapse:collapse;font-size:14px}
 .tema button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .tema.lado{margin-top:12px;background:rgba(255,255,255,.08)}.tema.lado button{color:rgba(255,255,255,.7)}
 .tema.lado button[aria-pressed="true"]{background:#fff;color:#14162B}
+/* salão */
+.planta{position:relative;aspect-ratio:16/10;container-type:inline-size;margin-top:12px;border-radius:14px;background:rgb(var(--inkrgb) / .035);border:1px solid var(--line);overflow:hidden;
+  background-image:radial-gradient(rgb(var(--inkrgb) / .09) 1px,transparent 1px);background-size:22px 22px}
+.planta.edit{outline:2px dashed var(--cobalt);outline-offset:-2px}
+.mesa{position:absolute;transform:translate(-50%,-50%);width:min(calc(var(--t) * 1px),calc(var(--t) / 3.6 * 1cqw));aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:50%;
+  background:var(--card);border:2.5px solid var(--mint);font-size:12px;line-height:1.1;color:var(--ink);touch-action:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.mesa.quadrada{border-radius:14px}
+.mesa b{font-size:12.5px;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mesa small{font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+.mesa em{position:absolute;top:-6px;right:-6px;font-style:normal;font-size:11px;font-weight:800;background:var(--ink);color:var(--paper);border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;padding:0 5px}
+.mesa .cam{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--cobalt);box-shadow:0 0 0 2px var(--card)}
+.mesa.sentou{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 14%,var(--card))}
+.mesa.atendida{border-color:var(--cobalt);background:color-mix(in srgb,var(--cobalt) 12%,var(--card))}
+.mesa.alerta{border-color:var(--red);background:color-mix(in srgb,var(--red) 16%,var(--card));animation:pulsa 1.4s ease-in-out infinite}
+.mesa.alerta small{color:var(--red);font-weight:700}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--red) 45%,transparent)}50%{box-shadow:0 0 0 10px transparent}}
+.planta.edit .mesa{cursor:grab}
+.leg{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);flex-wrap:wrap}
+.leg i{width:11px;height:11px;border-radius:50%;border:2px solid var(--mint);margin-left:6px}.leg i.sentou{border-color:var(--amber)}.leg i.alerta{border-color:var(--red)}.leg i.atendida{border-color:var(--cobalt)}
+.barras{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;height:130px;align-items:end}
+.barras div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.barras i{width:100%;border-radius:5px 5px 2px 2px;background:color-mix(in srgb,var(--cobalt) 45%,var(--card));min-height:2px}.barras i.pico{background:var(--cobalt)}
+.barras small{font-size:11px;color:var(--soft)}
+.foto-cam{position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;background:#000}
+.foto-cam img{display:block;width:100%}.foto-cam svg{position:absolute;inset:0;width:100%;height:100%}
+.foto-cam .z{fill:color-mix(in srgb,var(--cobalt) 30%,transparent);stroke:#fff;stroke-width:.004}
+.foto-cam .z.outra{fill:rgba(255,255,255,.18);stroke:rgba(255,255,255,.6)}.foto-cam polyline.z{fill:none}
+.foto-cam .pt{fill:#fff;stroke:var(--cobalt);stroke-width:.004}
+@media (prefers-reduced-motion:reduce){.mesa.alerta{animation:none}}
+@media (max-width:600px){.planta{aspect-ratio:4/3}.mesa b{font-size:11px}.mesa small{font-size:10.5px}}
 </style>
 <script>(function(){var t="auto";try{t=localStorage.getItem("zv-tema")||"auto"}catch(e){}
 var esc=t==="escuro"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.tema=esc?"escuro":"claro"})()</script>
@@ -299,10 +328,11 @@ const IC = {
   catalogo: '<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>', estoque: '<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',
   financeiro: '<path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/>', site: '<path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   assistente: '<path d="M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01"/>',
-  vender: '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>'
+  vender: '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>',
+  salao: '<circle cx="8" cy="8" r="3"/><circle cx="17" cy="15" r="3"/><path d="M3 21h18M8 11v3M17 18v3"/>'
 };
 function abas() { const a = [["inicio", "Início"], ehAgenda() ? ["agenda", W().ped] : ["pedidos", "Pedidos"], ["clientes", "Clientes"], ["catalogo", W().itens]];
-  if (!ehAgenda()) a.push(["estoque", "Estoque"]); a.push(["financeiro", "Caixa"]); if (!ehRes()) a.push(["vender", "Vender mais"]); a.push(["site", "Meu site"], ["assistente", "Assistente"]); return a; }
+  if (!ehAgenda()) a.push(["estoque", "Estoque"]); a.push(["financeiro", "Caixa"]); if (temSalao()) a.push(["salao", "Salão"]); if (!ehRes()) a.push(["vender", "Vender mais"]); a.push(["site", "Meu site"], ["assistente", "Assistente"]); return a; }
 function montarNav() { const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
   const h = abas().map(([k, l]) => `<a href="#${k}" data-k="${k}">${svg(k)}<span>${l}</span>${k === "pedidos" || k === "agenda" ? '<span class="n" id="n-' + k + '" hidden></span>' : ""}</a>`).join("");
   $("nav").innerHTML = h;
@@ -321,8 +351,8 @@ function seletorTema(onde) { const t = temaAtual();
   return `<div class="tema ${onde}" role="group" aria-label="Tema">${[["auto", "Auto"], ["claro", "Claro"], ["escuro", "Escuro"]].map(([k, l]) => `<button type="button" data-t="${k}" aria-pressed="${k === t}" onclick="aplicarTema('${k}')">${l}</button>`).join("")}</div>`; }
 function maisMenu() { const curtas = ["inicio", "pedidos", "agenda", "clientes", "assistente"];
   abrirSheet(`<h2>Mais</h2><nav class="lst" style="margin-top:10px">${abas().filter(([k]) => !curtas.includes(k)).map(([k, l]) => `<a class="r" style="text-decoration:none;color:inherit;font-weight:700" href="#${k}" onclick="fecharSheet()">${l}<span aria-hidden="true">›</span></a>`).join("")}<a class="r" style="text-decoration:none;color:inherit;font-weight:700" href="${siteURL()}" target="_blank" rel="noopener">Ver meu site<span aria-hidden="true">↗</span></a><a class="r" style="text-decoration:none;color:var(--red);font-weight:700" href="#" onclick="sair();return false">Sair</a></nav><h3 style="margin:18px 0 8px;font-size:15px">Tema</h3>${seletorTema("folha")}`); }
-function ir(k) { if (!abas().some(a => a[0] === k)) k = "inicio"; TAB = k; document.querySelectorAll(".nav a,.tabbar a").forEach(a => a.setAttribute("aria-current", a.dataset.k === k ? "page" : "false"));
-  window.scrollTo(0, 0); ({ inicio: telaInicio, pedidos: telaPedidos, agenda: telaAgenda, clientes: telaClientes, catalogo: telaCatalogo, estoque: telaEstoque, financeiro: telaFinanceiro, site: telaSite, assistente: telaAssistente, vender: telaVender })[k](); }
+function ir(k) { if (!abas().some(a => a[0] === k)) k = "inicio"; TAB = k; clearInterval(salaoT); document.querySelectorAll(".nav a,.tabbar a").forEach(a => a.setAttribute("aria-current", a.dataset.k === k ? "page" : "false"));
+  window.scrollTo(0, 0); ({ inicio: telaInicio, pedidos: telaPedidos, agenda: telaAgenda, clientes: telaClientes, catalogo: telaCatalogo, estoque: telaEstoque, financeiro: telaFinanceiro, site: telaSite, assistente: telaAssistente, vender: telaVender, salao: telaSalao })[k](); }
 window.addEventListener("hashchange", () => { if (NEG) ir(location.hash.slice(1)); });
 function topo(t, acts = "") { return `<div class="top"><h1>${t}</h1><div class="acts">${acts}</div></div>`; }
 
@@ -535,6 +565,164 @@ function editarMsgOferta() {
     <button class="b pri wide" style="margin-top:12px" onclick="salvarMsgOferta()">Salvar</button><button class="b sec wide" style="margin-top:8px" onclick="$('vMsg').value=MSG_OFERTA">Voltar ao texto padrão</button>`); }
 async function salvarMsgOferta() { const v = $("vMsg").value.trim(); if (!v) return toast("Escreva a mensagem.");
   if (await salvarDados(d => { d.msgOferta = v; }, "Mensagem salva.")) { fecharSheet(); telaVender(); } }
+
+/* ---------------- salão: mesas ao vivo, fila, câmera ---------------- */
+const SALAO_NICHOS = ["pizzaria", "hamburgueria", "pastelaria", "acai", "adega", "padaria", "marmitaria", "restaurante"];
+const temSalao = () => NEG && NEG.tipo === "pedido" && (SALAO_NICHOS.includes(NEG.nicho) || !!(cfg().salao || {}).ativo);
+let salaoT = null, MESAS = [], EST = {}, FILA = [], CAMS = [], salaoEdit = false, alertasVistos = new Set(), picoFds = false;
+const salaoCfg = () => Object.assign({ alerta_min: 3 }, cfg().salao || {});
+const garcomLigado = () => { try { return localStorage.getItem("zv-garcom") === "1"; } catch (e) { return false; } };
+const mmss = seg => { seg = Math.max(0, Math.floor(seg)); const h = Math.floor(seg / 3600), m = Math.floor(seg % 3600 / 60), s2 = seg % 60;
+  return h ? `${h}h${String(m).padStart(2, "0")}` : `${m}:${String(s2).padStart(2, "0")}`; };
+function situacao(m) { const e = EST[m.id]; if (!e || e.status !== "ocupada") return "livre";
+  if (e.atendida_em) return "atendida"; const min = (Date.now() - new Date(e.desde)) / 60000;
+  return min >= salaoCfg().alerta_min ? "alerta" : "sentou"; }
+async function carregarSalao() {
+  const [m, e, f, c] = await Promise.all([sb.from("zv_mesas").select("*").eq("negocio", NEG.id).order("ordem").order("nome"),
+    sb.from("zv_mesa_estado").select("*").eq("negocio", NEG.id), sb.from("zv_fila").select("*").eq("negocio", NEG.id).eq("status", "esperando").order("criado_em"),
+    sb.from("zv_cameras").select("id,nome,foto,pedir_foto,ultimo_sinal").eq("negocio", NEG.id).order("criado_em")]);
+  MESAS = m.data || []; EST = Object.fromEntries((e.data || []).map(x => [x.mesa, x])); FILA = f.data || []; CAMS = c.data || [];
+}
+async function telaSalao() { const m = $("main"); m.innerHTML = topo("Salão") + '<p class="muted">Carregando…</p>';
+  await carregarSalao(); desenharSalao(); clearInterval(salaoT);
+  salaoT = setInterval(async () => { if (TAB !== "salao") return clearInterval(salaoT); await carregarSalao(); if (!salaoEdit) atualizarSalao(); }, 4000); }
+function desenharSalao() { const m = $("main");
+  m.innerHTML = topo("Salão", `<button class="b ${garcomLigado() ? "pri" : "sec"} sm" id="bGarcom" onclick="alternarGarcom()">${garcomLigado() ? "Modo garçom ligado" : "Ligar modo garçom"}</button>
+      <button class="b sec sm" onclick="salaoEdit=!salaoEdit;desenharSalao()">${salaoEdit ? "Concluir planta" : "Editar mesas"}</button>`) +
+    `<div class="kpis" id="sKpis"></div>
+     <div class="cols2"><div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+       <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">${salaoEdit ? "Arraste as mesas para o lugar delas" : "Mesas agora"}</h2>
+         ${salaoEdit ? `<button class="b pri sm" onclick="novaMesa()">Adicionar mesa</button>` : `<div class="leg"><i class="livre"></i>Livre<i class="sentou"></i>Sentou<i class="alerta"></i>Sem atendimento<i class="atendida"></i>Atendida</div>`}</div>
+         <div class="planta${salaoEdit ? " edit" : ""}" id="planta"></div>
+         ${MESAS.length ? "" : `<p class="vazio">Nenhuma mesa ainda. Toque em <b>Editar mesas</b> e monte a planta do seu salão.</p>`}</div>
+       <div class="card" id="sPico"></div></div>
+     <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+       <div class="card" id="sAlertas"></div>
+       <div class="card" id="sFila"></div>
+       <div class="card" id="sCams"></div></div></div>`;
+  atualizarSalao(); desenharPico(); desenharCams(); if (salaoEdit) ligarArraste(); }
+function atualizarSalao() { if (!$("planta")) return;
+  const sit = MESAS.map(situacao), ocup = sit.filter(x => x !== "livre").length, alertas = MESAS.filter((x, i) => sit[i] === "alerta");
+  $("sKpis").innerHTML = `<div class="card kpi"><small>Mesas ocupadas</small><b>${ocup}/${MESAS.length}</b></div><div class="card kpi"><small>Sem atendimento</small><b style="color:${alertas.length ? "var(--red)" : "inherit"}">${alertas.length}</b></div>
+    <div class="card kpi"><small>Na fila</small><b>${FILA.length}</b></div><div class="card kpi"><small>Alerta depois de</small><b>${salaoCfg().alerta_min} min</b><a href="#" style="font-size:12.5px" onclick="event.preventDefault();ajustarAlerta()">mudar</a></div>`;
+  $("planta").innerHTML = MESAS.map((x, i) => { const e = EST[x.id] || {}, s2 = sit[i], t = e.desde ? (Date.now() - new Date(e.desde)) / 1000 : 0;
+    const tam = Math.round(Math.min(100, 60 + x.lugares * 5));
+    return `<button class="mesa ${x.forma} ${s2}" data-id="${x.id}" style="left:${x.x * 100}%;top:${x.y * 100}%;--t:${tam}" onclick="${salaoEdit ? "" : `abrirMesa('${x.id}')`}" aria-label="${esc(x.nome)}">
+      <b>${esc(x.nome)}</b><small>${s2 === "livre" ? x.lugares + " lug." : mmss(t)}</small>${e.pessoas && s2 !== "livre" ? `<em>${e.pessoas}</em>` : ""}${x.zona ? '<span class="cam" title="Vista pela câmera"></span>' : ""}</button>`; }).join("");
+  $("sAlertas").innerHTML = `<h2>Atenção</h2>` + (alertas.length ? `<div class="lst">${alertas.map(x => { const e = EST[x.id]; return `<div class="r"><div><b>${esc(x.nome)}</b> <span class="muted" style="font-size:13px">sentaram há ${mmss((Date.now() - new Date(e.desde)) / 1000)} e ninguém atendeu</span></div>
+      <button class="b pri sm" onclick="acaoMesa('${x.id}','atendi')">Atendi</button></div>`; }).join("")}</div>` : `<p class="vazio">Tudo em dia. Quando uma mesa ficar ${salaoCfg().alerta_min} minutos sem atendimento, ela aparece aqui.</p>`);
+  desenharFila();
+  // aviso no celular do garçom
+  if (garcomLigado()) alertas.forEach(x => { const k = x.id + EST[x.id].desde; if (!alertasVistos.has(k)) { alertasVistos.add(k); avisarGarcom(x.nome); } });
+}
+function abrirMesa(id) { const x = MESAS.find(m => m.id === id), e = EST[id] || {}, s2 = situacao(x);
+  abrirSheet(`<h2>${esc(x.nome)}</h2><p class="muted" style="margin:4px 0 14px">${s2 === "livre" ? `Livre · ${x.lugares} lugares` : `${e.pessoas || "?"} pessoas · sentaram há ${mmss((Date.now() - new Date(e.desde)) / 1000)}${e.atendida_em ? " · atendida" : " · ainda sem atendimento"}${e.origem === "camera" ? " · pela câmera" : ""}`}</p>
+    ${s2 === "livre" ? `<label class="f">Quantas pessoas<input class="t" id="mPes" inputmode="numeric" value="${Math.min(x.lugares, 2)}"></label><button class="b pri wide" style="margin-top:12px" onclick="acaoMesa('${id}','sentou',+$('mPes').value||2)">Marcar como ocupada</button>`
+      : `${e.atendida_em ? "" : `<button class="b pri wide" onclick="acaoMesa('${id}','atendi')">Atendi esta mesa</button>`}<button class="b sec wide" style="margin-top:8px" onclick="acaoMesa('${id}','liberou')">Mesa liberada</button>`}`); }
+async function acaoMesa(id, acao, pessoas) { const { error } = await sb.rpc("zv_mesa", { p_mesa: id, p_acao: acao, p_pessoas: pessoas || null });
+  if (error) return toast(erro(error)); fecharSheet(); await carregarSalao(); atualizarSalao(); }
+function ajustarAlerta() { abrirSheet(`<h2>Alerta de mesa sem atendimento</h2><p class="muted" style="margin:6px 0 12px">Depois de quantos minutos sentados sem ninguém atender a mesa aparece em vermelho e o celular do garçom toca.</p>
+  <input class="t" id="aMin" inputmode="numeric" value="${salaoCfg().alerta_min}"><button class="b pri wide" style="margin-top:12px" onclick="salvarAlerta()">Salvar</button>`); }
+async function salvarAlerta() { const v = Math.min(60, Math.max(1, parseInt($("aMin").value) || 3));
+  if (await salvarDados(d => { d.config = d.config || {}; d.config.salao = Object.assign({}, d.config.salao || {}, { alerta_min: v }); }, "Alerta em " + v + " min.")) { fecharSheet(); atualizarSalao(); } }
+/* modo garçom: som + vibração + notificação enquanto o painel está aberto */
+function alternarGarcom() { const v = !garcomLigado(); try { localStorage.setItem("zv-garcom", v ? "1" : "0"); } catch (e) {}
+  if (v) { avisarGarcom(null); if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); toast("Modo garçom ligado: este aparelho toca quando uma mesa ficar sem atendimento."); }
+  $("bGarcom").className = "b " + (v ? "pri" : "sec") + " sm"; $("bGarcom").textContent = v ? "Modo garçom ligado" : "Ligar modo garçom"; }
+let audioCtx = null;
+function avisarGarcom(nome) { try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume();
+    if (nome) [0, .18, .36].forEach(t => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = 880; g.gain.setValueAtTime(.0001, audioCtx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(.3, audioCtx.currentTime + t + .02); g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + t + .15); o.connect(g).connect(audioCtx.destination); o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + .16); }); } catch (e) {}
+  if (!nome) return; if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+  if ("Notification" in window && Notification.permission === "granted") try { new Notification(nome + " sem atendimento", { body: "Os clientes sentaram e ninguém foi à mesa ainda.", tag: "mesa-" + nome }); } catch (e) {}
+  toast(nome + " está sem atendimento."); }
+/* fila de espera */
+function desenharFila() { const el = $("sFila"); if (!el) return;
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Fila de espera</h2><button class="b sec sm" onclick="novaFila()">Adicionar</button></div>` +
+    (FILA.length ? `<div class="lst" style="margin-top:8px">${FILA.map(f => { const mesa = melhorMesa(f.pessoas), chamado = f.mesa && MESAS.find(x => x.id === f.mesa);
+      return `<div class="r"><div style="min-width:0"><b>${esc(f.nome)}</b> <span class="muted" style="font-size:13px">${f.pessoas} pessoas · há ${mmss((Date.now() - new Date(f.criado_em)) / 1000)}</span>
+        ${chamado ? `<div style="font-size:13px;color:var(--ok-ink)">Chamado para ${esc(chamado.nome)}</div>` : mesa ? `<div style="font-size:13px">Livre agora: <b>${esc(mesa.nome)}</b></div>` : `<div class="muted" style="font-size:13px">Nenhuma mesa livre para ${f.pessoas} ainda</div>`}</div>
+        <div style="display:flex;gap:6px;flex:none">${mesa && !chamado ? `<button class="b pri sm" onclick="chamarFila('${f.id}','${mesa.id}')">Chamar</button>` : ""}<button class="b sec sm" aria-label="Tirar da fila" onclick="tirarFila('${f.id}')">×</button></div></div>`; }).join("")}</div>`
+      : `<p class="vazio">Ninguém esperando. Quando lotar, anote quem chega e a gente avisa qual mesa liberou.</p>`); }
+function melhorMesa(p) { return MESAS.filter(x => situacao(x) === "livre" && x.lugares >= p && !FILA.some(f => f.mesa === x.id)).sort((a, b) => a.lugares - b.lugares)[0]; }
+function novaFila() { abrirSheet(`<h2>Entrar na fila</h2><label class="f" style="margin-top:10px">Nome<input class="t" id="fNome"></label><label class="f" style="margin-top:10px">Quantas pessoas<input class="t" id="fPes" inputmode="numeric" value="2"></label>
+  <label class="f" style="margin-top:10px">WhatsApp (para avisar quando liberar)<input class="t" id="fZap" inputmode="tel"></label><button class="b pri wide" style="margin-top:12px" onclick="salvarFila()">Colocar na fila</button>`); }
+async function salvarFila() { const nome = $("fNome").value.trim(); if (!nome) return toast("Escreva o nome.");
+  const { error } = await sb.from("zv_fila").insert({ negocio: NEG.id, nome, pessoas: Math.max(1, parseInt($("fPes").value) || 2), whatsapp: $("fZap").value.replace(/\D/g, "") || null });
+  if (error) return toast(erro(error)); fecharSheet(); await carregarSalao(); atualizarSalao(); }
+async function chamarFila(fid, mid) { const f = FILA.find(x => x.id === fid), mesa = MESAS.find(x => x.id === mid);
+  await sb.from("zv_fila").update({ mesa: mid }).eq("id", fid);
+  if (f.whatsapp) window.open(zapLink(f.whatsapp, `Oi, ${f.nome.split(" ")[0]}! Sua mesa no ${NEG.nome} está pronta: ${mesa.nome}. Pode vir.`), "_blank");
+  toast(`${f.nome} chamado para ${mesa.nome}.`); await carregarSalao(); atualizarSalao(); }
+async function tirarFila(fid) { await sb.from("zv_fila").update({ status: "desistiu" }).eq("id", fid); await carregarSalao(); atualizarSalao(); }
+/* horários de pico */
+async function desenharPico() { const el = $("sPico"); if (!el) return;
+  const { data } = await sb.rpc("zv_salao_resumo", { p_negocio: NEG.id, p_dias: 28 }); const r = data || {}, L = (r.por_hora || []).filter(x => !!x.fds === picoFds);
+  const hs = []; for (let h = 10; h <= 23; h++) hs.push(h); const max = Math.max(1, ...L.map(x => x.n)), por = Object.fromEntries(L.map(x => [x.h, x.n]));
+  const topo3 = [...L].sort((a, b) => b.n - a.n).slice(0, 2).map(x => x.h + "h");
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Horários de pico</h2>
+      <div class="seg" style="min-width:220px"><button aria-pressed="${!picoFds}" onclick="picoFds=false;desenharPico()">Semana</button><button aria-pressed="${picoFds}" onclick="picoFds=true;desenharPico()">Fim de semana</button></div></div>
+    <p class="muted" style="font-size:13.5px;margin:6px 0 10px">Mesas que sentaram por horário, nas últimas 4 semanas.${topo3.length ? ` Mais cheio às <b>${topo3.join(" e ")}</b>: escale a equipe para esses horários.` : ""}</p>
+    ${L.length ? `<div class="barras">${hs.map(h => `<div title="${h}h: ${por[h] || 0} mesas"><i style="height:${Math.round((por[h] || 0) / max * 100)}%" class="${topo3.includes(h + "h") ? "pico" : ""}"></i><small>${h}</small></div>`).join("")}</div>`
+      : `<p class="vazio">Aparece depois dos primeiros dias com as mesas sendo marcadas.</p>`}
+    <div class="kpis" style="margin:12px 0 0"><div class="card kpi"><small>Espera até atender</small><b>${r.espera_media != null ? mmss(r.espera_media) : "—"}</b></div><div class="card kpi"><small>Tempo na mesa</small><b>${r.permanencia_media != null ? mmss(r.permanencia_media) : "—"}</b></div></div>`; }
+/* câmeras */
+function desenharCams() { const el = $("sCams"); if (!el) return;
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Câmera</h2><button class="b sec sm" onclick="novaCamera()">Conectar câmera</button></div>
+    <p class="muted" style="font-size:13.5px;margin:6px 0 8px">A câmera do teto diz sozinha quando a mesa ocupa, se alguém atendeu e quando liberou. Só os números vêm para cá; nenhum vídeo é gravado.</p>` +
+    (CAMS.length ? `<div class="lst">${CAMS.map(c => { const on = c.ultimo_sinal && Date.now() - new Date(c.ultimo_sinal) < 90000, n = MESAS.filter(x => x.camera === c.id && x.zona).length;
+      return `<div class="r"><div><b>${esc(c.nome)}</b> <span class="pill ${on ? "ok" : "no"}">${on ? "ligada" : c.ultimo_sinal ? "sem sinal" : "esperando o programa"}</span><div class="muted" style="font-size:13px">${n} mesa${n === 1 ? "" : "s"} marcada${n === 1 ? "" : "s"}</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${c.foto ? `<button class="b pri sm" onclick="marcarMesas('${c.id}')">Marcar mesas</button>` : ""}<button class="b sec sm" onclick="pedirFoto('${c.id}')">${c.foto ? "Nova foto" : "Pedir foto"}</button><button class="b sec sm" aria-label="Remover câmera" onclick="removerCamera('${c.id}')">×</button></div></div>`; }).join("")}</div>`
+      : `<p class="vazio">Sem câmera, as mesas funcionam marcando na mão: toque na mesa e escolha Sentou, Atendi ou Liberou.</p>`); }
+async function novaCamera() { const { data, error } = await sb.rpc("zv_camera_nova", { p_negocio: NEG.id, p_nome: "Câmera do salão" }); if (error) return toast(erro(error));
+  const r = Array.isArray(data) ? data[0] : data; await carregarSalao(); desenharCams();
+  abrirSheet(`<h2>Conectar a câmera</h2><p class="muted" style="margin:6px 0 12px">Funciona com a câmera IP que já está no teto (qualquer marca que tenha endereço RTSP, como Intelbras, Hikvision e Yoosee) e um computador ligado no restaurante.</p>
+    <ol style="padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:14.5px"><li>No computador do restaurante, baixe e abra o <b>Zivoop Câmera</b>.</li><li>Quando ele pedir, cole este código:<div class="linkbox" style="margin-top:6px"><span style="font-family:monospace;font-size:13px;word-break:break-all">${esc(r.codigo)}</span><button class="b sec sm" onclick="copiar('${esc(r.codigo)}')">Copiar</button></div></li>
+    <li>Cole também o endereço RTSP da câmera (está no app ou na etiqueta dela).</li><li>Volte aqui, toque em <b>Marcar mesas</b> e desenhe cada mesa na foto da câmera.</li></ol>
+    <p class="muted" style="font-size:13px;margin-top:10px">Guarde o código: ele só aparece agora. Se perder, remova a câmera e conecte de novo.</p>`); }
+async function pedirFoto(id) { await sb.from("zv_cameras").update({ pedir_foto: true }).eq("id", id); toast("Pedimos uma foto nova. Ela chega em até 1 minuto, se o programa estiver ligado."); }
+async function removerCamera(id) { if (!confirm("Remover esta câmera? As mesas continuam, marcadas na mão.")) return;
+  await sb.from("zv_mesas").update({ camera: null, zona: null }).eq("camera", id); await sb.from("zv_cameras").delete().eq("id", id); await carregarSalao(); desenharCams(); atualizarSalao(); }
+/* marcar as mesas na foto: escolhe a mesa e toca nos cantos dela */
+let marca = null;
+function marcarMesas(cid) { const c = CAMS.find(x => x.id === cid); if (!MESAS.length) return toast("Crie as mesas primeiro em Editar mesas.");
+  marca = { cid, mesa: MESAS[0].id, pts: [] };
+  abrirSheet(`<h2>Marcar mesas na câmera</h2><p class="muted" style="margin:6px 0 10px">Escolha a mesa e toque nos cantos dela na foto (4 a 8 pontos, contornando a mesa e as cadeiras). Depois toque em Salvar.</p>
+    <select class="t" id="mkMesa" onchange="marca.mesa=this.value;marca.pts=[];desenharMarca()">${MESAS.map(x => `<option value="${x.id}">${esc(x.nome)}${x.zona && x.camera === cid ? " (marcada)" : ""}</option>`).join("")}</select>
+    <div class="foto-cam" id="mkFoto" style="margin-top:10px"><img src="${c.foto}" alt="Imagem da câmera"><svg viewBox="0 0 1 1" preserveAspectRatio="none" id="mkSvg"></svg></div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="b sec" onclick="marca.pts=[];desenharMarca()">Limpar</button><button class="b pri" style="flex:1" onclick="salvarMarca()">Salvar esta mesa</button></div>`);
+  $("mkFoto").onclick = ev => { const r = ev.currentTarget.getBoundingClientRect(); marca.pts.push([+((ev.clientX - r.left) / r.width).toFixed(4), +((ev.clientY - r.top) / r.height).toFixed(4)]); desenharMarca(); };
+  desenharMarca(); }
+function desenharMarca() { const svg = $("mkSvg"); if (!svg) return;
+  const outras = MESAS.filter(x => x.camera === marca.cid && x.zona && x.id !== marca.mesa).map(x => `<polygon points="${x.zona.map(p => p.join(",")).join(" ")}" class="z outra"/>`).join("");
+  const p = marca.pts.map(p => p.join(",")).join(" ");
+  svg.innerHTML = outras + (marca.pts.length > 2 ? `<polygon points="${p}" class="z"/>` : `<polyline points="${p}" class="z"/>`) + marca.pts.map(q => `<circle cx="${q[0]}" cy="${q[1]}" r=".012" class="pt"/>`).join(""); }
+async function salvarMarca() { if (marca.pts.length < 3) return toast("Toque em pelo menos 3 cantos da mesa.");
+  const { error } = await sb.from("zv_mesas").update({ camera: marca.cid, zona: marca.pts }).eq("id", marca.mesa); if (error) return toast(erro(error));
+  await carregarSalao(); toast("Mesa marcada. O programa da câmera pega a mudança em até 1 minuto.");
+  const prox = MESAS.find(x => !(x.zona && x.camera === marca.cid)); if (prox) { $("mkMesa").value = prox.id; marca.mesa = prox.id; marca.pts = []; desenharMarca(); } else { fecharSheet(); desenharCams(); atualizarSalao(); } }
+/* editor da planta: arrastar mesas */
+function novaMesa() { abrirSheet(`<h2>Nova mesa</h2><label class="f" style="margin-top:10px">Nome<input class="t" id="nmNome" value="Mesa ${MESAS.length + 1}"></label>
+  <label class="f" style="margin-top:10px">Lugares<input class="t" id="nmLug" inputmode="numeric" value="4"></label>
+  <div class="seg" style="margin-top:10px"><button aria-pressed="true" id="fR" onclick="this.setAttribute('aria-pressed',true);$('fQ').setAttribute('aria-pressed',false)">Redonda</button><button aria-pressed="false" id="fQ" onclick="this.setAttribute('aria-pressed',true);$('fR').setAttribute('aria-pressed',false)">Quadrada</button></div>
+  <button class="b pri wide" style="margin-top:12px" onclick="salvarMesa()">Adicionar</button>`); }
+async function salvarMesa() { const nome = $("nmNome").value.trim() || "Mesa"; const n = MESAS.length;
+  const { error } = await sb.from("zv_mesas").insert({ negocio: NEG.id, nome, lugares: Math.min(40, Math.max(1, parseInt($("nmLug").value) || 4)), forma: $("fQ").getAttribute("aria-pressed") === "true" ? "quadrada" : "redonda",
+    x: .12 + (n % 5) * .19, y: .18 + Math.floor(n / 5) % 4 * .22, ordem: n });
+  if (error) return toast(erro(error)); fecharSheet(); await carregarSalao(); desenharSalao(); }
+function ligarArraste() { const pl = $("planta"); let arr = null;
+  pl.querySelectorAll(".mesa").forEach(b => { b.onpointerdown = ev => { ev.preventDefault(); b.setPointerCapture(ev.pointerId); arr = { b, id: b.dataset.id, moveu: false }; };
+    b.onpointermove = ev => { if (!arr || arr.b !== b) return; const r = pl.getBoundingClientRect(); arr.moveu = true;
+      arr.x = Math.min(.96, Math.max(.04, (ev.clientX - r.left) / r.width)); arr.y = Math.min(.94, Math.max(.06, (ev.clientY - r.top) / r.height)); b.style.left = arr.x * 100 + "%"; b.style.top = arr.y * 100 + "%"; };
+    b.onpointerup = async () => { if (!arr) return; const a = arr; arr = null;
+      if (!a.moveu) return editarMesa(a.id);
+      const m = MESAS.find(x => x.id === a.id); m.x = a.x; m.y = a.y; await sb.from("zv_mesas").update({ x: a.x, y: a.y }).eq("id", a.id); }; }); }
+function editarMesa(id) { const x = MESAS.find(m => m.id === id);
+  abrirSheet(`<h2>${esc(x.nome)}</h2><label class="f" style="margin-top:10px">Nome<input class="t" id="emNome" value="${esc(x.nome)}"></label><label class="f" style="margin-top:10px">Lugares<input class="t" id="emLug" inputmode="numeric" value="${x.lugares}"></label>
+    <button class="b pri wide" style="margin-top:12px" onclick="salvarEdicaoMesa('${id}')">Salvar</button><button class="b no wide" style="margin-top:8px" onclick="apagarMesa('${id}')">Apagar mesa</button>`); }
+async function salvarEdicaoMesa(id) { await sb.from("zv_mesas").update({ nome: $("emNome").value.trim() || "Mesa", lugares: Math.min(40, Math.max(1, parseInt($("emLug").value) || 4)) }).eq("id", id);
+  fecharSheet(); await carregarSalao(); desenharSalao(); }
+async function apagarMesa(id) { if (!confirm("Apagar esta mesa?")) return; await sb.from("zv_mesas").delete().eq("id", id); fecharSheet(); await carregarSalao(); desenharSalao(); }
 
 /* ---------------- catálogo ---------------- */
 let CAT = null, sujo = false;
