@@ -117,6 +117,108 @@
       };
     }
   }
-  document.addEventListener("DOMContentLoaded", function () { ligarCombos(); });
+  /* QR code na mesa (?mesa=código): o carrinho manda direto para a cozinha, sem WhatsApp, e aparece a barra
+     com Chamar garçom e Conta. Pagamento é no fim, ao pedir a conta (Pix na hora, se a loja tiver chave). */
+  function ligarMesa() {
+    var q = (location.search.match(/[?&]mesa=([a-f0-9]{16,64})/i) || [])[1];
+    if (!q || Z.tipo !== "pedido" || typeof cart === "undefined" || typeof renderCart !== "function") return;
+    var M = null, ocupado = false, h = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+    var din = function (v) { return typeof brl === "function" ? brl(v) : "R$ " + (+v).toFixed(2).replace(".", ","); };
+    var un = function (r) { return (r && r.zv_mesa_qr) || r; };
+    var css = document.createElement("style");
+    css.textContent = ".zv-mesa{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;align-items:center;gap:8px;padding:10px max(12px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom));" +
+      "background:var(--paper,#fff);color:var(--ink,#111);border-top:1px solid var(--line,rgba(0,0,0,.12));box-shadow:0 -8px 24px rgba(0,0,0,.12);font-family:inherit}" +
+      ".zv-mesa .zm-t{flex:1;min-width:0;line-height:1.15}.zv-mesa .zm-t small{display:block;font-size:12px;opacity:.65}.zv-mesa .zm-t b{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}" +
+      ".zv-mesa button{min-height:46px;padding:0 14px;border-radius:12px;font:inherit;font-weight:700;font-size:14.5px;border:1px solid var(--line,rgba(0,0,0,.15));background:transparent;color:inherit;cursor:pointer}" +
+      ".zv-mesa button.pri{background:var(--c2);color:var(--c2ink,#111);border-color:transparent}.zv-mesa button[disabled]{opacity:.6;cursor:default}" +
+      ".zv-mesa button:focus-visible{outline:3px solid var(--c2);outline-offset:2px}" +
+      "body.zv-na-mesa{padding-bottom:calc(76px + env(safe-area-inset-bottom))}body.zv-na-mesa .fab{bottom:calc(80px + env(safe-area-inset-bottom))}" +
+      "body.zv-na-mesa .wa-float,body.zv-na-mesa .zap-float{display:none}" +
+      ".zm-lin{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line,rgba(0,0,0,.12));font-size:15px}.zm-lin small{opacity:.65}" +
+      ".zm-ped{font-size:12.5px;opacity:.65;margin:14px 0 2px}.zm-ped:first-child{margin-top:0}";
+    document.head.appendChild(css);
+    var bar = document.createElement("div"); bar.className = "zv-mesa"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", "Sua mesa");
+    var pinta = function () {
+      var ch = (M && M.chamados) || [];
+      bar.innerHTML = '<div class="zm-t"><small>Você está na</small><b>' + h(M ? M.mesa : "mesa") + "</b></div>" +
+        '<button id="zmGar" ' + (ch.indexOf("garcom") >= 0 ? "disabled" : "") + ">" + (ch.indexOf("garcom") >= 0 ? "Garçom a caminho" : "Chamar garçom") + "</button>" +
+        '<button class="pri" id="zmConta">' + (ch.indexOf("conta") >= 0 ? "Conta pedida" : "Conta") + "</button>";
+      bar.querySelector("#zmGar").onclick = chamarGarcom; bar.querySelector("#zmConta").onclick = abrirConta;
+    };
+    var atualizar = function () { return Z.rpc("zv_mesa_qr", { p_qr: q }).then(function (r) { r = un(r); if (r && r.mesa) { M = r; pinta(); } return M; }); };
+    var totalConta = function () { return ((M && M.conta) || []).reduce(function (s, p) { return s + (+p.total || 0); }, 0); };
+    function chamarGarcom() {
+      if (ocupado) return; ocupado = true;
+      Z.rpc("zv_mesa_chamar", { p_qr: q, p_tipo: "garcom", p_detalhe: null })
+        .then(function () { toast("Chamamos o garçom. Ele já vem até a " + M.mesa + "."); return atualizar(); })
+        .catch(function (e) { toast(/muitos/.test(e.message) ? "Já avisamos o garçom. Aguarde um instante." : Z.erro(e)); })
+        .then(function () { ocupado = false; });
+    }
+    var pag = null;
+    function abrirConta() {
+      atualizar().catch(function () {}).then(function () {
+        var L = (M && M.conta) || [], pedida = ((M && M.chamados) || []).indexOf("conta") >= 0;
+        document.getElementById("shTitle").textContent = "Conta da " + M.mesa;
+        var body = document.getElementById("shBody"), foot = document.getElementById("shFoot");
+        body.innerHTML = L.length ? L.map(function (p) {
+          return '<div class="zm-ped">Pedido nº ' + p.numero + ", " + new Date(p.em).toTimeString().slice(0, 5) + "</div>" + (p.itens || []).map(function (i) {
+            return '<div class="zm-lin"><span>' + h(i.qty) + "× " + h(i.nome) + (i.cfg ? " <small>(" + h(i.cfg) + ")</small>" : "") + "</span><span>" + din((+i.precoUnit || 0) * (+i.qty || 0)) + "</span></div>"; }).join(""); }).join("")
+          : '<div class="empty">Nada pedido por aqui ainda.<br>Escolha no cardápio e peça direto desta mesa.</div>';
+        var ops = ["Pix", "Cartão", "Dinheiro"], temPix = typeof CONFIG !== "undefined" && CONFIG.pix && CONFIG.pix.chave && !/SUA_CHAVE/i.test(CONFIG.pix.chave);
+        foot.innerHTML = '<div class="totrow"><span style="font-weight:600">Total da mesa</span><span class="tv">' + din(totalConta()) + "</span></div>" +
+          (pedida ? '<div class="hint" style="margin-top:10px">Pedimos a conta' + (pag ? " (" + h(pag) + ")" : "") + ". O garçom já traz.</div>" : "") +
+          (L.length ? '<div class="field" style="margin-top:14px"><label>Como vai pagar?</label><div class="opts" style="grid-template-columns:repeat(3,1fr)">' +
+            ops.map(function (o) { return '<button class="o2 center ' + (pag === o ? "sel" : "") + '" data-p="' + o + '">' + o + "</button>"; }).join("") + "</div></div>" +
+            '<button class="send" id="zmPedeConta"' + (pag ? "" : " disabled") + ">" + (pedida ? "Avisar de novo" : "Pedir a conta") + "</button>" +
+            (temPix && pag === "Pix" ? '<button class="send" id="zmPix" style="margin-top:8px;background:transparent;color:inherit;border:1px solid var(--line)">Pagar com Pix agora</button>' : "") : "");
+        foot.querySelectorAll("[data-p]").forEach(function (b) { b.onclick = function () { pag = b.dataset.p; abrirConta(); }; });
+        var bc = foot.querySelector("#zmPedeConta"); if (bc) bc.onclick = function () { bc.disabled = true;
+          Z.rpc("zv_mesa_chamar", { p_qr: q, p_tipo: "conta", p_detalhe: pag }).then(function () { toast("Conta pedida. O garçom já traz."); return atualizar(); })
+            .then(function () { closeAll(); }).catch(function (e) { bc.disabled = false; toast(Z.erro(e)); }); };
+        var bp = foot.querySelector("#zmPix"); if (bp) bp.onclick = function () {
+          Z.rpc("zv_mesa_chamar", { p_qr: q, p_tipo: "conta", p_detalhe: "Pix" }).catch(function () {}).then(atualizar);
+          showConfirm({ num: "M" + Date.now().toString(36).slice(-5).toUpperCase(), titulo: "Pix da " + M.mesa, sub: "Pague o total da mesa e mostre o comprovante ao garçom.", valorPix: totalConta(), pixTitulo: "Total da mesa", passos: [], waUrl: "" });
+          var a = document.querySelector("#conf a.conf-btn"); if (a) a.remove(); };
+        openSheet("mesa");
+      });
+    }
+    /* carrinho da mesa: sem entrega, sem WhatsApp, nome opcional (só depois que o código da mesa confere) */
+    function trocarCarrinho() {
+    total = function () { return Math.max(0, subtotal() - descontoCupom()); };
+    faltando = function () { return ""; };
+    var origRender = renderCart;
+    renderCart = function () {
+      origRender(); if (!M || !cart.length) return;
+      document.getElementById("shTitle").textContent = "Pedido da " + M.mesa;
+      document.getElementById("shFoot").innerHTML =
+        '<div class="field"><label>Seu nome <small>opcional</small></label><input class="txt" id="zmNome" placeholder="Para o garçom saber de quem é" value="' + h(order.nome) + '"></div>' +
+        '<div class="field"><label>Observação <small>opcional</small></label><input class="txt" id="zmObs" placeholder="Ex.: sem cebola, trazer junto com a bebida" value="' + h(Z.mesaObs || "") + '"></div>' +
+        '<div style="margin-top:16px"><div class="totrow"><span style="font-weight:600">Total</span><span class="tv">' + din(total()) + "</span></div></div>" +
+        '<button class="send" id="sendBtn">Pedir na ' + h(M.mesa) + "</button>" +
+        '<div class="hint">O pedido vai direto para a cozinha. Você paga no fim, quando pedir a conta.</div>';
+      document.getElementById("zmNome").oninput = function () { order.nome = this.value; };
+      document.getElementById("zmObs").oninput = function () { Z.mesaObs = this.value; };
+      document.getElementById("sendBtn").onclick = enviar;
+    };
+    enviar = function () {
+      if (!M || ocupado || !cart.length) return; ocupado = true;
+      var b = document.getElementById("sendBtn"); if (b) { b.disabled = true; b.textContent = "Enviando…"; }
+      var itens = cart.map(function (l) { return { id: l.id, nome: l.nome, qty: l.qty, precoUnit: l.precoUnit, cfg: l.cfg || null, obs: l.obs || null, un: l.un || null }; });
+      Z.rpc("zv_mesa_pedir", { p_qr: q, p_itens: itens, p_total: total(), p_nome: (order.nome || "").trim() || null, p_obs: (Z.mesaObs || "").trim() || null })
+        .then(function (num) { num = (num && num.zv_mesa_pedir) || num; ocupado = false; Z.mesaObs = "";
+          showConfirm({ num: num, titulo: "Pedido nº " + num + " na cozinha", sub: "Já estamos preparando. Quer mais alguma coisa? É só pedir de novo por aqui.",
+            valorPix: 0, passos: [["Pedido feito, " + new Date().toTimeString().slice(0, 5), true], ["Em preparo", false], ["Chega na " + M.mesa, false]], waUrl: "", depois: "Voltar ao cardápio" });
+          var a = document.querySelector("#conf a.conf-btn"); if (a) a.remove();
+          cart = []; onCartChange(); atualizar().catch(function () {}); })
+        .catch(function (e) { ocupado = false; if (b) { b.disabled = false; b.textContent = "Pedir na " + M.mesa; }
+          toast(/mesa_invalida/.test(e.message) ? "Este QR não vale mais. Peça um novo ao garçom." : Z.erro(e)); });
+    };
+    }
+    atualizar().then(function (r) {
+      if (!r) return; trocarCarrinho(); document.body.appendChild(bar); document.body.classList.add("zv-na-mesa");
+      setInterval(function () { if (!document.hidden) atualizar().catch(function () {}); }, 20000);
+    }).catch(function (e) { if (/mesa_invalida/.test(String(e.message))) toast("Este QR de mesa não vale mais. Peça um novo ao garçom."); });
+  }
+  document.addEventListener("DOMContentLoaded", function () { ligarCombos(); ligarMesa(); });
   document.addEventListener("DOMContentLoaded", function () { if (Z.tipo === "reserva") ligarReserva(); if (Z.tipo === "agenda") ligarAgenda(); else if (Z.tipo === "pedido") ligarPedido(); });
 })();

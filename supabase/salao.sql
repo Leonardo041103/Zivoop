@@ -44,7 +44,7 @@ create table if not exists public.zv_mesa_estado (
   pessoas int not null default 0,
   desde timestamptz,                    -- quando sentaram
   atendida_em timestamptz,              -- primeira vez que alguém atendeu
-  origem text not null default 'manual' check (origem in ('manual','camera')),
+  origem text not null default 'manual' check (origem in ('manual','camera','qr')),
   atualizado timestamptz not null default now()
 );
 
@@ -98,6 +98,7 @@ begin
   elsif p_status = 'livre' and e.status = 'ocupada' then
     insert into zv_salao_eventos (negocio, mesa, tipo, pessoas, espera_seg) values (m.negocio, m.id, 'saiu', e.pessoas, extract(epoch from agora - e.desde)::int);
     update zv_mesa_estado set status = 'livre', pessoas = 0, desde = null, atendida_em = null, origem = p_origem, atualizado = agora where mesa = m.id;
+    update zv_mesa_chamados set status = 'atendido', atendido_em = agora where mesa = m.id and status = 'aberto';
   elsif e.status = 'ocupada' then
     update zv_mesa_estado set pessoas = coalesce(nullif(p_pessoas, 0), pessoas), origem = p_origem, atualizado = agora where mesa = m.id;
   end if;
@@ -194,3 +195,88 @@ begin
 end $$;
 revoke execute on function public.zv_salao_resumo(uuid, int) from public, anon;
 grant execute on function public.zv_salao_resumo(uuid, int) to authenticated;
+
+
+-- =====================================================================
+-- QR code na mesa: o cliente abre o cardápio do site ligado à mesa e pede itens, chama o garçom ou pede a conta.
+-- Cada mesa tem um código secreto (qr). Quem tem o código só consegue mexer naquela mesa.
+-- =====================================================================
+alter table public.zv_mesas add column if not exists qr text unique default encode(extensions.gen_random_bytes(12), 'hex');
+update public.zv_mesas set qr = encode(extensions.gen_random_bytes(12), 'hex') where qr is null;
+alter table public.zv_mesas drop constraint if exists zv_mesas_qr_tam;
+alter table public.zv_mesas add constraint zv_mesas_qr_tam check (qr is null or qr ~ '^[a-f0-9]{16,64}$');
+alter table public.zv_mesa_estado drop constraint if exists zv_mesa_estado_origem_check;
+alter table public.zv_mesa_estado add constraint zv_mesa_estado_origem_check check (origem in ('manual','camera','qr'));
+
+create table if not exists public.zv_mesa_chamados (
+  id uuid primary key default gen_random_uuid(),
+  negocio uuid not null references public.zv_negocios on delete cascade,
+  mesa uuid not null references public.zv_mesas on delete cascade,
+  tipo text not null check (tipo in ('garcom','conta','pedido')),
+  pedido uuid references public.zv_pedidos on delete set null,
+  detalhe text,
+  status text not null default 'aberto' check (status in ('aberto','atendido')),
+  criado_em timestamptz not null default now(), atendido_em timestamptz
+);
+create index if not exists zv_cham_neg on public.zv_mesa_chamados (negocio, status, criado_em);
+create index if not exists zv_cham_mesa on public.zv_mesa_chamados (mesa, criado_em);
+alter table public.zv_mesa_chamados enable row level security;
+drop policy if exists dono on public.zv_mesa_chamados;
+create policy dono on public.zv_mesa_chamados for all to authenticated using (public.zv_meu(negocio)) with check (public.zv_meu(negocio));
+grant select, update, delete on public.zv_mesa_chamados to authenticated;
+revoke all on public.zv_mesa_chamados from anon;
+
+-- o que a mesa enxerga: nome, a conta desde que sentaram e o que já foi pedido ao garçom
+create or replace function public.zv_mesa_qr(p_qr text)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare m zv_mesas; n zv_negocios; e zv_mesa_estado;
+begin
+  select * into m from zv_mesas where qr = lower(p_qr); if not found then raise exception 'mesa_invalida'; end if;
+  select * into n from zv_negocios where id = m.negocio and status = 'ativo'; if not found then raise exception 'negocio_inexistente'; end if;
+  select * into e from zv_mesa_estado where mesa = m.id;
+  return jsonb_build_object('mesa', m.nome, 'slug', n.slug, 'ocupada', coalesce(e.status = 'ocupada', false),
+    'conta', case when e.status = 'ocupada' then coalesce((select jsonb_agg(jsonb_build_object('numero', p.numero, 'itens', p.itens, 'total', p.total, 'etapa', p.etapa, 'em', p.criado_em) order by p.criado_em)
+        from zv_pedidos p where p.negocio = m.negocio and p.detalhes->>'mesa' = m.id::text and p.etapa <> 'cancelado' and p.criado_em >= e.desde), '[]') else '[]' end,
+    'chamados', coalesce((select jsonb_agg(distinct c.tipo) from zv_mesa_chamados c where c.mesa = m.id and c.status = 'aberto' and c.tipo <> 'pedido'), '[]'));
+end $$;
+
+-- pedido feito pela mesa: entra nos Pedidos do painel (com o nome da mesa) e acende a mesa no Salão
+create or replace function public.zv_mesa_pedir(p_qr text, p_itens jsonb, p_total numeric, p_nome text default null, p_obs text default null)
+returns int language plpgsql security definer set search_path = public as $$
+declare m zv_mesas; v_num int; v_id uuid;
+begin
+  select mm.* into m from zv_mesas mm join zv_negocios n on n.id = mm.negocio and n.status = 'ativo' where mm.qr = lower(p_qr);
+  if not found then raise exception 'mesa_invalida'; end if;
+  if jsonb_typeof(p_itens) <> 'array' or jsonb_array_length(p_itens) = 0 then raise exception 'sem_itens'; end if;
+  if jsonb_array_length(p_itens) > 60 then raise exception 'itens_demais'; end if;
+  if (select count(*) from zv_pedidos where negocio = m.negocio and detalhes->>'mesa' = m.id::text and criado_em > now() - interval '10 minutes') >= 6 then raise exception 'muitos_pedidos'; end if;
+  perform zv_mesa_muda(m.id, 'ocupada', null, true, 'qr');
+  perform pg_advisory_xact_lock(hashtext('zvped' || m.negocio));
+  select coalesce(max(numero), 0) + 1 into v_num from zv_pedidos where negocio = m.negocio;
+  insert into zv_pedidos (negocio, numero, nome, itens, total, entrega, detalhes)
+  values (m.negocio, v_num, left(coalesce(nullif(trim(p_nome), ''), m.nome), 80), p_itens, greatest(coalesce(p_total, 0), 0), left(m.nome, 300),
+    jsonb_build_object('mesa', m.id, 'mesa_nome', m.nome, 'origem', 'qr', 'obs', nullif(left(trim(coalesce(p_obs, '')), 300), '')))
+  returning id into v_id;
+  insert into zv_mesa_chamados (negocio, mesa, tipo, pedido, detalhe) values (m.negocio, m.id, 'pedido', v_id, 'Pedido nº ' || v_num);
+  return v_num;
+end $$;
+
+-- chamar o garçom ou pedir a conta (repetir enquanto ninguém atendeu não cria outro chamado)
+create or replace function public.zv_mesa_chamar(p_qr text, p_tipo text, p_detalhe text default null)
+returns text language plpgsql security definer set search_path = public as $$
+declare m zv_mesas;
+begin
+  select mm.* into m from zv_mesas mm join zv_negocios n on n.id = mm.negocio and n.status = 'ativo' where mm.qr = lower(p_qr);
+  if not found then raise exception 'mesa_invalida'; end if;
+  if p_tipo not in ('garcom', 'conta') then raise exception 'tipo_invalido'; end if;
+  if exists (select 1 from zv_mesa_chamados where mesa = m.id and tipo = p_tipo and status = 'aberto') then
+    update zv_mesa_chamados set detalhe = coalesce(left(p_detalhe, 60), detalhe) where mesa = m.id and tipo = p_tipo and status = 'aberto';
+    return 'ja_chamado';
+  end if;
+  if (select count(*) from zv_mesa_chamados where mesa = m.id and criado_em > now() - interval '10 minutes') >= 12 then raise exception 'muitos_chamados'; end if;
+  perform zv_mesa_muda(m.id, 'ocupada', null, false, 'qr');
+  insert into zv_mesa_chamados (negocio, mesa, tipo, detalhe) values (m.negocio, m.id, p_tipo, left(p_detalhe, 60));
+  return 'ok';
+end $$;
+revoke execute on function public.zv_mesa_qr(text), public.zv_mesa_pedir(text, jsonb, numeric, text, text), public.zv_mesa_chamar(text, text, text) from public;
+grant execute on function public.zv_mesa_qr(text), public.zv_mesa_pedir(text, jsonb, numeric, text, text), public.zv_mesa_chamar(text, text, text) to anon, authenticated;
