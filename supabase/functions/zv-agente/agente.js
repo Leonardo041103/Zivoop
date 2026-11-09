@@ -19,7 +19,7 @@ export function criarDB(url, headers) {
   };
 }
 
-const sem = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+const sem = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
 const brl = v => "R$ " + Number(v || 0).toFixed(2).replace(".", ",");
 const numero = s => { if (s == null) return null; let t = String(s).replace(/r\$|reais|real/gi, "").trim();
   if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, ""); t = t.replace(",", "."); const n = parseFloat(t); return isNaN(n) ? null : Math.round(n * 100) / 100; };
