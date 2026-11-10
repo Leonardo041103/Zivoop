@@ -1,5 +1,10 @@
 # Zivoop Ofertas
 
+> **Antes de lançar:** mover o Zivoop Ofertas para um banco próprio no Supabase (projeto separado do `zivoop-pedidos`).
+> O robô usa a chave service_role numa VPS; no mesmo banco dos sites, uma invasão da VPS exporia os dados de todos os negócios.
+> Passos: criar o projeto, rodar `supabase/ofertas.sql` nele, trocar `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` no `.env` do robô e a URL/chave em `src/ofertas/index.html`, e apagar as tabelas `fl_*` do `zivoop-pedidos`.
+
+
 Posta ofertas de afiliado (Shopee, Mercado Livre, Amazon) sozinho nos grupos de WhatsApp do cliente.
 
 - **Painel do cliente:** https://zivoop.vercel.app/ofertas (arquivo `src/ofertas/index.html`)
