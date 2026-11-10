@@ -8,7 +8,7 @@
       .then(function (r) { return r.json().catch(function () { return null; }).then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || ("HTTP " + r.status)); return j; }); });
   };
   var ERROS = { horario_ocupado: "Esse horário acabou de ser reservado. Escolha outro.", horario_passado: "Esse horário já passou.", muitos_pendentes: "Você já tem agendamentos esperando confirmação.",
-    muitos_pedidos: "Muitos pedidos em pouco tempo. Fale com a loja pelo WhatsApp.", indisponivel: "Essa data acabou de ser reservada. Escolha outra.", datas_invalidas: "Confira as datas.", nome_obrigatorio: "Digite seu nome.", negocio_inexistente: "Este site está fora do ar." };
+    muitos_pedidos: "Muitos pedidos em pouco tempo. Fale com a loja pelo WhatsApp.", indisponivel: "Essa data acabou de ser reservada. Escolha outra.", datas_invalidas: "Confira as datas.", nome_obrigatorio: "Digite seu nome.", negocio_inexistente: "Este site está fora do ar.", muitos_agendamentos: "Muitos agendamentos em pouco tempo. Tente de novo em alguns minutos.", itens_demais: "Pedido grande demais. Divida em dois.", pedido_grande_demais: "Pedido grande demais. Divida em dois." };
   Z.erro = function (e) { var m = String((e && e.message) || e); for (var k in ERROS) if (m.indexOf(k) >= 0) return ERROS[k]; return "Não deu para salvar agora. Confira a internet e tente de novo."; };
   var conv = function (l) { return (l || []).map(function (o) { return { p: o.profissional || "", a: Date.parse(o.inicio), b: Date.parse(o.fim) }; }); };
   Z.busy = conv(Z.ocupados);

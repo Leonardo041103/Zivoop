@@ -231,6 +231,7 @@ var esc=t==="escuro"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").ma
     <p class="err" id="aErr" role="alert"></p>
     <button class="b pri" id="aBtn" type="submit">Entrar</button>
     <button class="b sec" type="button" id="aReset" onclick="esqueci()">Esqueci a senha</button>
+    <p class="muted" style="font-size:12.5px;margin:0;text-align:center">Ao entrar ou criar a conta, você concorda com os <a href="/termos" target="_blank" rel="noopener">Termos de uso</a> e a <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.</p>
   </form>
 </div>
 
@@ -270,7 +271,7 @@ const clone = o => JSON.parse(JSON.stringify(o ?? null));
 const zapLink = (num, txt) => "https://wa.me/" + (String(num).replace(/\D/g, "").length <= 11 ? "55" : "") + String(num).replace(/\D/g, "") + (txt ? "?text=" + encodeURIComponent(txt) : "");
 const desde = t => { const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 1 ? "agora" : m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.floor(m / 60) + "h" : "há " + Math.floor(m / 1440) + "d"; };
 let toastT; function toast(t) { let el = $("toast"); if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); } el.textContent = t; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 3000); }
-const ERR = { limite_negocios: "Você chegou ao limite de 5 negócios nesta conta.", nome_obrigatorio: "Escreva o nome do negócio.", modelo_inexistente: "Escolha o tipo do negócio.", "Invalid login credentials": "E-mail ou senha não conferem.", "User already registered": "Esse e-mail já tem conta. Entre com ele.", "Email not confirmed": "Confirme o e-mail: mandamos um link para a sua caixa de entrada." };
+const ERR = { limite_negocios: "Você chegou ao limite de 5 negócios nesta conta.", tente_mais_tarde: "Muita gente criando site agora. Tente de novo em alguns minutos.", muitos_pedidos: "Muitos pedidos em pouco tempo. Espere alguns minutos.", nome_obrigatorio: "Escreva o nome do negócio.", modelo_inexistente: "Escolha o tipo do negócio.", "Invalid login credentials": "E-mail ou senha não conferem.", "User already registered": "Esse e-mail já tem conta. Entre com ele.", "Email not confirmed": "Confirme o e-mail: mandamos um link para a sua caixa de entrada." };
 const erro = e => { const m = String(e && e.message || e); const k = Object.keys(ERR).find(k => m.includes(k)); return k ? ERR[k] : "Não deu certo: " + m; };
 
 let U = null, NEGS = [], NEG = null, PAD = null, MODELOS = [], TAB = "inicio", pollT = null, vistos = new Set(), primeira = true;

@@ -56,6 +56,6 @@ module.exports = async (req, res) => {
     .replace('<script src="dados.js"></script>', `<script>window.DADOS=${seguro(dados)};window.ZV=${seguro(zv)};</script>\n<script src="/zv-site.js"></script>`)
     .split(`https://zivoop.com/modelos/${site.nicho}/`).join(`https://zivoop.com/${slug}`);
   res.statusCode = 200; res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.setHeader("Cache-Control", "public, s-maxage=5, stale-while-revalidate=30");
+  res.setHeader("Cache-Control", "public, s-maxage=15, stale-while-revalidate=300");
   res.end(html);
 };

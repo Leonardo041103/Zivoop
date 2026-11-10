@@ -14,6 +14,13 @@ Deno.serve(async (req) => {
   let body: { texto?: string; negocio?: string } = {};
   try { body = await req.json(); } catch (_) { /* vazio */ }
   const admin = criarDB(SB, { apikey: SRV, Authorization: "Bearer " + SRV });
+  // limite por dono: protege a conta da IA (custo) de uso exagerado ou de um robô
+  try {
+    const desde = new Date(Date.now() - 3600e3).toISOString();
+    const r = await fetch(`${SB}/rest/v1/zv_mensagens?select=id&dono=eq.${user.id}&papel=eq.dono&criado_em=gte.${encodeURIComponent(desde)}`, { headers: { apikey: SRV, Authorization: "Bearer " + SRV, Prefer: "count=exact", Range: "0-0" } });
+    const total = parseInt((r.headers.get("content-range") || "").split("/")[1] || "0");
+    if (total >= 60) return json({ resposta: "Você mandou muitas mensagens na última hora. Espere um pouco e tente de novo." }, 429);
+  } catch (_) { /* sem contagem, segue */ }
   const usuario = criarDB(SB, { apikey: ANON, Authorization: auth });
   const ia = { chave: Deno.env.get("OPENAI_API_KEY"), base: Deno.env.get("OPENAI_BASE_URL") || "https://api.openai.com/v1", modelo: Deno.env.get("OPENAI_MODEL") || "gpt-4o-mini" };
   try {
