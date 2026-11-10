@@ -616,6 +616,12 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* nada pode deixar a página mais larga que o celular */
+html,body{overflow-x:clip}
+.card,.card .txt,.unit,.unit .ubd{min-width:0}
+.card h3,.card .desc,.sec-h h2,.unit h3{overflow-wrap:break-word}
+@media (max-width:420px){.sec-h h2{overflow-wrap:anywhere}}
+
 /* ===== Identidade por grupo: base comum =====
    Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
    e as formas. Grupos de fundo claro usam a abertura clara. */
@@ -665,6 +671,36 @@ footer{background:var(--c1d);font-size:14px}
 [data-estilo=clinica] .sobre{background:var(--paper);border:1px solid var(--line);border-radius:30px;margin-top:30px}
 [data-estilo=clinica] footer{background:var(--paper);color:var(--ink-soft);border-top:1px solid var(--line)}
 [data-estilo=clinica] footer .fb{color:var(--ink)}
+
+/* 3D e realidade aumentada */
+.v3d-pill{display:inline-flex;align-self:flex-start;width:max-content;align-items:center;gap:5px;min-height:30px;padding:0 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c2) 45%,transparent);
+  background:color-mix(in srgb,var(--c2) 12%,transparent);color:inherit;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.02em;cursor:pointer;margin:6px 0 2px}
+.v3d-pill:hover{background:color-mix(in srgb,var(--c2) 22%,transparent)}
+.v3d-big{display:flex;align-items:center;gap:12px;width:100%;margin:10px 0 4px;padding:12px 14px;border-radius:16px;border:1.5px solid color-mix(in srgb,var(--c2) 55%,transparent);
+  background:color-mix(in srgb,var(--c2) 10%,transparent);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.v3d-big svg{width:30px;height:30px;flex:none;color:var(--c2d,var(--c2))}.v3d-big b{display:block;font-size:16px}.v3d-big small{display:block;font-size:13px;opacity:.72}
+.v3d-pill:focus-visible,.v3d-big:focus-visible,.v3d button:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+.v3d{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;color:#fff;
+  background:radial-gradient(120% 80% at 50% 38%,#3a3733 0%,#1b1a18 55%,#0d0c0b 100%)}
+.v3d.on{display:flex}
+.v3d-top{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px 8px}
+.v3d-tt{flex:1;min-width:0}.v3d-tt b{display:block;font-family:var(--fd,inherit);font-size:20px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v3d-tt span{font-size:14.5px;opacity:.75}
+.v3d-x{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:26px;line-height:1;cursor:pointer}
+.v3d-palco{position:relative;flex:1 1 0;min-height:0;overflow:hidden}
+.v3d-palco model-viewer{position:absolute;inset:0;width:100%;height:100%;background:transparent;--poster-color:transparent;--progress-bar-color:var(--c2)}
+.v3d-carr{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:14px;font-size:14.5px;opacity:.85;text-align:center;padding:0 24px}
+.v3d-carr[hidden]{display:none}
+.v3d-carr i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:var(--c2);animation:v3dGira 1s linear infinite}
+@keyframes v3dGira{to{transform:rotate(360deg)}}
+.v3d-bot{position:relative;z-index:1;padding:10px 16px calc(16px + env(safe-area-inset-bottom));display:grid;gap:10px;max-width:560px;width:100%;margin:0 auto}
+.v3d-dica{margin:0;font-size:14px;opacity:.78;text-align:center;min-height:1.3em}
+.v3d-acoes{display:flex;gap:10px}
+.v3d-ar,.v3d-ok{flex:1;min-height:52px;border-radius:999px;font:inherit;font-weight:700;font-size:15.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.v3d-ar{border:0;background:var(--c2);color:var(--c2ink,#111)}.v3d-ar[hidden]{display:none}
+.v3d-ok{border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff}
+.v3d-cred{font-size:11.5px;opacity:.5;text-align:center}.v3d-cred:empty{display:none}
+@media (prefers-reduced-motion:reduce){.v3d-carr i{animation:none}}
 
 </style>
 </head>
@@ -1135,7 +1171,7 @@ function cardEl(it){
     :`<div class="ph" onclick="openItem('${it.id}')">${it.e||CONFIG.emoji}</div>`;
   const preco=it.consulta?`<span class="price" style="font-size:14px;color:var(--c2d)">${it.consultaTxt||"Consulte"}</span>`
     :`<span class="price">${variaPreco(it)?'<span class="from">a partir de</span>':''}${it.de?`<span class="de">${brl(it.de)}</span>`:''}${brl(minPreco(it))}${unidadeCard(it)?` <small>/${unidadeCard(it)}</small>`:''}</span>`;
-  el.innerHTML=`${thumb}<div class="txt"><h3 onclick="openItem('${it.id}')">${it.n}</h3><div class="desc">${it.d||""}</div>${it.info?`<div class="info">${it.info}</div>`:""}
+  el.innerHTML=`${thumb}<div class="txt"><h3 onclick="openItem('${it.id}')">${it.n}</h3><div class="desc">${it.d||""}</div>${it.info?`<div class="info">${it.info}</div>`:""}${pill3d(it)}
     ${coresCard(it)}${it.tag?`<span class="tag">${it.tag}</span>`:(it.de&&it.de>minPreco(it)?`<span class="tag">Economize ${brl(it.de-minPreco(it))}</span>`:"")}<div class="bot">${preco}<span id="act-${it.id}"></span></div></div>`;
   return el;
 }
@@ -1178,6 +1214,67 @@ function perguntarWhats(){
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=`+encodeURIComponent(`Olá! Vocês têm ${q||"um produto"}?`),"_blank");
 }
 
+/* ===== 3D e realidade aumentada =====
+   O cliente toca em "Ver em 3D": o produto aparece em 3D (gira, aproxima) e, no celular, em tamanho real
+   em cima da mesa ou no espaço dele (Android: Scene Viewer/WebXR; iPhone: AR Quick Look).
+   O visualizador (model-viewer, do Google) só é baixado quando alguém toca no botão. */
+const AR3D = null;
+const REG3D = {};
+const url3d = v => /^(https?:)?\/\//.test(v) ? v : "3d/" + v + ".glb";
+const tem3d = it => !!(AR3D && it && it.m3d && !it.oculto);
+const ICO3D = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8 20 7.2v9.6L12 21.2 4 16.8V7.2z"/><path d="M4 7.2 12 11.6l8-4.4M12 11.6v9.6"/></svg>`;
+let mvPromessa = null;
+function carregarMV() {
+  if (customElements.get("model-viewer")) return Promise.resolve();
+  if (mvPromessa) return mvPromessa;
+  mvPromessa = new Promise((ok, falha) => { const s = document.createElement("script"); s.type = "module";
+    s.src = "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+    s.onload = () => customElements.whenDefined("model-viewer").then(ok); s.onerror = () => { mvPromessa = null; s.remove(); falha(); };
+    document.head.appendChild(s); });
+  return mvPromessa;
+}
+function pill3d(it, onde) { if (!tem3d(it)) return ""; REG3D[it.id] = it;
+  return onde === "grande"
+    ? `<button class="v3d-big" onclick="ver3d('${it.id}')">${ICO3D}<span><b>Ver em 3D</b><small>${AR3D.txt}, no tamanho real</small></span></button>`
+    : `<button class="v3d-pill" onclick="event.stopPropagation();ver3d('${it.id}')" aria-label="Ver ${esc(it.n)} em 3D">${ICO3D}3D</button>`; }
+let v3dVolta = null;
+function fechar3d() { const o = document.getElementById("v3d"); if (!o || !o.classList.contains("on")) return; o.classList.remove("on");
+  const mv = o.querySelector("model-viewer"); if (mv) mv.removeAttribute("src");
+  document.documentElement.style.overflow = ""; if (v3dVolta && v3dVolta.focus) v3dVolta.focus(); }
+async function ver3d(id) {
+  const it = REG3D[id]; if (!it) return; v3dVolta = document.activeElement;
+  let o = document.getElementById("v3d");
+  if (!o) { o = document.createElement("div"); o.id = "v3d"; o.className = "v3d"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-labelledby", "v3dT");
+    o.innerHTML = `<div class="v3d-top"><div class="v3d-tt"><b id="v3dT"></b><span id="v3dP"></span></div><button class="v3d-x" aria-label="Fechar" onclick="fechar3d()">×</button></div>
+      <div class="v3d-palco" id="v3dPalco"><div class="v3d-carr" id="v3dCarr"><i></i><span>Carregando o 3D…</span></div></div>
+      <div class="v3d-bot"><p class="v3d-dica" id="v3dDica"></p><div class="v3d-acoes"><button class="v3d-ar" id="v3dAR" hidden>${ICO3D}<span>${AR3D.txt}</span></button><button class="v3d-ok" id="v3dOk"></button></div><small class="v3d-cred" id="v3dCred"></small></div>`;
+    document.body.appendChild(o);
+    o.addEventListener("keydown", e => { if (e.key === "Escape") fechar3d(); if (e.key === "Tab") { const f = [...o.querySelectorAll("button:not([hidden])")]; const i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } } }); }
+  document.getElementById("v3dT").textContent = it.n;
+  document.getElementById("v3dP").textContent = it.p != null && typeof brl === "function" ? brl(typeof minPreco === "function" ? minPreco(it) : it.p) : "";
+  document.getElementById("v3dCred").textContent = it.m3dCredito || "";
+  const ok = document.getElementById("v3dOk"); ok.textContent = window.V3D_ACAO_TXT || "Escolher"; ok.onclick = () => { fechar3d(); if (window.V3D_ACAO) window.V3D_ACAO(it); };
+  o.classList.add("on"); document.documentElement.style.overflow = "hidden"; o.querySelector(".v3d-x").focus();
+  const palco = document.getElementById("v3dPalco"), carr = document.getElementById("v3dCarr"), dica = document.getElementById("v3dDica"), bAR = document.getElementById("v3dAR");
+  carr.hidden = false; carr.querySelector("span").textContent = "Carregando o 3D…"; dica.textContent = ""; bAR.hidden = true;
+  try { await carregarMV(); } catch (e) { carr.querySelector("span").textContent = "Não deu para abrir o 3D agora. Confira a internet e tente de novo."; return; }
+  let mv = palco.querySelector("model-viewer");
+  if (!mv) { mv = document.createElement("model-viewer");
+    const at = { "camera-controls": "", "touch-action": "pan-y", "auto-rotate": "", "auto-rotate-delay": "1200", "rotation-per-second": "16deg", "shadow-intensity": "1.1", "shadow-softness": "0.85",
+      "environment-image": "neutral", "exposure": "1.05", "interaction-prompt": "none", "ar": "", "ar-modes": "webxr scene-viewer quick-look", "ar-scale": "fixed", "ar-placement": "floor", "camera-orbit": "30deg 68deg 105%" };
+    for (const k in at) mv.setAttribute(k, at[k]);
+    const slotAR = document.createElement("button"); slotAR.slot = "ar-button"; slotAR.hidden = true; mv.appendChild(slotAR);   // usamos o nosso botão
+    mv.addEventListener("load", () => { carr.hidden = true;
+      dica.textContent = mv.canActivateAR ? "Arraste para girar. Toque em “" + AR3D.txt + "” e aponte a câmera para " + (AR3D.modo === "mesa" ? "a mesa." : "o chão.") : "Arraste para girar e use dois dedos para aproximar." + (/Mobi|Android|iPhone/.test(navigator.userAgent) ? "" : " No celular, dá para ver no tamanho real.");
+      bAR.hidden = !mv.canActivateAR; });
+    mv.addEventListener("error", () => { carr.hidden = false; carr.querySelector("span").textContent = "Não deu para abrir este 3D."; });
+    mv.addEventListener("ar-status", e => { if (e.detail.status === "failed") dica.textContent = "A câmera não abriu. Confira se o navegador tem permissão para usar a câmera."; });
+    palco.appendChild(mv); bAR.onclick = () => mv.activateAR(); }
+  mv.alt = "Modelo 3D de " + it.n; mv.src = url3d(it.m3d);
+}
+
+window.V3D_ACAO=it=>{ if(sheetMode==="item"&&modal&&modal.item&&modal.item.id===it.id) return; openItem(it.id); };
 /* ===== Montagem visual: pizza, copo de açaí e marmita desenhados com o que o cliente escolheu =====
    item.vis = "pizza" | "copo" | "marmita"; item.ing = ingredientes que vêm no item (o cliente pode tirar).
    Cor e forma de cada ingrediente: VIS_PADRAO abaixo (o nicho completa com CONFIG.ingVis). */
@@ -1343,7 +1440,7 @@ function renderItem(){
   const img=it.vis?visHTML():it.img?`<img class="it-img" src="${imgUrl(it.img)}" alt="${esc(it.n)}">`:`<div class="it-ph">${it.e||CONFIG.emoji}</div>`;
   const gs=it.g.map((_,gi)=>grupoHtml(gi));
   const unit=it.g.length?"":`<span class="it-unit">${brl(it.p)}${it.un?" por "+it.un:""}</span>`;
-  document.getElementById("shBody").innerHTML=`${img}${unit}
+  document.getElementById("shBody").innerHTML=`${img}${pill3d(it,"grande")}${unit}
     <div class="it-desc">${it.d||""}${it.info?`<div class="info">${it.info}</div>`:""}${it.nota?`<br><b>${it.nota}</b>`:""}</div>
     ${gs[0]||""}${ingHTML()}${meioHtml()}${gs.slice(1).join("")}
     <div class="opt-group"><label>Quantidade</label>

@@ -216,6 +216,13 @@ table.tb{width:100%;border-collapse:collapse;font-size:14px}
 .foto-cam .pt{fill:#fff;stroke:var(--cobalt);stroke-width:.004}
 @media (prefers-reduced-motion:reduce){.mesa.alerta{animation:none}}
 @media (max-width:600px){.planta{aspect-ratio:4/3}.mesa b{font-size:11px}.mesa small{font-size:10.5px}}
+.est-fundos{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.est-fundos[hidden]{display:none}.est-fundos .chip i{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid var(--line);margin-right:6px;vertical-align:-2px}
+.est-cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.est-cmp figure{margin:0;min-width:0}.est-cmp figcaption{font-size:12.5px;color:var(--ink2);text-align:center;margin-top:5px;font-weight:600}
+.est-q{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--paper);display:grid;place-items:center;border:1px solid var(--line)}.est-q img{width:100%;height:100%;object-fit:contain}
+.est-gira{width:28px;height:28px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--cobalt);animation:estGira 1s linear infinite}@keyframes estGira{to{transform:rotate(360deg)}}
+.p3d{height:300px;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 35%,#f4f2ef,#dcd8d2)}.p3d model-viewer{width:100%;height:100%}
+.p3d-passos{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14.5px}
+@media (prefers-reduced-motion:reduce){.est-gira{animation:none}}
 </style>
 <script>(function(){var t="auto";try{t=localStorage.getItem("zv-tema")||"auto"}catch(e){}
 var esc=t==="escuro"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.tema=esc?"escuro":"claro"})()</script>
@@ -792,14 +799,14 @@ function desenharCatalogo() { const m = $("main"), ag = ehAgenda();
   m.innerHTML = topo(W().itens, `<button class="b sec sm" onclick="novaCat()">Nova categoria</button>`) +
   `<p class="muted" style="margin:-8px 0 14px;font-size:14px">Mude nome, preço, descrição e foto. Toque em “Salvar” e o site muda na hora.</p>` +
   CAT.map((c, ci) => `<section class="cat"><div class="ch"><input value="${esc(c.cat)}" aria-label="Nome da categoria" oninput="CAT[${ci}].cat=this.value;marcar()"><button class="b sec sm" onclick="novoItem(${ci})">+ ${W().item}</button>${c.items.length ? "" : `<button class="b no sm" onclick="CAT.splice(${ci},1);marcar();desenharCatalogo()">Apagar</button>`}</div>
-    ${c.items.map((it, ii) => `<div class="it ${it.oculto ? "off" : ""}"><div class="ph">${it.img && /^https?:/.test(it.img) ? `<img src="${esc(it.img)}" alt="">` : it.img ? `<img src="/modelos/${NEG.nicho}/img/${esc(it.img)}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${esc(it.e || "📷")}'))">` : esc(it.e || "📷")}<input type="file" accept="image/*" aria-label="Trocar foto de ${esc(it.n)}" onchange="subirFoto(${ci},${ii},this.files[0])"></div>
+    ${c.items.map((it, ii) => `<div class="it ${it.oculto ? "off" : ""}"><div class="ph">${it.img && /^https?:/.test(it.img) ? `<img src="${esc(it.img)}" alt="">` : it.img ? `<img src="/modelos/${NEG.nicho}/img/${esc(it.img)}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${esc(it.e || "📷")}'))">` : esc(it.e || "📷")}<input type="file" accept="image/*" aria-label="Trocar foto de ${esc(it.n)}" onchange="subirFoto(${ci},${ii},this.files[0]);this.value=''"></div>
       <div class="row"><input class="t nm" value="${esc(it.n)}" aria-label="Nome" oninput="CAT[${ci}].items[${ii}].n=this.value;marcar()">${it.v ? "" : `<input class="t pr" inputmode="decimal" value="${it.p != null ? Number(it.p).toFixed(2).replace(".", ",") : ""}" aria-label="Preço" placeholder="Preço" oninput="setPreco(${ci},${ii},this.value)">`}
         ${ehRes() && cfg().multi ? `<input class="t pr" style="width:96px" inputmode="numeric" value="${it.estoque || ""}" aria-label="Quantos você tem" placeholder="qtd" title="Quantos você tem" oninput="CAT[${ci}].items[${ii}].estoque=parseInt(this.value)||0;marcar()">` : ""}
         ${ag && !ehRes() ? `<input class="t pr" style="width:96px" inputmode="numeric" value="${it.dur || ""}" aria-label="Duração em minutos" placeholder="min" oninput="CAT[${ci}].items[${ii}].dur=parseInt(this.value)||0;marcar()">` : ""}</div>
       ${it.v ? `<div class="vs">${it.v.map((v, vi) => `<label>${esc(v.l)}<input class="t" inputmode="decimal" value="${Number(v.p).toFixed(2).replace(".", ",")}" oninput="setVar(${ci},${ii},${vi},this.value)"></label>`).join("")}</div>` : ""}
       ${it.g && !it.v ? `<p class="muted" style="grid-column:2;margin:0;font-size:12.5px">Tem opções de montagem (${it.g.map(g => esc(g.l)).join(", ")}). Os preços das opções seguem o modelo.</p>` : ""}
       <textarea class="t ds" rows="2" aria-label="Descrição" placeholder="Descrição" oninput="CAT[${ci}].items[${ii}].d=this.value;marcar()">${esc(it.d || "")}</textarea>
-      <div class="ac"><button class="b sec sm" onclick="CAT[${ci}].items[${ii}].oculto=!CAT[${ci}].items[${ii}].oculto;marcar();desenharCatalogo()">${it.oculto ? "Mostrar no site" : ag ? "Pausar" : "Esgotado (esconder)"}</button><button class="b no sm" onclick="if(confirm('Apagar ${esc(it.n).replace(/'/g, "")}?')){CAT[${ci}].items.splice(${ii},1);marcar();desenharCatalogo()}">Apagar</button></div></div>`).join("")}</section>`).join("") +
+      <div class="ac">${tem3dNicho() ? `<button class="b sec sm" onclick="abrir3d(${ci},${ii})">${it.m3d ? "3D no site" : "+ 3D"}</button>` : ""}<button class="b sec sm" onclick="CAT[${ci}].items[${ii}].oculto=!CAT[${ci}].items[${ii}].oculto;marcar();desenharCatalogo()">${it.oculto ? "Mostrar no site" : ag ? "Pausar" : "Esgotado (esconder)"}</button><button class="b no sm" onclick="if(confirm('Apagar ${esc(it.n).replace(/'/g, "")}?')){CAT[${ci}].items.splice(${ii},1);marcar();desenharCatalogo()}">Apagar</button></div></div>`).join("")}</section>`).join("") +
   `<div class="salvar" id="barSalvar" ${sujo ? "" : "hidden"}><span>Você tem mudanças não salvas</span><span style="display:flex;gap:8px"><button class="b sec sm" onclick="sujo=false;CAT=null;telaCatalogo()">Desfazer</button><button class="b pri sm" onclick="salvarCatalogo()">Salvar e publicar</button></span></div>`; }
 function marcar() { sujo = true; const b = $("barSalvar"); if (b) b.hidden = false; }
 const num = v => { const n = parseFloat(String(v).replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return isNaN(n) ? null : Math.round(n * 100) / 100; };
@@ -812,11 +819,141 @@ async function salvarDados(f, msg) { const d = clone(NEG.dados) || {}; f(d); con
   if (error) { toast(erro(error)); return false; } NEG = data; toast(msg || "Salvo. Já está no ar."); return true; }
 async function encolher(file) { const img = await createImageBitmap(file); const s = Math.min(1, 900 / Math.max(img.width, img.height)), c = document.createElement("canvas"); c.width = img.width * s; c.height = img.height * s; c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
   return await new Promise(ok => c.toBlob(ok, "image/jpeg", .84)); }
-async function subirFoto(ci, ii, file) { if (!file) return; toast("Enviando a foto…");
-  try { const blob = await encolher(file), path = NEG.id + "/" + CAT[ci].items[ii].id + "-" + Date.now() + ".jpg";
+/* ---------------- fotos com IA (estúdio de foto) ----------------
+   Produto (sites de pedido): a IA tira o fundo e monta a foto num fundo de estúdio, com sombra e luz certas.
+   Serviços e espaços (agenda e reserva): só luz e cor automáticas, porque o fundo faz parte da foto.
+   Tudo roda no navegador do dono: sem custo por foto e a foto não vai para nenhum serviço de fora. */
+const ORT_CDN = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/";
+const estudioProduto = () => !!NEG && NEG.tipo === "pedido";
+let iaSess = null, iaProm = null;
+function carregarIA() {
+  if (iaSess) return Promise.resolve(iaSess);
+  if (iaProm) return iaProm;
+  iaProm = (async () => {
+    if (!window.ort) await new Promise((ok, falha) => { const s = document.createElement("script"); s.src = ORT_CDN + "ort.wasm.min.js"; s.onload = ok; s.onerror = () => { s.remove(); falha(new Error("sem internet")); }; document.head.appendChild(s); });
+    ort.env.wasm.wasmPaths = ORT_CDN; ort.env.wasm.numThreads = 1;
+    iaSess = await ort.InferenceSession.create("/ia/u2netp.onnx", { executionProviders: ["wasm"] });
+    return iaSess; })();
+  iaProm.catch(() => { iaProm = null; });
+  return iaProm;
+}
+async function mascaraIA(bmp) {   // U²-Net: devolve um canvas 320x320 com o produto no alfa
+  const S = 320, c = document.createElement("canvas"); c.width = c.height = S; const x = c.getContext("2d", { willReadFrequently: true });
+  x.drawImage(bmp, 0, 0, S, S); const px = x.getImageData(0, 0, S, S).data;
+  let mx = 1; for (let i = 0; i < px.length; i += 4) mx = Math.max(mx, px[i], px[i + 1], px[i + 2]);
+  const M = [.485, .456, .406], D = [.229, .224, .225], N = S * S, f = new Float32Array(3 * N);
+  for (let p = 0, i = 0; p < N; p++, i += 4) for (let k = 0; k < 3; k++) f[k * N + p] = (px[i + k] / mx - M[k]) / D[k];
+  const s = await carregarIA(), out = await s.run({ [s.inputNames[0]]: new ort.Tensor("float32", f, [1, 3, S, S]) }), r = out[s.outputNames[0]].data;
+  let lo = Infinity, hi = -Infinity; for (let p = 0; p < N; p++) { if (r[p] < lo) lo = r[p]; if (r[p] > hi) hi = r[p]; }
+  const id = x.createImageData(S, S); let n = 0, x0 = S, y0 = S, x1 = -1, y1 = -1;
+  for (let p = 0; p < N; p++) { const a = Math.min(1, Math.max(0, ((r[p] - lo) / ((hi - lo) || 1) - .06) / .88)); id.data[p * 4 + 3] = Math.round(a * 255);
+    if (a > .5) { n++; const px_ = p % S, py = (p / S) | 0; if (px_ < x0) x0 = px_; if (px_ > x1) x1 = px_; if (py < y0) y0 = py; if (py > y1) y1 = py; } }
+  x.clearRect(0, 0, S, S); x.putImageData(id, 0, 0);
+  return { c, cobre: n / N, box: x1 < 0 ? null : { x: x0 / S, y: y0 / S, w: (x1 - x0 + 1) / S, h: (y1 - y0 + 1) / S } };
+}
+function ajustarLuz(ctx, w, h, soObjeto) {   // níveis automáticos (corta 0,5% das pontas), leve correção de cor e +8% de saturação
+  const d = ctx.getImageData(0, 0, w, h), a = d.data, H = [new Uint32Array(256), new Uint32Array(256), new Uint32Array(256)]; let n = 0;
+  for (let i = 0; i < a.length; i += 12) { if (soObjeto && a[i + 3] < 200) continue; H[0][a[i]]++; H[1][a[i + 1]]++; H[2][a[i + 2]]++; n++; }
+  if (n < 80) return;
+  const pc = (h, q) => { let s = 0; for (let v = 0; v < 256; v++) { s += h[v]; if (s >= q * n) return v; } return 255; };
+  const lo = [0, 1, 2].map(k => pc(H[k], .005)), hi = [0, 1, 2].map(k => pc(H[k], .995)), LO = Math.min(...lo), HI = Math.max(...hi);
+  const lut = [0, 1, 2].map(k => { const l = (lo[k] + LO) / 2, t = new Uint8ClampedArray(256), g = Math.min(1.45, 255 / Math.max(1, (hi[k] + HI) / 2 - l));
+    for (let v = 0; v < 256; v++) t[v] = 255 * Math.pow(Math.min(1, Math.max(0, (v - l) * g / 255)), .96); return t; });
+  for (let i = 0; i < a.length; i += 4) { const r = lut[0][a[i]], g = lut[1][a[i + 1]], b = lut[2][a[i + 2]], L = .299 * r + .587 * g + .114 * b;
+    a[i] = L + (r - L) * 1.08; a[i + 1] = L + (g - L) * 1.08; a[i + 2] = L + (b - L) * 1.08; }
+  ctx.putImageData(d, 0, 0);
+}
+function fotoBase(bmp, max, luz) { const s = Math.min(1, max / Math.max(bmp.width, bmp.height)), c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s); const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(bmp, 0, 0, c.width, c.height);
+  if (luz) ajustarLuz(x, c.width, c.height, false); return c; }
+async function recortarIA(bmp) { const m = await mascaraIA(bmp); if (!m.box) return { cobre: 0 };
+  const c = fotoBase(bmp, 1600, false), x = c.getContext("2d");
+  x.globalCompositeOperation = "destination-in"; x.imageSmoothingQuality = "high"; x.drawImage(m.c, 0, 0, c.width, c.height); x.globalCompositeOperation = "source-over";
+  ajustarLuz(x, c.width, c.height, true);
+  const p = .012, b = m.box, bx = Math.max(0, b.x - p), by = Math.max(0, b.y - p);
+  return { c, cobre: m.cobre, box: { x: bx * c.width, y: by * c.height, w: (Math.min(1, b.x + b.w + p) - bx) * c.width, h: (Math.min(1, b.y + b.h + p) - by) * c.height } }; }
+const FUNDOS = { branco: ["Branco", "#ffffff", "#ebe8e3"], areia: ["Areia", "#faf4ea", "#e5d9c6"], cinza: ["Cinza", "#f5f6f8", "#d9dde3"], escuro: ["Escuro", "#3a3a3d", "#171718"] };
+function montarEstudio(rc, box, fundo) {
+  const S = 1200, c = document.createElement("canvas"); c.width = c.height = S; const x = c.getContext("2d"), [, c1, c2] = FUNDOS[fundo] || FUNDOS.branco;
+  const g = x.createRadialGradient(S / 2, S * .4, S * .08, S / 2, S * .5, S * .8); g.addColorStop(0, c1); g.addColorStop(1, c2); x.fillStyle = g; x.fillRect(0, 0, S, S);
+  const k = Math.min(S * .78 / box.w, S * .7 / box.h), w = box.w * k, h = box.h * k, dx = (S - w) / 2, dy = S * .85 - h, esc = fundo === "escuro";
+  x.save(); x.shadowColor = esc ? "rgba(0,0,0,.6)" : "rgba(40,30,20,.32)"; x.shadowBlur = S * .03; x.shadowOffsetY = 5000;   // sombra de contato (desenhada fora da tela e projetada)
+  x.beginPath(); x.ellipse(S / 2, dy + h - S * .004 - 5000, w * .4, Math.max(8, Math.min(h * .04, S * .022)), 0, 0, Math.PI * 2); x.fill(); x.restore();
+  x.save(); x.shadowColor = esc ? "rgba(0,0,0,.5)" : "rgba(40,30,20,.16)"; x.shadowBlur = S * .045; x.shadowOffsetY = S * .018;
+  x.imageSmoothingQuality = "high"; x.drawImage(rc, box.x, box.y, box.w, box.h, dx, dy, w, h); x.restore();
+  return c; }
+let ESTU = null;
+async function subirFoto(ci, ii, file) { if (!file) return;
+  if (!/^image\//.test(file.type || "image/")) { toast("Escolha um arquivo de foto (JPG, PNG ou WEBP)."); return; }
+  let bmp; try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); } catch (e) { toast("Não deu para abrir essa foto. Tente outra."); return; }
+  const prod = estudioProduto(), it = CAT[ci].items[ii];
+  ESTU = { ci, ii, bmp, modo: prod ? "estudio" : "luz", fundo: "branco", prod };
+  const modos = prod ? [["estudio", "Estúdio"], ["luz", "Só luz e cor"], ["original", "Original"]] : [["luz", "Luz e cor automáticas"], ["original", "Original"]];
+  abrirSheet(`<h2>Estúdio de foto</h2><p class="muted" style="margin:4px 0 12px;font-size:14px">${esc(it.n)}. ${prod ? "A IA tira o fundo e coloca o produto num fundo de estúdio, com sombra e luz certas." : "A luz e as cores são acertadas sozinhas. O fundo continua, porque faz parte do seu espaço."}</p>
+    <div class="seg" id="estModo" role="group" aria-label="Como usar a foto">${modos.map(([m, t]) => `<button data-m="${m}" onclick="ESTU.modo='${m}';renderEstudio()">${t}</button>`).join("")}</div>
+    <div class="est-fundos" id="estFundos" role="group" aria-label="Cor do fundo">${Object.entries(FUNDOS).map(([k, [t, a, b]]) => `<button class="chip" data-f="${k}" onclick="ESTU.fundo='${k}';renderEstudio()"><i style="background:linear-gradient(${a},${b})"></i>${t}</button>`).join("")}</div>
+    <div class="est-cmp"><figure><div class="est-q"><img id="estAntes" alt="Foto original"></div><figcaption>Antes</figcaption></figure><figure><div class="est-q" id="estDepois"></div><figcaption>Depois</figcaption></figure></div>
+    <p class="muted" id="estMsg" aria-live="polite" style="min-height:1.4em;font-size:13.5px;margin:10px 0 0"></p>
+    <button class="b pri wide" id="estUsar" style="margin-top:10px" onclick="usarEstudio()" disabled>Usar esta foto</button>`);
+  $("estAntes").src = URL.createObjectURL(file); renderEstudio(); }
+async function renderEstudio() { const E = ESTU; if (!E) return; const tk = E.tk = (E.tk || 0) + 1, dep = $("estDepois"), msg = $("estMsg"), usar = $("estUsar");
+  document.querySelectorAll("#estModo button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === E.modo)));
+  document.querySelectorAll("#estFundos button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === E.fundo)));
+  $("estFundos").hidden = E.modo !== "estudio"; usar.disabled = true; dep.innerHTML = `<i class="est-gira" aria-hidden="true"></i>`; msg.textContent = E.aviso || ""; E.aviso = "";
+  await new Promise(r => setTimeout(r, 30));   // deixa o carregando aparecer antes do cálculo
+  try { let c;
+    if (E.modo === "estudio") {
+      if (!E.rc) { msg.textContent = iaSess ? "Tirando o fundo…" : "Preparando a IA. Só na primeira vez, leva alguns segundos…"; E.rc = await recortarIA(E.bmp); }
+      if (tk !== E.tk || ESTU !== E) return;
+      if (!(E.rc.cobre > .025 && E.rc.cobre < .97)) { E.modo = "luz"; E.aviso = "Não deu para separar o produto do fundo nesta foto, então usei só luz e cor. Com o produto inteiro na foto e um fundo liso, fica melhor."; return renderEstudio(); }
+      c = montarEstudio(E.rc.c, E.rc.box, E.fundo); msg.textContent = "Confira as bordas. Se a IA cortou alguma parte do produto, use “Só luz e cor”.";
+    } else { c = fotoBase(E.bmp, 1200, E.modo === "luz"); if (!msg.textContent) msg.textContent = E.modo === "luz" ? "Luz, contraste e cor acertados." : "A foto vai como você enviou."; }
+    if (tk !== E.tk || ESTU !== E) return;
+    E.canvas = c; const im = new Image(); im.alt = "Como a foto vai ficar no site"; im.src = c.toDataURL("image/jpeg", .82); dep.innerHTML = ""; dep.appendChild(im); usar.disabled = false;
+  } catch (e) { if (tk !== E.tk || ESTU !== E) return; E.modo = "luz"; E.aviso = "A IA não abriu neste aparelho agora (confira a internet). Usei só luz e cor."; renderEstudio(); } }
+async function usarEstudio() { const E = ESTU; if (!E || !E.canvas) return; const b = $("estUsar"); b.disabled = true; b.textContent = "Enviando…";
+  try { const blob = await new Promise(ok => E.canvas.toBlob(ok, "image/jpeg", .86)), it = CAT[E.ci].items[E.ii], path = NEG.id + "/" + it.id + "-" + Date.now() + ".jpg";
     const { error } = await sb.storage.from("zv-fotos").upload(path, blob, { contentType: "image/jpeg", upsert: true }); if (error) throw error;
-    CAT[ci].items[ii].img = sb.storage.from("zv-fotos").getPublicUrl(path).data.publicUrl; marcar(); desenharCatalogo(); toast("Foto pronta. Toque em Salvar para publicar."); }
-  catch (e) { toast("Não deu para enviar a foto: " + (e.message || e)); } }
+    it.img = sb.storage.from("zv-fotos").getPublicUrl(path).data.publicUrl; ESTU = null; fecharSheet(); marcar(); desenharCatalogo(); toast("Foto pronta. Toque em Salvar e publicar."); }
+  catch (e) { b.disabled = false; b.textContent = "Usar esta foto"; toast("Não deu para enviar a foto: " + (e.message || e)); } }
+
+/* ---------------- 3D do produto ----------------
+   Só nos nichos que mostram o botão "Ver em 3D" no site (comida: na mesa; objetos: no espaço). */
+const NICHOS_3D = {"pizzaria": "mesa", "hamburgueria": "mesa", "pastelaria": "mesa", "acai": "mesa", "padaria": "mesa", "marmitaria": "mesa", "floricultura": "espaco", "aluguel-festa": "espaco", "loja-roupa": "espaco", "materiais-construcao": "espaco", "autopecas": "espaco"};
+const tem3dNicho = () => !!NEG && !!NICHOS_3D[NEG.nicho];
+const url3dPainel = v => /^https?:/.test(v) ? v : `/modelos/${NEG.nicho}/3d/${v}.glb`;
+let mvPainel = null;
+function carregarMVPainel() { if (customElements.get("model-viewer")) return Promise.resolve(); if (mvPainel) return mvPainel;
+  mvPainel = new Promise((ok, falha) => { const s = document.createElement("script"); s.type = "module"; s.src = "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+    s.onload = () => customElements.whenDefined("model-viewer").then(ok); s.onerror = () => { mvPainel = null; s.remove(); falha(); }; document.head.appendChild(s); }); return mvPainel; }
+function m3dSalvo(id) { for (const c of (NEG.dados && NEG.dados.menu) || []) for (const i of c.items || []) if (i.id === id) return i.m3d || null; return null; }
+async function apagar3dSolto(it) {   // apaga do armazenamento um 3D enviado agora e ainda não publicado
+  const v = it.m3d; if (!v || !/\/zv-3d\//.test(v) || v === m3dSalvo(it.id)) return; const p = v.split("/zv-3d/")[1]; if (p) await sb.storage.from("zv-3d").remove([decodeURIComponent(p)]); }
+function abrir3d(ci, ii) { const it = CAT[ci].items[ii], txt = NICHOS_3D[NEG.nicho] === "mesa" ? "na mesa" : "no espaço";
+  abrirSheet(`<h2>3D de ${esc(it.n)}</h2>
+    ${it.m3d ? `<p class="muted" style="margin:4px 0 12px;font-size:14px">No site aparece o botão “Ver em 3D”. No celular, o cliente vê o produto ${txt} dele, no tamanho real.</p>
+      <div class="p3d" id="p3d"><i class="est-gira" aria-hidden="true"></i></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><label class="b sec" style="flex:1;position:relative">Trocar arquivo<input type="file" accept=".glb,model/gltf-binary" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="subir3d(${ci},${ii},this.files[0])"></label><button class="b no" style="flex:1" onclick="tirar3d(${ci},${ii})">Tirar o 3D</button></div>`
+    : `<p class="muted" style="margin:4px 0 12px;font-size:14px">Com o 3D, o cliente gira o produto na tela e, no celular, vê ele ${txt} dele no tamanho real antes de comprar.</p>
+      <ol class="p3d-passos"><li>Baixe no celular um app grátis de escanear em 3D, como o Polycam ou o Luma AI.</li><li>Coloque o produto em um lugar com boa luz e ande em volta dele, devagar, seguindo o app.</li><li>Exporte no formato GLB e envie aqui. Até 15 MB.</li></ol>
+      <label class="b pri wide" style="position:relative;margin-top:12px">Enviar arquivo 3D (.glb)<input type="file" accept=".glb,model/gltf-binary" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="subir3d(${ci},${ii},this.files[0])"></label>`}
+    <p class="muted" id="m3dMsg" aria-live="polite" style="font-size:13.5px;margin:10px 0 0;min-height:1.3em"></p>`);
+  if (it.m3d) carregarMVPainel().then(() => { const box = $("p3d"); if (!box) return; const mv = document.createElement("model-viewer");
+    for (const [k, v] of Object.entries({ "camera-controls": "", "auto-rotate": "", "shadow-intensity": "1", "environment-image": "neutral", "interaction-prompt": "none", alt: "Modelo 3D de " + it.n })) mv.setAttribute(k, v);
+    mv.addEventListener("load", () => { const g = box.querySelector(".est-gira"); if (g) g.remove(); });
+    mv.addEventListener("error", () => { box.innerHTML = `<p class="muted" style="padding:20px;text-align:center">Não deu para abrir este 3D. Tente enviar o arquivo de novo.</p>`; });
+    mv.src = url3dPainel(it.m3d); box.appendChild(mv); }).catch(() => { const box = $("p3d"); if (box) box.innerHTML = `<p class="muted" style="padding:20px;text-align:center">Sem internet para mostrar o 3D agora.</p>`; }); }
+async function subir3d(ci, ii, file) { if (!file) return; const it = CAT[ci].items[ii], msg = $("m3dMsg");
+  if (file.size > 15 * 1024 * 1024) { msg.textContent = "Esse arquivo passa de 15 MB. No app de escanear, exporte em qualidade média."; return; }
+  const cab = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+  if (String.fromCharCode(...cab) !== "glTF") { msg.textContent = "Esse arquivo não é um 3D em GLB. No app de escanear, escolha exportar como GLB."; return; }
+  msg.textContent = "Enviando o 3D…";
+  try { const path = NEG.id + "/" + it.id + "-" + Date.now() + ".glb";
+    const { error } = await sb.storage.from("zv-3d").upload(path, file, { contentType: "model/gltf-binary", upsert: true }); if (error) throw error;
+    await apagar3dSolto(it).catch(() => {});
+    it.m3d = sb.storage.from("zv-3d").getPublicUrl(path).data.publicUrl; delete it.m3dCredito; marcar(); desenharCatalogo(); abrir3d(ci, ii); toast("3D pronto. Toque em Salvar e publicar."); }
+  catch (e) { msg.textContent = "Não deu para enviar o 3D: " + (/limit|policy|row-level/i.test(e.message || "") ? "o limite de arquivos 3D deste negócio foi atingido." : (e.message || e)); } }
+async function tirar3d(ci, ii) { const it = CAT[ci].items[ii]; await apagar3dSolto(it).catch(() => {}); delete it.m3d; delete it.m3dCredito; marcar(); desenharCatalogo(); fecharSheet(); toast("3D tirado. Toque em Salvar e publicar."); }
 
 /* ---------------- estoque ---------------- */
 async function telaEstoque() { const m = $("main"); const { data } = await sb.from("zv_estoque").select("*").eq("negocio", NEG.id); const E = {}; (data || []).forEach(e => E[e.item] = e);

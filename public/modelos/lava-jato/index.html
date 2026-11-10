@@ -627,6 +627,12 @@ footer{background:var(--c1d);font-size:14px}
 @keyframes selo{from{transform:scale(0) rotate(-40deg)}}
 .conf-fid.ganhou{background:color-mix(in srgb,var(--c2) 22%,var(--paper))}
 
+/* nada pode deixar a página mais larga que o celular */
+html,body{overflow-x:clip}
+.card,.card .txt,.unit,.unit .ubd{min-width:0}
+.card h3,.card .desc,.sec-h h2,.unit h3{overflow-wrap:break-word}
+@media (max-width:420px){.sec-h h2{overflow-wrap:anywhere}}
+
 /* ===== Identidade por grupo: base comum =====
    Cada grupo define --pbg (fundo da abertura), as cores do sistema (fundo, papel, tinta)
    e as formas. Grupos de fundo claro usam a abertura clara. */
