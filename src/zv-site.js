@@ -7,7 +7,7 @@
     return fetch(Z.api + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: Z.key, Authorization: "Bearer " + Z.key, "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return null; }).then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || ("HTTP " + r.status)); return j; }); });
   };
-  var ERROS = { horario_ocupado: "Esse horário acabou de ser reservado. Escolha outro.", horario_passado: "Esse horário já passou.", muitos_pendentes: "Você já tem agendamentos esperando confirmação.",
+  var ERROS = { dados_invalidos: "Confira o nome e o WhatsApp com DDD.", data_invalida: "Escolha um dia dos próximos dois meses.", horario_ocupado: "Esse horário acabou de ser reservado. Escolha outro.", horario_passado: "Esse horário já passou.", muitos_pendentes: "Você já tem agendamentos esperando confirmação.",
     muitos_pedidos: "Muitos pedidos em pouco tempo. Fale com a loja pelo WhatsApp.", indisponivel: "Essa data acabou de ser reservada. Escolha outra.", datas_invalidas: "Confira as datas.", nome_obrigatorio: "Digite seu nome.", negocio_inexistente: "Este site está fora do ar.", muitos_agendamentos: "Muitos agendamentos em pouco tempo. Tente de novo em alguns minutos.", itens_demais: "Pedido grande demais. Divida em dois.", pedido_grande_demais: "Pedido grande demais. Divida em dois." };
   Z.erro = function (e) { var m = String((e && e.message) || e); for (var k in ERROS) if (m.indexOf(k) >= 0) return ERROS[k]; return "Não deu para salvar agora. Confira a internet e tente de novo."; };
   var conv = function (l) { return (l || []).map(function (o) { return { p: o.profissional || "", a: Date.parse(o.inicio), b: Date.parse(o.fim) }; }); };
@@ -219,6 +219,24 @@
       setInterval(function () { if (!document.hidden) atualizar().catch(function () {}); }, 20000);
     }).catch(function (e) { if (/mesa_invalida/.test(String(e.message))) toast("Este QR de mesa não vale mais. Peça um novo ao garçom."); });
   }
+  // lista de espera: dia lotado → o cliente pede para ser avisado se abrir vaga (barbearia)
+  Z.esperar = function () {
+    var box = document.getElementById("espBox"); if (!box || typeof order === "undefined" || !order.data) return;
+    var h = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+    var dia = new Date(order.data + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" });
+    box.innerHTML = "<b>Lista de espera de " + h(dia) + "</b><div class=\"esp-f\"><input id=\"zeN\" autocomplete=\"name\" placeholder=\"Seu nome\" value=\"" + h(order.nome || "") + "\">" +
+      "<input id=\"zeZ\" inputmode=\"tel\" autocomplete=\"tel\" placeholder=\"Seu WhatsApp com DDD\" value=\"" + h(order.tel || "") + "\"><button class=\"esp-btn\" id=\"zeOk\">Entrar na lista</button></div>";
+    document.getElementById("zeN").focus();
+    document.getElementById("zeOk").onclick = function () {
+      var n = document.getElementById("zeN").value.trim(), z = document.getElementById("zeZ").value.trim(), b = this;
+      if (n.length < 2 || z.replace(/\D/g, "").length < 10) { toast("Escreva seu nome e o WhatsApp com DDD."); return; }
+      b.disabled = true; b.textContent = "Enviando…";
+      Z.rpc("zv_entrar_espera", { p_slug: Z.slug, p_nome: n, p_whatsapp: z, p_dia: order.data, p_prof: order.prof || "" })
+        .then(function (pos) { pos = (pos && pos.zv_entrar_espera) || pos;
+          box.innerHTML = "<b>Pronto, você está na lista.</b><br>Você é o " + pos + "º da fila para " + h(dia) + ". Se abrir um horário, a barbearia te chama no WhatsApp, por ordem de chegada."; })
+        .catch(function (e) { b.disabled = false; b.textContent = "Entrar na lista"; toast(Z.erro(e)); });
+    };
+  };
   document.addEventListener("DOMContentLoaded", function () { ligarCombos(); ligarMesa(); });
   document.addEventListener("DOMContentLoaded", function () { if (Z.tipo === "reserva") ligarReserva(); if (Z.tipo === "agenda") ligarAgenda(); else if (Z.tipo === "pedido") ligarPedido(); });
 })();
