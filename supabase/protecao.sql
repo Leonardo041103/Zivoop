@@ -34,7 +34,7 @@ begin
   end if;
   if (select count(*) from zv_negocios where criado_em > now() - interval '1 hour') >= 60 then raise exception 'tente_mais_tarde'; end if;
   -- endereços que são páginas da Zivoop não podem virar site de cliente
-  if new.slug in ('ofertas','privacidade','termos','painel','modelos','api','admin','zivoop') then new.slug := new.slug || '-loja'; end if;
+  if new.slug in ('ofertas','privacidade','termos','painel','modelos','api','admin','zivoop','lanchonete','barbearia','ia') then new.slug := new.slug || '-loja'; end if;
   return new;
 end $$;
 drop trigger if exists trava on public.zv_negocios;

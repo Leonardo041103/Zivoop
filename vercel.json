@@ -12,6 +12,14 @@
       "destination": "/painel/index.html"
     },
     {
+      "source": "/lanchonete/painel",
+      "destination": "/lanchonete/painel/index.html"
+    },
+    {
+      "source": "/barbearia/painel",
+      "destination": "/barbearia/painel/index.html"
+    },
+    {
       "source": "/ofertas",
       "destination": "/ofertas/index.html"
     },

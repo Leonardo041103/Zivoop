@@ -55,7 +55,7 @@
       var m = typeof modo === "function" ? modo() : null, ent = m ? (m.label || m.msg || "") : "";
       if (m && m.form === "endereco" && order.end) ent += ": " + [order.end.rua, order.end.num, order.end.comp, order.end.bairro].filter(Boolean).join(", ");
       var corpo = { p_slug: Z.slug, p_nome: order.nome, p_whatsapp: order.tel, p_itens: itens, p_total: total(), p_pagamento: order.pag || null, p_entrega: ent,
-        p_detalhes: { tipo: order.tipo, end: order.end || null, extra: order.extra, troco: order.troco || null, cupom: order.cupom || null, ref: order.end && order.end.ref || null } };
+        p_detalhes: { tipo: order.tipo, end: order.end || null, extra: order.extra, troco: order.troco || null, cupom: order.cupom || null, ref: order.end && order.end.ref || null, taxa: typeof taxaEntrega === "function" ? taxaEntrega() : null } };
       origEnviar();
       Z.rpc("zv_novo_pedido", corpo).catch(function () { /* o pedido já foi pelo WhatsApp */ });
     };

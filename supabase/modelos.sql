@@ -35,5 +35,6 @@ insert into public.zv_modelos (nicho, tipo, nome, emoji) values
 ('pousada','reserva','Pousada','🌿'),
 ('quadra-society','reserva','Quadra society','⚽'),
 ('aluguel-festa','reserva','Aluguel para festas','🎉'),
-('chacara','reserva','Chácara de eventos','🌞')
+('chacara','reserva','Chácara de eventos','🌞'),
+('lanchonete','pedido','Lanchonete','🍔')
 on conflict (nicho) do update set tipo = excluded.tipo, nome = excluded.nome, emoji = excluded.emoji;
