@@ -282,7 +282,8 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 /* ===== o que o dono da Zivoop muda aqui ===== */
 const ZIVOOP={
   whatsapp:"",            /* ex.: "5511999999999". Vazio = esconde o botão de WhatsApp */
-  supabase:{url:"https://phswqjkytnkukqpbtoqd.supabase.co",key:"sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8"},
+  supabase:{url:"https://yqpaqwwdfeyesxvbbcwy.supabase.co",key:"sb_publishable_yFqNbiwT-PEvOI1RVDXhIw_vNgMjB-H"},  /* banco próprio do site de vendas (zivoop-site) */
+  app:"https://zivoop.vercel.app",  /* endereço da plataforma (painel e demonstrações). Quando o domínio estiver pronto: "https://app.zivoop.com" */
   interesses:[["site","Site e painel para o meu negócio"],["salao","Salão com mesas e QR (restaurante)"],["camera","Câmera para o salão"],["ofertas","Zivoop Ofertas (afiliado)"],["","Ainda não sei"]],
   painel:[
     {k:"pedidos",t:"Pedidos",d:"Cada pedido do site cai num quadro: novo, em preparo, pronto e entregue. Entregou, o valor entra no caixa.",img:"pc-pedidos",cel:"cel-pedidos",alt:"Quadro de pedidos com as colunas Novos, Em preparo, Pronto e Entregue"},
@@ -303,12 +304,12 @@ const PRIMEIROS=["pizzaria","hamburgueria","restaurante","barbearia","salao","ac
 function phoneScale(){ const p=document.getElementById("phone"), f=document.getElementById("demo"), w=p.querySelector(".screen").clientWidth, h=p.querySelector(".screen").clientHeight, s=w/390;
   f.style.transform=`scale(${s})`; f.style.height=(h/s)+"px"; }
 function mostrar(slug,rolar){ atual=slug; const n=NICHOS.find(x=>x.s===slug), f=document.getElementById("demo"), ld=document.getElementById("ld");
-  ld.classList.remove("off"); ld.textContent=`Abrindo ${n.n.toLowerCase()}…`; f.onload=()=>ld.classList.add("off"); f.src=`/modelos/${slug}/?embed=1`;
-  document.getElementById("now").innerHTML=`Você está vendo <b>${esc(n.ex)}</b>, modelo de ${esc(n.n.toLowerCase())}. <a href="/modelos/${slug}/" target="_blank" rel="noopener">Abrir em tela cheia</a>`;
+  ld.classList.remove("off"); ld.textContent=`Abrindo ${n.n.toLowerCase()}…`; f.onload=()=>ld.classList.add("off"); f.src=`${ZIVOOP.app}/modelos/${slug}/?embed=1`;
+  document.getElementById("now").innerHTML=`Você está vendo <b>${esc(n.ex)}</b>, modelo de ${esc(n.n.toLowerCase())}. <a href="${ZIVOOP.app}/modelos/${slug}/" target="_blank" rel="noopener">Abrir em tela cheia</a>`;
   document.querySelectorAll("#switch button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===slug));
   document.querySelectorAll(".ni").forEach(c=>c.classList.toggle("on",c.dataset.s===slug));
   if(rolar) document.getElementById("phone").scrollIntoView({behavior:"smooth",block:"center"}); }
-function ver(slug){ if(grande()) mostrar(slug,true); else window.open(`/modelos/${slug}/`,"_blank","noopener"); }
+function ver(slug){ if(grande()) mostrar(slug,true); else window.open(`${ZIVOOP.app}/modelos/${slug}/`,"_blank","noopener"); }
 function quero(slug){ document.getElementById("fNicho").value=slug; document.getElementById("quero").scrollIntoView({behavior:"smooth"}); setTimeout(()=>document.querySelector('#form [name="nome"]').focus({preventScroll:true}),500); }
 function renderCats(){ document.getElementById("cats").innerHTML=CATS.map(([k,l])=>`<button aria-pressed="${cat===k}" onclick="cat='${k}';renderCats();renderGrid()">${l}</button>`).join(""); }
 function renderGrid(){ let L=NICHOS.filter(n=>cat==="todos"||n.c===cat); const corta=cat==="todos"&&!todos; if(corta) L=PRIMEIROS.map(k=>NICHOS.find(n=>n.s===k)).filter(Boolean);

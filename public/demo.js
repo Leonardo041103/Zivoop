@@ -9,6 +9,6 @@
   function exemplo(u){ return /wa\.me\/(SEU_WHATSAPP|\?)/.test(String(u||"")); }
   var wo=window.open; window.open=function(u){ if(exemplo(u)){ aviso(); return null; } return wo.apply(window,arguments); };
   document.addEventListener("click",function(e){ var a=e.target.closest&&e.target.closest("a[href]"); if(a&&exemplo(a.getAttribute("href"))){ e.preventDefault(); aviso(); } },true);
-  function faixa(){ if(embed) return; var a=document.createElement("a"); a.href="/#quero"; a.className="zv-demo"; a.innerHTML="<b>Demonstração Zivoop.</b> <span>Quero um site assim para o meu negócio</span>"; document.body.insertBefore(a,document.body.firstChild); }
+  function faixa(){ if(embed) return; var a=document.createElement("a"); a.href="https://zivoop.com/#quero"; a.className="zv-demo"; a.innerHTML="<b>Demonstração Zivoop.</b> <span>Quero um site assim para o meu negócio</span>"; document.body.insertBefore(a,document.body.firstChild); }
   if(document.body) faixa(); else document.addEventListener("DOMContentLoaded",faixa);
 })();

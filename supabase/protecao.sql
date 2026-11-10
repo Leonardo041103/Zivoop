@@ -40,22 +40,10 @@ end $$;
 drop trigger if exists trava on public.zv_negocios;
 create trigger trava before insert on public.zv_negocios for each row execute function public.zv_trava_negocios();
 
--- contatos do zivoop.com: no máximo 300 por dia no total
-do $$ begin
-  if to_regclass('public.zivoop_leads') is not null then
-    execute $f$
-      create or replace function public.zivoop_trava_leads() returns trigger language plpgsql security definer set search_path = public as $g$
-      begin
-        if (select count(*) from zivoop_leads where criado_em > now() - interval '1 day') >= 300 then raise exception 'muitos_contatos'; end if;
-        return new;
-      end $g$;
-      drop trigger if exists trava on public.zivoop_leads;
-      create trigger trava before insert on public.zivoop_leads for each row execute function public.zivoop_trava_leads();
-    $f$;
-  end if;
-end $$;
+-- os contatos do zivoop.com agora ficam no banco próprio do site de vendas (projeto zivoop-site);
+-- a tabela antiga daqui estava vazia e sai
+drop function if exists public.zivoop_novo_lead(text,text,text,text,text,text,text,text);
+drop table if exists public.zivoop_leads;
 
 -- funções de trava não são chamáveis de fora
 revoke execute on function public.zv_trava_pedidos(), public.zv_trava_agenda(), public.zv_trava_negocios() from public, anon, authenticated;
-do $$ begin if to_regprocedure('public.zivoop_trava_leads()') is not null then
-  revoke execute on function public.zivoop_trava_leads() from public, anon, authenticated; end if; end $$;

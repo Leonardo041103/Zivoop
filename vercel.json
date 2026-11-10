@@ -82,10 +82,6 @@
           "value": "nosniff"
         },
         {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
         },
@@ -96,6 +92,24 @@
         {
           "key": "Permissions-Policy",
           "value": "camera=(self), geolocation=(self), microphone=(), payment=(), usb=()"
+        }
+      ]
+    },
+    {
+      "source": "/((?!modelos/).*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
+      "source": "/modelos/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://zivoop.com https://www.zivoop.com https://*.vercel.app"
         }
       ]
     }
