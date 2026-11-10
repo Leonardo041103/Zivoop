@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Zivoop | Site pronto para o seu negócio vender pelo WhatsApp</title>
-<meta name="description" content="Sites prontos para 38 tipos de negócio: o cliente escolhe, monta o pedido ou marca o horário e manda direto pro seu WhatsApp. Sem app e sem comissão.">
-<meta property="og:title" content="Zivoop: seu negócio vendendo pelo WhatsApp">
+<title>Zivoop | Site, painel e sistemas prontos para o seu negócio</title>
+<meta name="description" content="Site pronto para 41 tipos de negócio, com painel para pedidos, agenda, clientes e caixa, mesas com QR para restaurantes e assistente que muda o site por mensagem. Sem comissão por venda.">
+<meta property="og:title" content="Zivoop: os sistemas do seu negócio, prontos para usar">
 <meta property="og:description" content="Escolha o modelo do seu negócio, teste ao vivo e receba o site pronto com seus produtos, fotos e WhatsApp.">
 <meta property="og:image" content="/og.png"><meta property="og:type" content="website"><meta name="theme-color" content="#14162B">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
 <style>
-:root{--ink:#14162B;--ink-2:#4A4E6A;--paper:#F5F6FA;--card:#FFFFFF;--cobalt:#2E4BFF;--cobalt-d:#1F36D6;--tang:#FF7A1A;--mint:#19B37A;--line:rgba(20,22,43,.1);
+:root{--ink:#14162B;--ink-2:#4A4E6A;--paper:#F5F6FA;--card:#FFFFFF;--cobalt:#2E4BFF;--cobalt-d:#1F36D6;--tang:#FF7A1A;--mint:#19B37A;--cobalt-l:#8FA2FF;--line:rgba(20,22,43,.1);
   --wide:'Archivo',system-ui,sans-serif;--r:22px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}[hidden]{display:none!important}section[id]{scroll-margin-top:84px}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--wide);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:inherit}button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--tang);outline-offset:3px;border-radius:10px}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:3px;border-radius:10px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .in{max-width:1180px;margin:0 auto;padding:0 max(18px,env(safe-area-inset-left))}
 h1,h2,h3{font-stretch:125%;font-weight:850;letter-spacing:-.025em;line-height:1;margin:0}
@@ -86,25 +86,12 @@ section.blk{padding:84px 0 20px}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:s}
 @media (max-width:820px){.steps{grid-template-columns:1fr}}
 .step{background:var(--ink);color:#fff;border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:12px;min-height:240px}
-.step::before{counter-increment:s;content:counter(s);font-stretch:125%;font-weight:900;font-size:64px;line-height:.8;color:var(--tang)}
+.step::before{counter-increment:s;content:counter(s);font-stretch:125%;font-weight:900;font-size:64px;line-height:.8;color:var(--cobalt-l)}
 .step h3{font-size:24px;font-stretch:115%}.step p{margin:0;color:rgba(255,255,255,.72);font-size:15.5px}
 /* recursos */
 .feats{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;background:var(--line);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
 .ft{background:var(--card);padding:22px;display:flex;flex-direction:column;gap:6px}
 .ft b{font-size:17px}.ft span{font-size:14.5px;color:var(--ink-2)}
-/* planos */
-.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:stretch}
-@media (max-width:900px){.plans{grid-template-columns:1fr}}
-.pl{background:var(--card);border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:14px;border:1.5px solid var(--line)}
-.pl.dest{background:var(--cobalt);color:#fff;border-color:var(--cobalt)}
-.pl .tg{align-self:flex-start;font-size:12.5px;font-weight:800;background:var(--tang);color:#fff;border-radius:999px;padding:5px 11px}
-.pl h3{font-size:24px;font-stretch:115%}
-.pl .pr{font-stretch:125%;font-weight:900;font-size:44px;letter-spacing:-.03em;line-height:1}.pl .pr small{font-size:16px;font-weight:600;font-stretch:100%;opacity:.75;letter-spacing:0}
-.pl ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;flex:1}
-.pl li{display:flex;gap:10px;font-size:15px}.pl li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
-.pl.dest li::before{background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%232E4BFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
-.pl .btn{width:100%}.pl.dest .btn{background:#fff;color:var(--cobalt)}
-.nota{font-size:14px;color:var(--ink-2);margin-top:14px}
 /* formulário */
 .qbox{background:var(--ink);color:#fff;border-radius:calc(var(--r) + 8px);padding:clamp(26px,5vw,56px);display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;margin-top:84px}
 @media (max-width:900px){.qbox{grid-template-columns:1fr}}
@@ -115,10 +102,11 @@ form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .f .full{grid-column:1/-1}
 .f input,.f select,.f textarea{min-height:52px;border-radius:14px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;padding:0 14px;font-size:16px}
 .f textarea{padding:12px 14px;min-height:90px;resize:vertical}
+.qbox>div,form.f>*{min-width:0}.f input,.f select,.f textarea{width:100%;min-width:0;box-sizing:border-box}
 .f select option{color:var(--ink)}
-.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--tang);outline:0}
-.f .btn{background:var(--tang)}.f .btn:hover{background:#ea6a0c}
-.f .msg{font-size:14px;min-height:1.2em;color:#FFB98A}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--cobalt-l);outline:0}
+.f .btn{background:var(--cobalt)}.f .btn:hover{background:var(--cobalt-d)}
+.f .msg{font-size:14px;min-height:1.2em;color:#FFC2C2}
 .ok{display:none;flex-direction:column;gap:12px;justify-content:center}
 .ok.on{display:flex}.ok h3{font-size:34px}.ok p{color:rgba(255,255,255,.75);margin:0}
 .lgpd{font-size:12.5px;color:rgba(255,255,255,.5)}
@@ -130,6 +118,41 @@ form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .faq summary::after{content:"+";font-size:24px;line-height:1;color:var(--cobalt)}
 .faq details[open] summary::after{content:"−"}
 .faq details p{margin:0 0 18px;color:var(--ink-2)}
+/* telas do painel */
+.shot{background:var(--ink);border-radius:18px;padding:10px 10px 0;box-shadow:0 40px 80px -40px rgba(20,22,43,.5)}
+.shot .bar{display:flex;gap:6px;padding:2px 4px 10px}.shot .bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18)}
+.shot img{display:block;width:100%;height:auto;border-radius:10px 10px 0 0}
+.pn{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:start}
+@media (max-width:900px){.pn{grid-template-columns:1fr}}
+.tabs{display:grid;gap:4px}
+.tabs button{text-align:left;border:0;background:transparent;border-radius:16px;padding:14px 16px;cursor:pointer;display:grid;gap:3px}
+.tabs button b{font-size:17px}.tabs button span{font-size:14.5px;color:var(--ink-2);display:none}
+.tabs button[aria-selected="true"]{background:var(--card);box-shadow:inset 3px 0 0 var(--cobalt)}.tabs button[aria-selected="true"] span{display:block}
+.tabs button:hover{background:rgba(20,22,43,.04)}
+@media (max-width:900px){.tabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:6px}.tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:none;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line)}.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:none;border-color:var(--ink)}
+  .tabs button[aria-selected="true"] span{display:none}}
+.pncap{display:none;margin:0 0 14px;color:var(--ink-2)}@media (max-width:900px){.pncap{display:block}}
+/* salão */
+.rest{background:var(--ink);color:#fff;border-radius:calc(var(--r) + 8px);padding:clamp(24px,5vw,56px);display:grid;gap:36px}
+.rest .sh p{color:rgba(255,255,255,.7)}
+.rest .row{display:grid;grid-template-columns:1.35fr 1fr;gap:28px;align-items:center}
+@media (max-width:900px){.rest .row{grid-template-columns:1fr}}
+.rest .shot{background:#06070F}
+.rest ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.rest li b{display:block;font-size:19px;font-stretch:112%;margin-bottom:4px}.rest li span{color:rgba(255,255,255,.7);font-size:15.5px}
+.cels{display:flex;gap:14px;justify-content:center}
+.cels figure{margin:0;flex:1;max-width:220px}.cels img{display:block;width:100%;height:auto;border-radius:22px;border:6px solid #06070F;box-shadow:0 30px 60px -30px rgba(0,0,0,.8)}
+.cels figcaption{font-size:13.5px;color:rgba(255,255,255,.7);text-align:center;margin-top:10px}
+@media (max-width:560px){.cels{gap:8px}.cels figure:nth-child(3){display:none}}
+/* ofertas */
+.of{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;border:1.5px solid var(--line);border-radius:var(--r);padding:clamp(22px,4vw,36px);background:var(--card)}
+@media (max-width:760px){.of{grid-template-columns:1fr}}
+.of h3{font-size:clamp(24px,3vw,32px);font-stretch:115%}.of p{margin:10px 0 0;color:var(--ink-2);max-width:40em}
+/* whatsapp */
+.wa{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:40;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:0 20px 0 16px;border-radius:999px;background:#1FAF5B;color:#fff;font-weight:750;text-decoration:none;box-shadow:0 14px 30px -10px rgba(0,0,0,.4)}
+.wa svg{width:24px;height:24px}
+@media (max-width:560px){.wa span{display:none}.wa{padding:0;width:56px;justify-content:center}}
 footer{padding:60px 0 40px;margin-top:84px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
 footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 </style>
@@ -137,17 +160,17 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 <body>
 <header class="top" id="top"><div class="in">
   <a class="logo" href="/" aria-label="Zivoop, início"><i></i>zivoop</a>
-  <nav class="nav" aria-label="Seções"><a href="#modelos">Modelos</a><a href="#como">Como funciona</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a></nav>
-  <a class="btn sm" href="#quero">Quero meu site</a>
+  <nav class="nav" aria-label="Seções"><a href="#modelos">Modelos</a><a href="#painel">Painel</a><a href="#restaurantes">Restaurantes</a><a href="#como">Como funciona</a><a href="#duvidas">Dúvidas</a></nav>
+  <a class="btn sm" href="#quero">Fale com a gente</a>
 </div></header>
 
 <main>
 <section class="hero"><div class="in">
   <div>
-    <h1>Seu negócio recebendo pedidos pelo WhatsApp.</h1>
-    <p class="lead">Sites prontos para 38 tipos de negócio. O cliente escolhe, monta o pedido ou marca o horário, e tudo chega organizado no seu WhatsApp. Sem aplicativo e sem comissão por venda.</p>
-    <div class="ctas"><a class="btn" href="#modelos">Ver os modelos</a><a class="btn ghost" href="#quero">Quero meu site</a></div>
-    <div class="proof"><div><b>38</b>modelos prontos, de pizzaria a pousada</div><div><b>0%</b>de comissão sobre os seus pedidos</div><div><b>Pix</b>com QR code no fim de cada pedido</div></div>
+    <h1>Os sistemas do seu negócio, prontos para usar.</h1>
+    <p class="lead">Site pronto para o seu tipo de negócio e um painel para cuidar de pedidos, agenda, clientes e caixa. Para restaurantes, mesas ao vivo com QR code. Sem aplicativo e sem comissão por venda.</p>
+    <div class="ctas"><a class="btn" href="#quero">Fale com a gente</a><a class="btn ghost" href="#modelos">Ver os exemplos</a></div>
+    <div class="proof"><div><b>41</b>modelos prontos, de pizzaria a pousada</div><div><b>0%</b>de comissão sobre os seus pedidos</div><div><b>1 painel</b>para pedidos, clientes e caixa</div></div>
   </div>
   <div class="stagewrap">
     <div class="phone" id="phone"><div class="screen"><div class="ld" id="ld">Abrindo o modelo…</div><iframe id="demo" title="Demonstração do site" loading="lazy"></iframe></div></div>
@@ -157,22 +180,14 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 </div></section>
 
 <section class="blk" id="modelos"><div class="in">
-  <div class="sh"><h2>Escolha o seu negócio</h2><p>Todos os modelos funcionam de verdade. Abra, faça um pedido de teste e veja como o cliente compra.</p></div>
+  <div class="sh"><h2>Veja o modelo do seu negócio</h2><p>Todos funcionam de verdade. Abra, faça um pedido ou marque um horário de teste e veja o que o seu cliente vai ver.</p></div>
   <div class="cats" id="cats" role="group" aria-label="Filtrar por tipo de negócio"></div>
   <div class="grid" id="grid"></div>
-</div></section>
-
-<section class="blk" id="como"><div class="in">
-  <div class="sh"><h2>Do modelo ao primeiro pedido</h2><p>Você não precisa entender de site. A gente entrega pronto e você só divulga o link.</p></div>
-  <div class="steps">
-    <div class="step"><h3>Você escolhe o modelo</h3><p>Teste os modelos aqui e diga qual tem a cara do seu negócio.</p></div>
-    <div class="step"><h3>A gente monta com os seus dados</h3><p>Colocamos seus produtos ou serviços, preços, fotos, horários, taxa de entrega, chave Pix e o seu WhatsApp.</p></div>
-    <div class="step"><h3>Você divulga e recebe</h3><p>Coloque o link na bio do Instagram e no status. O pedido chega pronto no seu WhatsApp, com o total e a forma de pagamento.</p></div>
-  </div>
+  <div style="text-align:center;margin-top:18px"><button class="btn ghost" id="maisMod" onclick="todos=true;renderGrid()">Ver todos os modelos</button></div>
 </div></section>
 
 <section class="blk"><div class="in">
-  <div class="sh"><h2>O que vem em todo site</h2></div>
+  <div class="sh"><h2>O que vem em todo site</h2><p>Tudo já montado com os seus produtos ou serviços, preços, fotos e horários.</p></div>
   <div class="feats">
     <div class="ft"><b>Pedido completo no WhatsApp</b><span>Itens, opções, endereço, troco e observações chegam numa mensagem só.</span></div>
     <div class="ft"><b>Pix com QR code</b><span>Ao final do pedido, o cliente vê o valor e o código Pix da sua chave.</span></div>
@@ -185,14 +200,48 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </div></section>
 
-<section class="blk" id="planos"><div class="in">
-  <div class="sh"><h2>Planos</h2><p>Você escolhe entre pagar uma vez ou ter a gente cuidando do site todo mês.</p></div>
-  <div class="plans" id="plans"></div>
-  <p class="nota" id="planNota"></p>
+<section class="blk" id="painel"><div class="in">
+  <div class="sh"><h2>O painel do dono</h2><p>Funciona no celular e no computador. Feito para quem não quer aprender sistema: cada tela faz uma coisa só.</p></div>
+  <div class="pn">
+    <div class="tabs" role="tablist" aria-label="Telas do painel" id="tabs"></div>
+    <div><p class="pncap" id="pncap"></p><div class="shot"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img id="pnImg" width="1600" height="1000" alt="" loading="lazy" decoding="async"></div></div>
+  </div>
+</div></section>
+
+<section class="blk" id="restaurantes"><div class="in"><div class="rest">
+  <div class="sh"><h2>Para quem atende no salão</h2><p>Pizzaria, restaurante, hamburgueria, adega: o painel mostra as mesas ao vivo e o cliente pede pela mesa.</p></div>
+  <div class="row">
+    <div class="shot"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="/zivoop/pc-salao.webp" width="1600" height="1000" alt="Tela do Salão: planta com 8 mesas, alerta de mesa sem atendimento, pedido de conta e gráfico de horários de pico" loading="lazy" decoding="async"></div>
+    <ul>
+      <li><b>Mesas ao vivo</b><span>Livre, ocupada, atendida. Mesa esperando há mais de 3 minutos acende e o celular do garçom apita.</span></li>
+      <li><b>QR code em cada mesa</b><span>O cliente lê, pede do cardápio, chama o garçom e pede a conta. Pode pagar no Pix pela mesa.</span></li>
+      <li><b>Fila de espera e horários de pico</b><span>Anote quem chega, avise pelo WhatsApp quando a mesa liberar e veja os horários mais cheios da semana.</span></li>
+      <li><b>Câmera, se você quiser</b><span>Uma câmera no teto marca sozinha quando a mesa ocupa e libera. Só contagem: nenhum vídeo é gravado.</span></li>
+    </ul>
+  </div>
+  <div class="cels">
+    <figure><img src="/zivoop/qr-cliente.webp" width="390" height="844" alt="Celular do cliente com o cardápio aberto pelo QR da Mesa 1" loading="lazy" decoding="async"><figcaption>O cliente lê o QR da mesa</figcaption></figure>
+    <figure><img src="/zivoop/qr-carrinho.webp" width="390" height="844" alt="Pedido da mesa sendo enviado direto para a cozinha" loading="lazy" decoding="async"><figcaption>Pede direto para a cozinha</figcaption></figure>
+    <figure><img src="/zivoop/qr-conta.webp" width="390" height="844" alt="Conta da mesa com o total e a forma de pagamento" loading="lazy" decoding="async"><figcaption>E pede a conta</figcaption></figure>
+  </div>
+</div></div></section>
+
+<section class="blk" id="ofertas"><div class="in"><div class="of">
+  <div><h3>Zivoop Ofertas, para afiliados</h3><p>Posta as suas ofertas da Shopee, do Mercado Livre e da Amazon nos seus grupos de WhatsApp, com o seu link de afiliado, no horário que você escolher. Mostra quantas foram enviadas e as suas comissões.</p></div>
+  <a class="btn ghost" href="#quero" onclick="document.getElementById('fInt').value='ofertas'">Quero saber mais</a>
+</div></div></section>
+
+<section class="blk" id="como"><div class="in">
+  <div class="sh"><h2>Como começar</h2><p>Você não precisa entender de sistema. A gente entrega pronto e mostra como usar.</p></div>
+  <div class="steps">
+    <div class="step"><h3>Você fala com a gente</h3><p>Conte o que o seu negócio vende e como atende. A gente indica o modelo e o que faz sentido para você.</p></div>
+    <div class="step"><h3>A gente monta com os seus dados</h3><p>Colocamos seus produtos ou serviços, preços, fotos, horários, taxa de entrega, chave Pix e o seu WhatsApp.</p></div>
+    <div class="step"><h3>Você usa e cuida pelo painel</h3><p>Divulgue o link no Instagram e no WhatsApp. Pedidos, clientes e caixa ficam no painel, e preço e produto você muda quando quiser.</p></div>
+  </div>
 </div></section>
 
 <section class="in" id="quero" aria-labelledby="qT"><div class="qbox">
-  <div><h2 id="qT">Quero meu site</h2><p>Mande seus dados e a gente chama no WhatsApp para entender o seu negócio. Sem compromisso.</p></div>
+  <div><h2 id="qT">Fale com a gente</h2><p>Mande seus dados e a gente chama você no WhatsApp para mostrar como funciona no seu negócio. Sem compromisso.</p></div>
   <div>
     <form class="f" id="form" novalidate>
       <label>Seu nome<input name="nome" required maxlength="80" autocomplete="name"></label>
@@ -200,13 +249,13 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <label>Nome do negócio<input name="negocio" maxlength="80" autocomplete="organization"></label>
       <label>Cidade<input name="cidade" maxlength="60" autocomplete="address-level2"></label>
       <label>Tipo de negócio<select name="nicho" id="fNicho"></select></label>
-      <label>Plano<select name="plano" id="fPlano"></select></label>
+      <label>O que te interessa<select name="plano" id="fInt"></select></label>
       <label class="full">Quer contar algo? <textarea name="mensagem" maxlength="500" placeholder="Ex.: tenho 40 produtos e faço entrega em 3 bairros"></textarea></label>
-      <div class="full"><button class="btn" type="submit" id="fBtn" style="width:100%">Pedir meu site</button></div>
+      <div class="full"><button class="btn" type="submit" id="fBtn" style="width:100%">Quero conversar</button></div>
       <div class="full msg" id="fMsg" role="alert"></div>
-      <div class="full lgpd">Usamos seus dados só para falar com você sobre o site. Pode pedir para apagar quando quiser.</div>
+      <div class="full lgpd">Usamos seus dados só para falar com você sobre a Zivoop. Pode pedir para apagar quando quiser.</div>
     </form>
-    <div class="ok" id="ok" role="status"><h3>Recebido!</h3><p id="okP">A gente chama você no WhatsApp em breve.</p><a class="btn ghost" style="color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)" href="#modelos">Ver mais modelos</a></div>
+    <div class="ok" id="ok" role="status"><h3>Recebido!</h3><p id="okP">A gente chama você no WhatsApp em breve.</p><a class="btn ghost" style="color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)" href="#modelos">Ver os exemplos</a></div>
   </div>
 </div></section>
 
@@ -215,25 +264,32 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <div class="faq">
     <details><summary>Preciso pagar comissão por pedido?</summary><p>Não. O pedido vai direto para o seu WhatsApp e o pagamento cai na sua conta. A Zivoop não fica com nenhuma parte da venda.</p></details>
     <details><summary>O cliente precisa baixar algum aplicativo?</summary><p>Não. Ele abre o link no navegador do celular. Se quiser, instala o site na tela inicial como se fosse um app.</p></details>
-    <details><summary>Quem coloca os produtos, preços e fotos?</summary><p>A gente coloca tudo para você na entrega. Depois, as mudanças de preço e produto podem ser feitas pela gente no plano mensal.</p></details>
+    <details><summary>Quem coloca os produtos, preços e fotos?</summary><p>A gente coloca tudo para você na entrega. Depois, você muda preço, produto, foto e horário pelo painel, ou escreve para o assistente: “baixa a calabresa pra R$ 49,90”.</p></details>
+    <details><summary>Preciso de computador?</summary><p>Não. O painel funciona no celular. Se tiver computador, também dá para usar nele.</p></details>
+    <details><summary>Quanto custa?</summary><p>Depende do que o seu negócio precisa: só o site e o painel, ou também o salão com QR e a câmera. Fale com a gente e mandamos o valor certo para o seu caso.</p></details>
+    <details><summary>A câmera do salão grava as pessoas?</summary><p>Não. O programa só conta quantas pessoas estão em cada mesa e manda esse número para o painel. Nenhum vídeo é gravado ou enviado.</p></details>
     <details><summary>Posso usar o meu próprio domínio?</summary><p>Pode. O site funciona no seu endereço (por exemplo, pizzariadobairro.com.br). O registro do domínio é seu.</p></details>
-    <details><summary>Meu negócio não está na lista. E agora?</summary><p>Mande os seus dados mesmo assim e conte o que você vende. Muitos negócios se encaixam num dos modelos de pedido, agendamento ou reserva.</p></details>
+    <details><summary>Meu negócio não está na lista. E agora?</summary><p>Fale com a gente mesmo assim e conte o que você vende. Quase todo negócio se encaixa num dos modelos de pedido, agendamento, reserva ou ingressos.</p></details>
   </div>
 </div></section>
 </main>
 
-<footer><div class="in"><span><b>zivoop</b>, sites prontos para o comércio local</span><span id="ano"></span></div></footer>
+<footer><div class="in"><span><b>zivoop</b>, sistemas prontos para o comércio local</span><span id="ano"></span></div></footer>
+<a class="wa" id="wa" hidden target="_blank" rel="noopener" aria-label="Falar com a Zivoop no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>WhatsApp</span></a>
 
 <script>
 /* ===== o que o dono da Zivoop muda aqui ===== */
 const ZIVOOP={
   whatsapp:"",            /* ex.: "5511999999999". Vazio = esconde o botão de WhatsApp */
   supabase:{url:"https://phswqjkytnkukqpbtoqd.supabase.co",key:"sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8"},
-  planos:[
-    {id:"unico",nome:"Site pronto",preco:"R$ 997",per:"pagamento único",itens:["Modelo do seu negócio montado com seus dados","Produtos, fotos, horários e Pix configurados","Publicado no seu domínio","30 dias de ajustes inclusos"]},
-    {id:"mensal",nome:"Site + cuidado mensal",preco:"R$ 79",per:"/mês",tag:"Mais escolhido",dest:true,itens:["Tudo do Site pronto, sem pagamento de entrada","Mudanças de preço, produto e foto sempre que precisar","Hospedagem e certificado de segurança inclusos","Suporte pelo WhatsApp"]},
-    {id:"anual",nome:"Anual",preco:"R$ 790",per:"/ano",itens:["Tudo do plano mensal","Dois meses de economia","Revisão do cardápio ou catálogo a cada trimestre"]}],
-  notaPlanos:"Domínio (.com.br) é registrado no seu nome, em registro.br, por cerca de R$ 40 por ano."
+  interesses:[["site","Site e painel para o meu negócio"],["salao","Salão com mesas e QR (restaurante)"],["camera","Câmera para o salão"],["ofertas","Zivoop Ofertas (afiliado)"],["","Ainda não sei"]],
+  painel:[
+    {k:"pedidos",t:"Pedidos",d:"Cada pedido do site cai num quadro: novo, em preparo, pronto e entregue. Entregou, o valor entra no caixa.",img:"pc-pedidos",cel:"cel-pedidos",alt:"Quadro de pedidos com as colunas Novos, Em preparo, Pronto e Entregue"},
+    {k:"inicio",t:"Resumo do dia",d:"Quanto entrou hoje, o saldo do mês e os pedidos que ainda estão em aberto, logo que você abre.",img:"pc-inicio",cel:"cel-inicio",alt:"Tela inicial com o que entrou hoje, saldo do mês e pedidos em aberto"},
+    {k:"clientes",t:"Clientes",d:"Quem pede vira cliente sozinho. Quem volta sobe para fiel. Um toque abre a conversa no WhatsApp.",img:"pc-clientes",alt:"Clientes organizados em Novos, Em conversa, Clientes e Fiéis"},
+    {k:"caixa",t:"Caixa",d:"As entradas dos pedidos e as suas saídas, dia a dia e por categoria, sem planilha.",img:"pc-caixa",alt:"Caixa do mês com entradas, saídas, saldo e gráfico dia a dia"},
+    {k:"vender",t:"Vender mais",d:"Descobre o que sai junto e mostra para qual cliente oferecer o quê. O site também sugere “Leve junto” sozinho.",img:"pc-vender",alt:"Lista de clientes com o produto certo para oferecer a cada um"},
+    {k:"assistente",t:"Assistente",d:"Peça como pediria a um funcionário: “o petit gâteau acabou”, “fecha na segunda”. O site muda na hora.",img:"pc-assistente",alt:"Conversa com o assistente mudando preço, tirando item e fechando um dia"}]
 };
 /* ============================================ */
 const NICHOS=[{"s":"mini-mercado","n":"Mini mercado","e":"🛒","c":"lojas","m":"Pedido","ex":"Mercadinho Bom Preço","t":"Mercado do bairro, faça a compra pelo celular e receba em casa"},{"s":"acougue","n":"Açougue","e":"🥩","c":"comida","m":"Pedido","ex":"Casa de Carnes Boi Bravo","t":"Açougue de bairro, corte do jeito que você pedir"},{"s":"padaria","n":"Padaria","e":"🥐","c":"comida","m":"Pedido","ex":"Padaria Trigo de Ouro","t":"Padaria e confeitaria, pão quentinho e encomendas de bolo"},{"s":"gas-agua","n":"Gás e água","e":"🔥","c":"lojas","m":"Pedido","ex":"Gás & Água Chama Azul","t":"Gás de cozinha e água mineral, entrega rápida no bairro"},{"s":"farmacia","n":"Farmácia","e":"💊","c":"saude","m":"Pedido","ex":"Farmácia Vida Mais","t":"Farmácia do bairro, higiene, beleza e medicamentos com orientação"},{"s":"floricultura","n":"Floricultura","e":"💐","c":"lojas","m":"Pedido","ex":"Floricultura Jardim Secreto","t":"Flores, buquês e presentes, entregamos com cartão"},{"s":"adega","n":"Adega","e":"🍷","c":"lojas","m":"Pedido","ex":"Adega Noite Boa","t":"Adega e conveniência, bebida gelada até tarde"},{"s":"acai","n":"Açaí","e":"🍧","c":"comida","m":"Pedido","ex":"Açaí da Ilha","t":"Açaí e sorvetes, monte o seu do seu jeito"},{"s":"autopecas","n":"Autopeças","e":"🔧","c":"servicos","m":"Pedido","ex":"Auto Peças Pistão","t":"Autopeças e acessórios, peça certa pro seu carro"},{"s":"oficina-mecanica","n":"Oficina mecânica","e":"🔧","c":"servicos","m":"Agendamento","ex":"Oficina Torque Certo","t":"Mecânica geral, agende a revisão sem fila"},{"s":"lava-jato","n":"Lava-jato","e":"🚿","c":"servicos","m":"Agendamento","ex":"Brilho Total Estética Automotiva","t":"Lava-jato e estética automotiva, agende e não pegue fila"},{"s":"veterinaria","n":"Veterinária","e":"🐾","c":"saude","m":"Agendamento","ex":"Clínica Veterinária Amigo Fiel","t":"Clínica veterinária, consultas, vacinas e exames"},{"s":"clinica-estetica","n":"Clínica de estética","e":"✨","c":"beleza","m":"Agendamento","ex":"Lumière Estética","t":"Clínica de estética, facial, corporal e bem-estar"},{"s":"academia","n":"Academia","e":"🏋️","c":"saude","m":"Agendamento","ex":"Academia Força Viva","t":"Musculação, funcional e pilates, agende sua aula experimental"},{"s":"escola-aulas","n":"Escola e aulas","e":"📚","c":"servicos","m":"Agendamento","ex":"Ponto de Aula","t":"Idiomas, música e reforço escolar, agende uma aula experimental"},{"s":"tatuagem","n":"Estúdio de tatuagem","e":"🖋️","c":"beleza","m":"Agendamento","ex":"Tinta Negra Tattoo","t":"Tattoo & piercing, conte sua ideia e reserve a sessão"},{"s":"fotografo","n":"Fotógrafo","e":"📷","c":"servicos","m":"Agendamento","ex":"Luz & Momento Fotografia","t":"Ensaios e eventos, reserve sua data"},{"s":"assistencia-celular","n":"Assistência de celular","e":"📱","c":"servicos","m":"Agendamento","ex":"Conserta Já Celulares","t":"Assistência técnica de celular, conserto rápido com garantia"},{"s":"hortifruti","n":"Hortifruti","e":"🥬","c":"comida","m":"Pedido","ex":"Quintal Hortifruti","t":"Frutas, verduras e legumes fresquinhos, entrega no bairro"},{"s":"distribuidora","n":"Distribuidora de bebidas","e":"🍺","c":"lojas","m":"Pedido","ex":"Gelada Express","t":"Distribuidora de bebidas, entrega rápida e gelada"},{"s":"materiais-construcao","n":"Materiais de construção","e":"🧱","c":"lojas","m":"Pedido","ex":"ConstruBem Materiais","t":"Material de construção, direto do depósito"},{"s":"loja-roupa","n":"Loja de roupas","e":"👗","c":"lojas","m":"Pedido","ex":"Boutique Lila","t":"Moda feminina, peças que vestem você"},{"s":"marmitaria","n":"Marmitaria","e":"🥗","c":"comida","m":"Pedido","ex":"Marmita Leve","t":"Comida fitness, congelada e do dia"},{"s":"pastelaria","n":"Pastelaria","e":"🥟","c":"comida","m":"Pedido","ex":"Império do Pastel","t":"Pastel na hora, caldo de cana geladinho"},{"s":"hamburgueria","n":"Hamburgueria","e":"🍔","c":"comida","m":"Pedido","ex":"Bendito Burger","t":"Hamburgueria artesanal, na chapa"},{"s":"pizzaria","n":"Pizzaria","e":"🍕","c":"comida","m":"Pedido","ex":"Bella Massa Pizzaria","t":"Pizzaria artesanal, forno a lenha"},{"s":"agropecuaria","n":"Agropecuária","e":"🌾","c":"lojas","m":"Pedido","ex":"Campo Forte Agropecuária","t":"Rações, sementes, adubos e ferramentas, entrega na cidade e na roça"},{"s":"salao","n":"Salão de beleza","e":"💇‍♀️","c":"beleza","m":"Agendamento","ex":"Studio Bella Hair","t":"Salão de beleza, cabelo, unhas & make"},{"s":"barbearia","n":"Barbearia","e":"💈","c":"beleza","m":"Agendamento","ex":"Barbearia Dom Rocha","t":"Barbearia clássica, hora marcada"},{"s":"studio-unhas","n":"Studio de unhas","e":"💅","c":"beleza","m":"Agendamento","ex":"Esmalteria Charme","t":"Unhas, Sobrancelha, Cílios"},{"s":"dentista","n":"Dentista","e":"🦷","c":"saude","m":"Agendamento","ex":"Sorriso Odonto","t":"Clínica odontológica, com hora marcada pela internet"},{"s":"petshop","n":"Pet shop","e":"🐶","c":"servicos","m":"Agendamento","ex":"Pet Amigo — Banho & Tosa","t":"Banho & Tosa, seu pet nas melhores mãos"},{"s":"personal","n":"Personal trainer","e":"💪","c":"saude","m":"Agendamento","ex":"Corpo em Foco — Personal Training","t":"Personal Training, Nova Aurora"},{"s":"pousada","n":"Pousada","e":"🌿","c":"lazer","m":"Reserva","ex":"Pousada Recanto Verde","t":"Pousada, natureza e sossego na serra"},{"s":"quadra-society","n":"Quadra society","e":"⚽","c":"lazer","m":"Reserva","ex":"Arena Gol de Placa","t":"Society, Areia, Churrasqueira"},{"s":"aluguel-festa","n":"Aluguel para festas","e":"🎉","c":"lazer","m":"Reserva","ex":"Festa & Alegria Locações","t":"Aluguel de brinquedos e equipamentos de festa"},{"s":"chacara","n":"Chácara de eventos","e":"🌞","c":"lazer","m":"Reserva","ex":"Chácara Recanto do Sol","t":"Chácara para lazer e eventos, reserve sua data"},{"s":"cinema","n":"Cinema","e":"🎬","c":"lazer","m":"Ingressos","ex":"Cine Aurora","t":"Escolha sua poltrona vendo a sala em 3D"},{"s":"restaurante","n":"Restaurante","e":"🍝","c":"comida","m":"Reserva de mesa + QR","ex":"Cantina Bella Vista","t":"Mesa escolhida no salão em 3D, pedido e garçom pelo QR"},{"s":"excursao","n":"Excursões","e":"🚌","c":"lazer","m":"Passagens","ex":"Rota Feliz Turismo","t":"Poltrona marcada vendo o ônibus em 3D"},{"s":"arena","n":"Estádio e arena","e":"🏟️","c":"lazer","m":"Ingressos","ex":"Arena Vale do Sol","t":"Setor e lugar escolhidos no estádio em 3D, para jogo, show e rodeio"}];
@@ -241,7 +297,8 @@ const CATS=[["todos","Todos"],["comida","Comida"],["lojas","Lojas e entrega"],["
 const DESTAQUE=["pizzaria","barbearia","acai","pousada","hamburgueria","cinema"];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
 const grande=()=>matchMedia("(min-width:901px)").matches;
-let cat="todos", atual="pizzaria";
+let cat="todos", atual="pizzaria", todos=false;
+const PRIMEIROS=["pizzaria","hamburgueria","restaurante","barbearia","salao","acai","mini-mercado","pousada"];
 function phoneScale(){ const p=document.getElementById("phone"), f=document.getElementById("demo"), w=p.querySelector(".screen").clientWidth, h=p.querySelector(".screen").clientHeight, s=w/390;
   f.style.transform=`scale(${s})`; f.style.height=(h/s)+"px"; }
 function mostrar(slug,rolar){ atual=slug; const n=NICHOS.find(x=>x.s===slug), f=document.getElementById("demo"), ld=document.getElementById("ld");
@@ -253,13 +310,20 @@ function mostrar(slug,rolar){ atual=slug; const n=NICHOS.find(x=>x.s===slug), f=
 function ver(slug){ if(grande()) mostrar(slug,true); else window.open(`/modelos/${slug}/`,"_blank","noopener"); }
 function quero(slug){ document.getElementById("fNicho").value=slug; document.getElementById("quero").scrollIntoView({behavior:"smooth"}); setTimeout(()=>document.querySelector('#form [name="nome"]').focus({preventScroll:true}),500); }
 function renderCats(){ document.getElementById("cats").innerHTML=CATS.map(([k,l])=>`<button aria-pressed="${cat===k}" onclick="cat='${k}';renderCats();renderGrid()">${l}</button>`).join(""); }
-function renderGrid(){ document.getElementById("grid").innerHTML=NICHOS.filter(n=>cat==="todos"||n.c===cat).map(n=>`<article class="ni ${n.s===atual?"on":""}" data-s="${n.s}">
+function renderGrid(){ let L=NICHOS.filter(n=>cat==="todos"||n.c===cat); const corta=cat==="todos"&&!todos; if(corta) L=PRIMEIROS.map(k=>NICHOS.find(n=>n.s===k)).filter(Boolean);
+  const mb=document.getElementById("maisMod"); mb.hidden=!corta; mb.textContent=`Ver todos os ${NICHOS.length} modelos`;
+  document.getElementById("grid").innerHTML=L.map(n=>`<article class="ni ${n.s===atual?"on":""}" data-s="${n.s}">
   <div class="hd"><span class="em" aria-hidden="true">${n.e}</span><div><h3>${esc(n.n)}</h3><span class="md">${esc(n.m)}</span></div></div>
   <p>${esc(n.t)}</p><div class="ac"><button class="ver" onclick="ver('${n.s}')">Ver ao vivo</button><button class="qb" onclick="quero('${n.s}')">Quero esse</button></div></article>`).join(""); }
-function renderPlans(){ document.getElementById("plans").innerHTML=ZIVOOP.planos.map(p=>`<div class="pl ${p.dest?"dest":""}">${p.tag?`<span class="tg">${esc(p.tag)}</span>`:""}<h3>${esc(p.nome)}</h3><div class="pr">${esc(p.preco)} <small>${esc(p.per)}</small></div><ul>${p.itens.map(i=>`<li>${esc(i)}</li>`).join("")}</ul><a class="btn" href="#quero" onclick="document.getElementById('fPlano').value='${p.id}'">Escolher ${esc(p.nome.toLowerCase())}</a></div>`).join("");
-  document.getElementById("planNota").textContent=ZIVOOP.notaPlanos||""; }
+function renderPainel(k,foco){ const L=ZIVOOP.painel, a=L.find(x=>x.k===k)||L[0];
+  document.getElementById("tabs").innerHTML=L.map(x=>`<button role="tab" id="tb-${x.k}" aria-selected="${x.k===a.k}" aria-controls="pnImg" tabindex="${x.k===a.k?0:-1}" onclick="renderPainel('${x.k}',true)"><b>${esc(x.t)}</b><span>${esc(x.d)}</span></button>`).join("");
+  const img=document.getElementById("pnImg"), cel=a.cel&&matchMedia("(max-width:560px)").matches;
+  img.src=`/zivoop/${cel?a.cel:a.img}.webp`; img.width=cel?780:1600; img.height=cel?1688:1000; img.alt=a.alt; document.getElementById("pncap").textContent=a.d; if(foco) document.getElementById("tb-"+a.k).focus(); }
+document.getElementById("tabs").addEventListener("keydown",e=>{ if(!["ArrowRight","ArrowLeft","ArrowDown","ArrowUp"].includes(e.key)) return; e.preventDefault();
+  const L=ZIVOOP.painel, i=L.findIndex(x=>document.getElementById("tb-"+x.k).getAttribute("aria-selected")==="true"), d=/Right|Down/.test(e.key)?1:-1, n=L[(i+d+L.length)%L.length].k;
+  renderPainel(n,true); });
 function renderForm(){ document.getElementById("fNicho").innerHTML=`<option value="">Escolha</option>`+NICHOS.map(n=>`<option value="${n.s}">${esc(n.n)}</option>`).join("")+`<option value="outro">Outro</option>`;
-  document.getElementById("fPlano").innerHTML=`<option value="">Ainda não sei</option>`+ZIVOOP.planos.map(p=>`<option value="${p.id}">${esc(p.nome)}</option>`).join(""); }
+  document.getElementById("fInt").innerHTML=ZIVOOP.interesses.map(([v,l])=>`<option value="${v}">${esc(l)}</option>`).join(""); }
 document.getElementById("form").addEventListener("submit",async e=>{ e.preventDefault(); const fd=new FormData(e.target), m=document.getElementById("fMsg"), b=document.getElementById("fBtn");
   const nome=(fd.get("nome")||"").trim(), w=(fd.get("whatsapp")||"").replace(/\D/g,"");
   if(nome.length<2){ m.textContent="Escreva seu nome."; e.target.nome.focus(); return; }
@@ -269,12 +333,13 @@ document.getElementById("form").addEventListener("submit",async e=>{ e.preventDe
   try{ const r=await fetch(ZIVOOP.supabase.url+"/rest/v1/rpc/zivoop_novo_lead",{method:"POST",headers:{"Content-Type":"application/json",apikey:ZIVOOP.supabase.key,Authorization:"Bearer "+ZIVOOP.supabase.key},body:JSON.stringify(body)});
     if(!r.ok) throw new Error(r.status);
     e.target.hidden=true; const ok=document.getElementById("ok"); ok.classList.add("on"); document.getElementById("okP").textContent=`Obrigado, ${nome.split(" ")[0]}. A gente chama você no WhatsApp (${fd.get("whatsapp")}) em breve.`;
-  }catch(err){ b.disabled=false; b.textContent="Pedir meu site"; m.textContent=ZIVOOP.whatsapp?"Não deu para enviar agora. Tente de novo ou fale direto no WhatsApp.":"Não deu para enviar agora. Confira a internet e tente de novo."; } });
+  }catch(err){ b.disabled=false; b.textContent="Quero conversar"; m.textContent=ZIVOOP.whatsapp?"Não deu para enviar agora. Tente de novo ou fale direto no WhatsApp.":"Não deu para enviar agora. Confira a internet e tente de novo."; } });
 addEventListener("scroll",()=>document.getElementById("top").classList.toggle("sc",scrollY>8),{passive:true});
 addEventListener("resize",phoneScale);
 document.getElementById("ano").textContent="© "+new Date().getFullYear()+" Zivoop";
 document.getElementById("switch").innerHTML=DESTAQUE.map(s=>{ const n=NICHOS.find(x=>x.s===s); return `<button data-s="${s}" onclick="mostrar('${s}')">${n.e} ${esc(n.n)}</button>`; }).join("");
-renderCats(); renderGrid(); renderPlans(); renderForm(); phoneScale(); mostrar("pizzaria");
+renderCats(); renderGrid(); renderPainel("pedidos"); renderForm(); phoneScale(); mostrar("pizzaria");
+if(ZIVOOP.whatsapp){ const w=document.getElementById("wa"); w.href="https://wa.me/"+ZIVOOP.whatsapp+"?text="+encodeURIComponent("Olá! Vi o site da Zivoop e quero saber mais."); w.hidden=false; }
 </script>
 </body>
 </html>
