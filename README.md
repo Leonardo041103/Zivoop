@@ -1,14 +1,12 @@
 # Zivoop
 
-Dois sites separados neste repositório:
+Tudo no mesmo endereço (site de vendas na raiz, painel em `/painel`, demonstrações em `/modelos/...`,
+sites dos clientes em `/<slug>`), mas com **dois bancos separados** no Supabase:
 
-| | O quê | Vercel | Banco (Supabase) |
-|---|---|---|---|
-| `site/` | zivoop.com, o site de vendas (gerado por `publicar_site.py` a partir de `src/site.html`) | projeto próprio, Root Directory = `site` | `zivoop-site` (só os contatos) |
-| raiz (`public/`, `api/`) | app.zivoop.com: painel, sites dos clientes (`/<slug>`), demonstrações (`/modelos/...`), Zivoop Ofertas | projeto `zivoop` | `zivoop-pedidos` |
+- `zivoop-site`: só os contatos de quem quer contratar (tabela `zivoop_leads`, formulário "Fale com a gente").
+- `zivoop-pedidos`: os softwares vendidos (painel, pedidos, agenda, reservas, salão, clientes dos negócios).
 
-O site de vendas mostra as demonstrações pela plataforma (`ZIVOOP.app` em `src/site.html`).
-Quando o domínio estiver pronto, troque para `https://app.zivoop.com` e publique de novo.
+O site de vendas é `src/site.html` (configuração no objeto `ZIVOOP` no fim do arquivo).
 
 
 Site da Zivoop: página de vendas e demonstrações ao vivo dos 38 modelos de site pronto.
