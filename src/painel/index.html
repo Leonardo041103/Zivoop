@@ -205,10 +205,10 @@ table.tb{width:100%;border-collapse:collapse;font-size:14px}
 .planta.edit .mesa{cursor:grab}
 .leg{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);flex-wrap:wrap}
 .leg i{width:11px;height:11px;border-radius:50%;border:2px solid var(--mint);margin-left:6px}.leg i.sentou{border-color:var(--amber)}.leg i.alerta{border-color:var(--red)}.leg i.atendida{border-color:var(--cobalt)}
-.barras{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;height:130px;align-items:end}
-.barras div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
-.barras i{width:100%;border-radius:5px 5px 2px 2px;background:color-mix(in srgb,var(--cobalt) 45%,var(--card));min-height:2px}.barras i.pico{background:var(--cobalt)}
-.barras small{font-size:11px;color:var(--soft)}
+.picob{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;height:130px;align-items:end}
+.picob div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.picob i{width:100%;border-radius:5px 5px 2px 2px;background:color-mix(in srgb,var(--cobalt) 45%,var(--card));min-height:2px}.picob i.pico{background:var(--cobalt)}
+.picob small{font-size:11px;color:var(--soft)}
 .foto-cam{position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;background:#000}
 .foto-cam img{display:block;width:100%}.foto-cam svg{position:absolute;inset:0;width:100%;height:100%}
 .foto-cam .z{fill:color-mix(in srgb,var(--cobalt) 30%,transparent);stroke:#fff;stroke-width:.004}
@@ -722,7 +722,7 @@ async function desenharPico() { const el = $("sPico"); if (!el) return;
   el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Horários de pico</h2>
       <div class="seg" style="min-width:220px"><button aria-pressed="${!picoFds}" onclick="picoFds=false;desenharPico()">Semana</button><button aria-pressed="${picoFds}" onclick="picoFds=true;desenharPico()">Fim de semana</button></div></div>
     <p class="muted" style="font-size:13.5px;margin:6px 0 10px">Mesas que sentaram por horário, nas últimas 4 semanas.${topo3.length ? ` Mais cheio às <b>${topo3.join(" e ")}</b>: escale a equipe para esses horários.` : ""}</p>
-    ${L.length ? `<div class="barras">${hs.map(h => `<div title="${h}h: ${por[h] || 0} mesas"><i style="height:${Math.round((por[h] || 0) / max * 100)}%" class="${topo3.includes(h + "h") ? "pico" : ""}"></i><small>${h}</small></div>`).join("")}</div>`
+    ${L.length ? `<div class="picob">${hs.map(h => `<div title="${h}h: ${por[h] || 0} mesas"><i style="height:${Math.round((por[h] || 0) / max * 100)}%" class="${topo3.includes(h + "h") ? "pico" : ""}"></i><small>${h}</small></div>`).join("")}</div>`
       : `<p class="vazio">Aparece depois dos primeiros dias com as mesas sendo marcadas.</p>`}
     <div class="kpis" style="margin:12px 0 0"><div class="card kpi"><small>Espera até atender</small><b>${r.espera_media != null ? mmss(r.espera_media) : "—"}</b></div><div class="card kpi"><small>Tempo na mesa</small><b>${r.permanencia_media != null ? mmss(r.permanencia_media) : "—"}</b></div></div>`; }
 /* câmeras */
