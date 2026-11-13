@@ -3,7 +3,7 @@
    Lista de espera (um por vez, por ordem de chegada), Hora de voltar, Sinal por Pix e Recibo do mês.
    Banco próprio: projeto Supabase só da barbearia. */
 window.ZV_PRODUTO = "barbearia";
-(() => { const B = { url: "{{BARB_SB_URL}}", key: "{{BARB_SB_KEY}}" };   // o publicar troca pelos dados do banco da barbearia
+(() => { const B = { url: "https://yqpaqwwdfeyesxvbbcwy.supabase.co", key: "sb_publishable_yFqNbiwT-PEvOI1RVDXhIw_vNgMjB-H" };   // banco próprio da barbearia (projeto zivoop-site no Supabase)
   if (!window.ZV_SB_URL && B.url.indexOf("{{") < 0) { window.ZV_SB_URL = B.url; window.ZV_SB_KEY = B.key; } })();
 window.ZV_ONB = { t: "Vamos colocar sua barbearia no ar", p: "Diga o nome e o WhatsApp da barbearia. Os serviços e os horários já vêm prontos. Você troca preços, barbeiros e fotos depois, aqui no painel." };
 window.ZV_CURTAS = ["inicio", "agenda", "clube", "clientes"];

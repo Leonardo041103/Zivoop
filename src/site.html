@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Zivoop | Site, painel e sistemas prontos para o seu negócio</title>
-<meta name="description" content="Site pronto para 41 tipos de negócio, com painel para pedidos, agenda, clientes e caixa, mesas com QR para restaurantes e assistente que muda o site por mensagem. Sem comissão por venda.">
-<meta property="og:title" content="Zivoop: os sistemas do seu negócio, prontos para usar">
-<meta property="og:description" content="Escolha o modelo do seu negócio, teste ao vivo e receba o site pronto com seus produtos, fotos e WhatsApp.">
+<title>Zivoop | Sistema pronto para barbearia e lanchonete</title>
+<meta name="description" content="Zivoop Barbearia e Zivoop Lanchonete: site de agendamento ou de pedidos, atendimento no WhatsApp e um painel no celular para agenda, cozinha, entregas, estoque, clientes e caixa. Sem comissão por venda.">
+<meta property="og:title" content="Zivoop: barbearia e lanchonete atendendo sozinhas">
+<meta property="og:description" content="O cliente marca o horário ou faz o pedido sozinho, e você cuida de tudo num painel no celular.">
 <meta property="og:image" content="/og.png"><meta property="og:type" content="website"><meta name="theme-color" content="#0E5E5A">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -132,22 +132,28 @@ form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .tabs button{flex:none;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line)}.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:none;border-color:var(--ink)}
   .tabs button[aria-selected="true"] span{display:none}}
 .pncap{display:none;margin:0 0 14px;color:var(--ink-2)}@media (max-width:900px){.pncap{display:block}}
-/* salão */
-.rest{background:var(--ink);color:#fff;border-radius:calc(var(--r) + 8px);padding:clamp(24px,5vw,56px);display:grid;gap:36px}
-.rest .sh p{color:rgba(255,255,255,.7)}
-.rest .row{display:grid;grid-template-columns:1.35fr 1fr;gap:28px;align-items:center}
-@media (max-width:900px){.rest .row{grid-template-columns:1fr}}
-.rest .shot{background:#06070F}
-.rest ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
-.rest li b{display:block;font-size:19px;font-stretch:112%;margin-bottom:4px}.rest li span{color:rgba(255,255,255,.7);font-size:15.5px}
+/* produtos */
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.prods{grid-template-columns:1fr}}
+.pd{background:var(--card);border-radius:calc(var(--r) + 6px);padding:clamp(22px,3.5vw,34px);display:flex;flex-direction:column;gap:18px;border:1.5px solid transparent}
+.pd.on{border-color:var(--cobalt)}
+.pd .hd{display:flex;align-items:center;gap:14px}
+.pd .em{width:58px;height:58px;border-radius:18px;background:var(--paper);display:grid;place-items:center;font-size:32px;flex:none}
+.pd h3{font-size:clamp(26px,3vw,32px);font-stretch:115%}.pd .sub{font-size:15px;color:var(--ink-2);margin-top:4px}
+.pd ul{list-style:none;margin:0;padding:0;display:grid;gap:12px;flex:1}
+.pd li{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:15.5px;color:var(--ink-2);line-height:1.45}
+.pd li::before{content:"";width:18px;height:18px;margin-top:2px;border-radius:50%;background:var(--cobalt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.pd li b{color:var(--ink);font-weight:750}
+.pd .ac{display:flex;gap:8px;flex-wrap:wrap}.pd .ac .btn{flex:1;min-width:150px}
+/* agendar conversando */
+.chat{background:var(--ink);color:#fff;border-radius:calc(var(--r) + 8px);padding:clamp(24px,5vw,56px);display:grid;grid-template-columns:1fr 1.15fr;gap:36px;align-items:center}
+@media (max-width:900px){.chat{grid-template-columns:1fr}}
+.chat h2{font-size:clamp(32px,4.4vw,50px)}.chat p{color:rgba(255,255,255,.72);margin:16px 0 0}
+.chat .btn{margin-top:24px;background:var(--tang);color:var(--ink)}.chat .btn:hover{background:#FFC24A}
 .cels{display:flex;gap:14px;justify-content:center}
 .cels figure{margin:0;flex:1;max-width:220px}.cels img{display:block;width:100%;height:auto;border-radius:22px;border:6px solid #06070F;box-shadow:0 30px 60px -30px rgba(0,0,0,.8)}
 .cels figcaption{font-size:13.5px;color:rgba(255,255,255,.7);text-align:center;margin-top:10px}
 @media (max-width:560px){.cels{gap:8px}.cels figure:nth-child(3){display:none}}
-/* ofertas */
-.of{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;border:1.5px solid var(--line);border-radius:var(--r);padding:clamp(22px,4vw,36px);background:var(--card)}
-@media (max-width:760px){.of{grid-template-columns:1fr}}
-.of h3{font-size:clamp(24px,3vw,32px);font-stretch:115%}.of p{margin:10px 0 0;color:var(--ink-2);max-width:40em}
 /* whatsapp */
 .wa{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:40;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:0 20px 0 16px;border-radius:999px;background:#1FAF5B;color:#fff;font-weight:750;text-decoration:none;box-shadow:0 14px 30px -10px rgba(0,0,0,.4)}
 .wa svg{width:24px;height:24px}
@@ -159,83 +165,82 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 <body>
 <header class="top" id="top"><div class="in">
   <a class="logo" href="/" aria-label="Zivoop, início"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M28 8H72A22 22 0 0 1 94 30V56A22 22 0 0 1 72 78H40L12 96L22 76A22 22 0 0 1 6 56V30A22 22 0 0 1 28 8Z" fill="var(--cobalt)"/><path d="M31 42L44 55L68 28" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="55" r="6.5" fill="var(--tang)"/></svg>zivoop</a>
-  <nav class="nav" aria-label="Seções"><a href="#modelos">Modelos</a><a href="#painel">Painel</a><a href="#restaurantes">Restaurantes</a><a href="#como">Como funciona</a><a href="#duvidas">Dúvidas</a></nav>
+  <nav class="nav" aria-label="Seções"><a href="#barbearia">Barbearia</a><a href="#lanchonete">Lanchonete</a><a href="#painel">Painel</a><a href="#como">Como funciona</a><a href="#duvidas">Dúvidas</a></nav>
   <a class="btn sm" href="#quero">Fale com a gente</a>
 </div></header>
 
 <main>
 <section class="hero"><div class="in">
   <div>
-    <h1>Os sistemas do seu negócio, prontos para usar.</h1>
-    <p class="lead">Site pronto para o seu tipo de negócio e um painel para cuidar de pedidos, agenda, clientes e caixa. Para restaurantes, mesas ao vivo com QR code. Sem aplicativo e sem comissão por venda.</p>
-    <div class="ctas"><a class="btn" href="#quero">Fale com a gente</a><a class="btn ghost" href="#modelos">Ver os exemplos</a></div>
-    <div class="proof"><div><b>41</b>modelos prontos, de pizzaria a pousada</div><div><b>0%</b>de comissão sobre os seus pedidos</div><div><b>1 painel</b>para pedidos, clientes e caixa</div></div>
+    <h1>Sua barbearia ou lanchonete atendendo sozinha.</h1>
+    <p class="lead">O cliente marca o horário ou faz o pedido pelo site, até conversando, a qualquer hora. Você cuida de agenda, cozinha, entregas, clientes e caixa num painel no celular. Sem aplicativo e sem comissão por venda.</p>
+    <div class="ctas"><a class="btn" href="#quero">Fale com a gente</a><a class="btn ghost" href="#produtos">Ver os dois sistemas</a></div>
+    <div class="proof"><div><b>2</b>sistemas, cada um feito para um tipo de negócio</div><div><b>0%</b>de comissão sobre os seus pedidos e horários</div><div><b>24h</b>agenda e cardápio abertos, mesmo com você ocupado</div></div>
   </div>
   <div class="stagewrap">
-    <div class="phone" id="phone"><div class="screen"><div class="ld" id="ld">Abrindo o modelo…</div><iframe id="demo" title="Demonstração do site" loading="lazy"></iframe></div></div>
-    <div class="switch" id="switch" role="group" aria-label="Trocar o modelo no celular"></div>
+    <div class="phone" id="phone"><div class="screen"><div class="ld" id="ld">Abrindo o exemplo…</div><iframe id="demo" title="Demonstração do site" loading="lazy"></iframe></div></div>
+    <div class="switch" id="switch" role="group" aria-label="Trocar o exemplo no celular"></div>
     <div class="now" id="now"></div>
   </div>
 </div></section>
 
-<section class="blk" id="modelos"><div class="in">
-  <div class="sh"><h2>Veja o modelo do seu negócio</h2><p>Todos funcionam de verdade. Abra, faça um pedido ou marque um horário de teste e veja o que o seu cliente vai ver.</p></div>
-  <div class="cats" id="cats" role="group" aria-label="Filtrar por tipo de negócio"></div>
-  <div class="grid" id="grid"></div>
-  <div style="text-align:center;margin-top:18px"><button class="btn ghost" id="maisMod" onclick="todos=true;renderGrid()">Ver todos os modelos</button></div>
-</div></section>
-
-<section class="blk"><div class="in">
-  <div class="sh"><h2>O que vem em todo site</h2><p>Tudo já montado com os seus produtos ou serviços, preços, fotos e horários.</p></div>
-  <div class="feats">
-    <div class="ft"><b>Pedido completo no WhatsApp</b><span>Itens, opções, endereço, troco e observações chegam numa mensagem só.</span></div>
-    <div class="ft"><b>Pix com QR code</b><span>Ao final do pedido, o cliente vê o valor e o código Pix da sua chave.</span></div>
-    <div class="ft"><b>Monte do seu jeito</b><span>Pizza, açaí, marmita e burger montados na tela, tirando ou pondo ingredientes.</span></div>
-    <div class="ft"><b>Agenda e reservas</b><span>Horários livres, calendário com preço por dia e sinal para garantir a data.</span></div>
-    <div class="ft"><b>Cartão fidelidade</b><span>A cada pedido, um selo. Na meta, o cliente ganha o prêmio que você escolher.</span></div>
-    <div class="ft"><b>Vira app no celular</b><span>O cliente instala o site na tela inicial e pede de novo com um toque.</span></div>
-    <div class="ft"><b>Entrega por bairro</b><span>Taxa diferente por bairro, pedido mínimo e frete grátis acima de um valor.</span></div>
-    <div class="ft"><b>Seu domínio</b><span>O site fica no seu endereço, com o seu nome, a sua logo e as suas cores.</span></div>
+<section class="blk" id="produtos"><div class="in">
+  <div class="sh"><h2>Um sistema para cada negócio</h2><p>Nada de sistema genérico. Cada um já vem com o que o seu dia a dia pede, e os dois funcionam de verdade: abra o exemplo e teste.</p></div>
+  <div class="prods">
+    <article class="pd" id="barbearia">
+      <div class="hd"><span class="em" aria-hidden="true">💈</span><div><h3>Zivoop Barbearia</h3><div class="sub">Agenda cheia e cadeira sem buraco</div></div></div>
+      <ul>
+        <li><span><b>Agenda por barbeiro.</b> O cliente escolhe serviço, barbeiro, dia e horário. Nunca marca dois no mesmo horário.</span></li>
+        <li><span><b>Agendar conversando.</b> Um link para a bio do Instagram e para o WhatsApp onde o cliente marca em menos de 1 minuto.</span></li>
+        <li><span><b>Robô no WhatsApp.</b> Marca, remarca, cancela e responde dúvidas no número da barbearia, com regras contra bloqueio.</span></li>
+        <li><span><b>Vaga que abriu vira horário.</b> Desmarcou? A lista de espera é avisada, um de cada vez, por ordem de chegada.</span></li>
+        <li><span><b>Clube de assinatura.</b> Planos mensais, quem está em dia, quem atrasou e quantos cortes cada um usou.</span></li>
+        <li><span><b>Comissão dos barbeiros, lembrete do dia seguinte, caixa e contas a pagar.</b></span></li>
+      </ul>
+      <div class="ac"><button class="btn ghost" onclick="ver('barbearia','?chat')">Testar o agendamento</button><button class="btn" onclick="quero('barbearia')">Quero esse</button></div>
+    </article>
+    <article class="pd" id="lanchonete">
+      <div class="hd"><span class="em" aria-hidden="true">🍔</span><div><h3>Zivoop Lanchonete</h3><div class="sub">Pedido certo, cozinha andando, lucro na mão</div></div></div>
+      <ul>
+        <li><span><b>Cardápio que vende.</b> Lanches, porções, combos e o “monte seu lanche”, tirando ou pondo ingrediente.</span></li>
+        <li><span><b>Pedido completo no WhatsApp.</b> Itens, observações, endereço, troco e Pix com QR code numa mensagem só.</span></li>
+        <li><span><b>Cozinha na tela.</b> Pedidos por ordem de chegada; o tempo fica amarelo aos 12 minutos e vermelho aos 20.</span></li>
+        <li><span><b>Entregas.</b> Taxa por bairro, motoboy de cada pedido, aviso ao cliente e acerto do dia com cada motoboy.</span></li>
+        <li><span><b>Estoque pela receita.</b> Vendeu um X-Burger, o pão, a carne e o queijo baixam sozinhos. Mostra o lucro de cada lanche.</span></li>
+        <li><span><b>Cartão fidelidade, clientes sumidos, caixa e contas a pagar.</b></span></li>
+      </ul>
+      <div class="ac"><button class="btn ghost" onclick="ver('lanchonete')">Ver o cardápio de exemplo</button><button class="btn" onclick="quero('lanchonete')">Quero esse</button></div>
+    </article>
   </div>
 </div></section>
 
+<section class="blk"><div class="in"><div class="chat">
+  <div>
+    <h2>Seu cliente marca conversando</h2>
+    <p>Na bio do Instagram ou no WhatsApp, a barbearia manda um link e o cliente marca como se estivesse num chat: toca no serviço com foto, escolhe o barbeiro, vê só os dias e horários livres e confirma. Se o dia estiver lotado, entra na lista de espera.</p>
+    <button class="btn" onclick="ver('barbearia','?chat')">Testar agora</button>
+  </div>
+  <div class="cels">
+    <figure><img src="/zivoop/bb-chat-servicos.webp" width="390" height="844" alt="Conversa de agendamento mostrando os serviços com foto e preço" loading="lazy" decoding="async"><figcaption>Escolhe o serviço</figcaption></figure>
+    <figure><img src="/zivoop/bb-chat-dia.webp" width="390" height="844" alt="Dias livres para escolher, com os dias lotados marcados" loading="lazy" decoding="async"><figcaption>Vê só o que está livre</figcaption></figure>
+    <figure><img src="/zivoop/bb-chat-resumo.webp" width="390" height="844" alt="Resumo do agendamento com serviço, barbeiro, dia, total e sinal por Pix" loading="lazy" decoding="async"><figcaption>E confirma</figcaption></figure>
+  </div>
+</div></div></section>
+
 <section class="blk" id="painel"><div class="in">
-  <div class="sh"><h2>O painel do dono</h2><p>Funciona no celular e no computador. Feito para quem não quer aprender sistema: cada tela faz uma coisa só.</p></div>
+  <div class="sh"><h2>O painel do dono</h2><p>Funciona no celular e no computador. Cada sistema tem as telas do seu negócio, e cada tela faz uma coisa só.</p></div>
   <div class="pn">
     <div class="tabs" role="tablist" aria-label="Telas do painel" id="tabs"></div>
     <div><p class="pncap" id="pncap"></p><div class="shot"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img id="pnImg" width="1600" height="1000" alt="" loading="lazy" decoding="async"></div></div>
   </div>
 </div></section>
 
-<section class="blk" id="restaurantes"><div class="in"><div class="rest">
-  <div class="sh"><h2>Para quem atende no salão</h2><p>Pizzaria, restaurante, hamburgueria, adega: o painel mostra as mesas ao vivo e o cliente pede pela mesa.</p></div>
-  <div class="row">
-    <div class="shot"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="/zivoop/pc-salao.webp" width="1600" height="1000" alt="Tela do Salão: planta com 8 mesas, alerta de mesa sem atendimento, pedido de conta e gráfico de horários de pico" loading="lazy" decoding="async"></div>
-    <ul>
-      <li><b>Mesas ao vivo</b><span>Livre, ocupada, atendida. Mesa esperando há mais de 3 minutos acende e o celular do garçom apita.</span></li>
-      <li><b>QR code em cada mesa</b><span>O cliente lê, pede do cardápio, chama o garçom e pede a conta. Pode pagar no Pix pela mesa.</span></li>
-      <li><b>Fila de espera e horários de pico</b><span>Anote quem chega, avise pelo WhatsApp quando a mesa liberar e veja os horários mais cheios da semana.</span></li>
-      <li><b>Câmera, se você quiser</b><span>Uma câmera no teto marca sozinha quando a mesa ocupa e libera. Só contagem: nenhum vídeo é gravado.</span></li>
-    </ul>
-  </div>
-  <div class="cels">
-    <figure><img src="/zivoop/qr-cliente.webp" width="390" height="844" alt="Celular do cliente com o cardápio aberto pelo QR da Mesa 1" loading="lazy" decoding="async"><figcaption>O cliente lê o QR da mesa</figcaption></figure>
-    <figure><img src="/zivoop/qr-carrinho.webp" width="390" height="844" alt="Pedido da mesa sendo enviado direto para a cozinha" loading="lazy" decoding="async"><figcaption>Pede direto para a cozinha</figcaption></figure>
-    <figure><img src="/zivoop/qr-conta.webp" width="390" height="844" alt="Conta da mesa com o total e a forma de pagamento" loading="lazy" decoding="async"><figcaption>E pede a conta</figcaption></figure>
-  </div>
-</div></div></section>
-
-<section class="blk" id="ofertas"><div class="in"><div class="of">
-  <div><h3>Zivoop Ofertas, para afiliados</h3><p>Posta as suas ofertas da Shopee, do Mercado Livre e da Amazon nos seus grupos de WhatsApp, com o seu link de afiliado, no horário que você escolher. Mostra quantas foram enviadas e as suas comissões.</p></div>
-  <a class="btn ghost" href="#quero" onclick="document.getElementById('fInt').value='ofertas'">Quero saber mais</a>
-</div></div></section>
-
 <section class="blk" id="como"><div class="in">
   <div class="sh"><h2>Como começar</h2><p>Você não precisa entender de sistema. A gente entrega pronto e mostra como usar.</p></div>
   <div class="steps">
-    <div class="step"><h3>Você fala com a gente</h3><p>Conte o que o seu negócio vende e como atende. A gente indica o modelo e o que faz sentido para você.</p></div>
-    <div class="step"><h3>A gente monta com os seus dados</h3><p>Colocamos seus produtos ou serviços, preços, fotos, horários, taxa de entrega, chave Pix e o seu WhatsApp.</p></div>
-    <div class="step"><h3>Você usa e cuida pelo painel</h3><p>Divulgue o link no Instagram e no WhatsApp. Pedidos, clientes e caixa ficam no painel, e preço e produto você muda quando quiser.</p></div>
+    <div class="step"><h3>Você fala com a gente</h3><p>Conte como a sua barbearia ou lanchonete atende hoje: serviços ou cardápio, horários, entrega, quem trabalha com você.</p></div>
+    <div class="step"><h3>A gente monta com os seus dados</h3><p>Colocamos serviços ou lanches, preços, fotos, horários, barbeiros, taxas de entrega, chave Pix e o seu WhatsApp.</p></div>
+    <div class="step"><h3>Você usa e cuida pelo painel</h3><p>Coloque o link na bio e no WhatsApp. Horários, pedidos, clientes e caixa ficam no painel, e preço e produto você muda quando quiser.</p></div>
   </div>
 </div></section>
 
@@ -248,33 +253,32 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <label>WhatsApp com DDD<input name="whatsapp" required inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(00) 00000-0000"></label>
       <label>Nome do negócio<input name="negocio" maxlength="80" autocomplete="organization"></label>
       <label>Cidade<input name="cidade" maxlength="60" autocomplete="address-level2"></label>
-      <label>Tipo de negócio<select name="nicho" id="fNicho"></select></label>
-      <label>O que te interessa<select name="plano" id="fInt"></select></label>
-      <label class="full">Quer contar algo? <textarea name="mensagem" maxlength="500" placeholder="Ex.: tenho 40 produtos e faço entrega em 3 bairros"></textarea></label>
+      <label class="full">Seu negócio<select name="nicho" id="fNicho"><option value="">Escolha</option><option value="barbearia">Barbearia</option><option value="lanchonete">Lanchonete</option><option value="outro">Outro</option></select></label>
+      <label class="full">Quer contar algo? <textarea name="mensagem" maxlength="500" placeholder="Ex.: somos 3 barbeiros e atendemos de terça a sábado"></textarea></label>
       <div class="full"><button class="btn" type="submit" id="fBtn" style="width:100%">Quero conversar</button></div>
       <div class="full msg" id="fMsg" role="alert"></div>
       <div class="full lgpd">Usamos seus dados só para falar com você sobre a Zivoop. Pode pedir para apagar quando quiser. Veja a <a href="/privacidade" style="color:inherit">Política de privacidade</a>.</div>
     </form>
-    <div class="ok" id="ok" role="status"><h3>Recebido!</h3><p id="okP">A gente chama você no WhatsApp em breve.</p><a class="btn ghost" style="color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)" href="#modelos">Ver os exemplos</a></div>
+    <div class="ok" id="ok" role="status"><h3>Recebido!</h3><p id="okP">A gente chama você no WhatsApp em breve.</p><a class="btn ghost" style="color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)" href="#produtos">Ver os sistemas</a></div>
   </div>
 </div></section>
 
 <section class="blk" id="duvidas"><div class="in">
   <div class="sh"><h2>Dúvidas</h2></div>
   <div class="faq">
-    <details><summary>Preciso pagar comissão por pedido?</summary><p>Não. O pedido vai direto para o seu WhatsApp e o pagamento cai na sua conta. A Zivoop não fica com nenhuma parte da venda.</p></details>
+    <details><summary>Preciso pagar comissão por pedido ou por horário?</summary><p>Não. O pedido e o agendamento chegam direto para você e o pagamento cai na sua conta. A Zivoop não fica com nenhuma parte.</p></details>
     <details><summary>O cliente precisa baixar algum aplicativo?</summary><p>Não. Ele abre o link no navegador do celular. Se quiser, instala o site na tela inicial como se fosse um app.</p></details>
-    <details><summary>Quem coloca os produtos, preços e fotos?</summary><p>A gente coloca tudo para você na entrega. Depois, você muda preço, produto, foto e horário pelo painel, ou escreve para o assistente: “baixa a calabresa pra R$ 49,90”.</p></details>
-    <details><summary>Preciso de computador?</summary><p>Não. O painel funciona no celular. Se tiver computador, também dá para usar nele.</p></details>
-    <details><summary>Quanto custa?</summary><p>Depende do que o seu negócio precisa: só o site e o painel, ou também o salão com QR e a câmera. Fale com a gente e mandamos o valor certo para o seu caso.</p></details>
-    <details><summary>A câmera do salão grava as pessoas?</summary><p>Não. O programa só conta quantas pessoas estão em cada mesa e manda esse número para o painel. Nenhum vídeo é gravado ou enviado.</p></details>
-    <details><summary>Posso usar o meu próprio domínio?</summary><p>Pode. O site funciona no seu endereço (por exemplo, pizzariadobairro.com.br). O registro do domínio é seu.</p></details>
-    <details><summary>Meu negócio não está na lista. E agora?</summary><p>Fale com a gente mesmo assim e conte o que você vende. Quase todo negócio se encaixa num dos modelos de pedido, agendamento, reserva ou ingressos.</p></details>
+    <details><summary>Como funciona o robô do WhatsApp?</summary><p>Ele usa o WhatsApp oficial (da Meta) no número da barbearia. Responde na hora, marca, remarca e cancela seguindo a sua agenda, e passa a conversa para você quando não sabe responder. Para não arriscar o número, só manda mensagem por conta própria das 8h às 21h, uma por cliente por dia, e para sozinho se a Meta avisar que a qualidade caiu. A ligação com o WhatsApp a gente faz junto com você. Até lá, o cliente já marca pelo link de agendar conversando.</p></details>
+    <details><summary>Quem coloca os serviços, o cardápio, os preços e as fotos?</summary><p>A gente coloca tudo para você na entrega. Depois, você muda preço, produto, foto e horário pelo painel, ou escreve para o assistente: “sobe o corte pra R$ 50”.</p></details>
+    <details><summary>Preciso de computador?</summary><p>Não. O painel funciona no celular. Se tiver computador, também dá para usar nele. Na lanchonete, a tela da cozinha fica ótima num tablet ou TV.</p></details>
+    <details><summary>Quanto custa?</summary><p>Depende do que o seu negócio precisa, como o número de barbeiros ou se a lanchonete faz entrega. Fale com a gente e mandamos o valor certo para o seu caso.</p></details>
+    <details><summary>Posso usar o meu próprio domínio?</summary><p>Pode. O site funciona no seu endereço (por exemplo, barbeariadobairro.com.br). O registro do domínio é seu.</p></details>
+    <details><summary>Meu negócio não é barbearia nem lanchonete. E agora?</summary><p>Por enquanto a Zivoop tem esses dois sistemas. Fale com a gente mesmo assim e conte o que você faz: se for parecido, como salão de beleza ou hamburgueria, provavelmente já serve.</p></details>
   </div>
 </div></section>
 </main>
 
-<footer><div class="in"><span><b>zivoop</b>, sistemas prontos para o comércio local</span><span><a href="/privacidade">Privacidade</a> · <a href="/termos">Termos de uso</a> · <span id="ano"></span></span></div></footer>
+<footer><div class="in"><span><b>zivoop</b>, sistemas prontos para barbearia e lanchonete</span><span><a href="/privacidade">Privacidade</a> · <a href="/termos">Termos de uso</a> · <span id="ano"></span></span></div></footer>
 <a class="wa" id="wa" hidden target="_blank" rel="noopener" aria-label="Falar com a Zivoop no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>WhatsApp</span></a>
 
 <script>
@@ -283,39 +287,30 @@ const ZIVOOP={
   whatsapp:"",            /* ex.: "5511999999999". Vazio = esconde o botão de WhatsApp */
   supabase:{url:"https://yqpaqwwdfeyesxvbbcwy.supabase.co",key:"sb_publishable_yFqNbiwT-PEvOI1RVDXhIw_vNgMjB-H"},  /* banco próprio do site de vendas (zivoop-site) */
   app:"",  /* demonstrações no mesmo endereço do site */
-  interesses:[["site","Site e painel para o meu negócio"],["salao","Salão com mesas e QR (restaurante)"],["camera","Câmera para o salão"],["ofertas","Zivoop Ofertas (afiliado)"],["","Ainda não sei"]],
   painel:[
-    {k:"pedidos",t:"Pedidos",d:"Cada pedido do site cai num quadro: novo, em preparo, pronto e entregue. Entregou, o valor entra no caixa.",img:"pc-pedidos",cel:"cel-pedidos",alt:"Quadro de pedidos com as colunas Novos, Em preparo, Pronto e Entregue"},
-    {k:"inicio",t:"Resumo do dia",d:"Quanto entrou hoje, o saldo do mês e os pedidos que ainda estão em aberto, logo que você abre.",img:"pc-inicio",cel:"cel-inicio",alt:"Tela inicial com o que entrou hoje, saldo do mês e pedidos em aberto"},
-    {k:"clientes",t:"Clientes",d:"Quem pede vira cliente sozinho. Quem volta sobe para fiel. Um toque abre a conversa no WhatsApp.",img:"pc-clientes",alt:"Clientes organizados em Novos, Em conversa, Clientes e Fiéis"},
-    {k:"caixa",t:"Caixa",d:"As entradas dos pedidos e as suas saídas, dia a dia e por categoria, sem planilha.",img:"pc-caixa",alt:"Caixa do mês com entradas, saídas, saldo e gráfico dia a dia"},
-    {k:"vender",t:"Vender mais",d:"Descobre o que sai junto e mostra para qual cliente oferecer o quê. O site também sugere “Leve junto” sozinho.",img:"pc-vender",alt:"Lista de clientes com o produto certo para oferecer a cada um"},
-    {k:"assistente",t:"Assistente",d:"Peça como pediria a um funcionário: “o petit gâteau acabou”, “fecha na segunda”. O site muda na hora.",img:"pc-assistente",alt:"Conversa com o assistente mudando preço, tirando item e fechando um dia"}]
+    {k:"bb-hoje",t:"Barbearia · Hoje",d:"O dia de cada barbeiro numa tela: confirmar, atendido ou faltou, e o lembrete para quem vem amanhã.",img:"bb-hoje",alt:"Tela Hoje da barbearia com os horários de cada barbeiro e os lembretes de amanhã"},
+    {k:"bb-clube",t:"Barbearia · Clube",d:"Planos mensais, quem está em dia, quem atrasou e quantos cortes cada assinante já usou no mês.",img:"bb-clube",alt:"Clube de assinatura com planos, receita fixa por mês e assinantes"},
+    {k:"bb-barbeiros",t:"Barbearia · Barbeiros",d:"Quanto cada barbeiro faturou, a comissão de cada um e quanto falta pagar. Pagou, sai do caixa.",img:"bb-barbeiros",alt:"Comissão de cada barbeiro no mês"},
+    {k:"ln-cozinha",t:"Lanchonete · Cozinha",d:"Os pedidos por ordem de chegada, com observações em destaque. O tempo muda de cor para nada atrasar.",img:"ln-cozinha",cel:"ln-cozinha-cel",alt:"Tela da cozinha com três pedidos e o tempo de cada um"},
+    {k:"ln-entregas",t:"Lanchonete · Entregas",d:"Escolha o motoboy, avise o cliente e veja o acerto do dia. A taxa de cada bairro você muda aqui.",img:"ln-entregas",alt:"Entregas prontas para sair, com motoboy, acerto do dia e taxa por bairro"},
+    {k:"ln-receitas",t:"Lanchonete · Estoque e receitas",d:"Quanto de cada insumo vai em cada lanche. O custo e o lucro aparecem na hora, e o estoque baixa sozinho.",img:"ln-receitas",alt:"Receitas dos lanches com custo, preço de venda e lucro"}]
 };
 /* ============================================ */
 const NICHOS={{NICHOS}};
-const CATS=[["todos","Todos"],["comida","Comida"],["lojas","Lojas e entrega"],["beleza","Beleza"],["saude","Saúde e bem-estar"],["servicos","Serviços"],["lazer","Hospedagem e lazer"]];
-const DESTAQUE=["pizzaria","barbearia","acai","pousada","hamburgueria","cinema"];
+const DESTAQUE=[["barbearia","","💈 Barbearia"],["barbearia","?chat","💬 Agendar conversando"],["lanchonete","","🍔 Lanchonete"]];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
 const grande=()=>matchMedia("(min-width:901px)").matches;
-let cat="todos", atual="pizzaria", todos=false;
-const PRIMEIROS=["pizzaria","hamburgueria","restaurante","barbearia","salao","acai","mini-mercado","pousada"];
+let atual="barbearia", atualQ="";
 function phoneScale(){ const p=document.getElementById("phone"), f=document.getElementById("demo"), w=p.querySelector(".screen").clientWidth, h=p.querySelector(".screen").clientHeight, s=w/390;
   f.style.transform=`scale(${s})`; f.style.height=(h/s)+"px"; }
-function mostrar(slug,rolar){ atual=slug; const n=NICHOS.find(x=>x.s===slug), f=document.getElementById("demo"), ld=document.getElementById("ld");
-  ld.classList.remove("off"); ld.textContent=`Abrindo ${n.n.toLowerCase()}…`; f.onload=()=>ld.classList.add("off"); f.src=`${ZIVOOP.app}/modelos/${slug}/?embed=1`;
-  document.getElementById("now").innerHTML=`Você está vendo <b>${esc(n.ex)}</b>, modelo de ${esc(n.n.toLowerCase())}. <a href="${ZIVOOP.app}/modelos/${slug}/" target="_blank" rel="noopener">Abrir em tela cheia</a>`;
-  document.querySelectorAll("#switch button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===slug));
-  document.querySelectorAll(".ni").forEach(c=>c.classList.toggle("on",c.dataset.s===slug));
+function mostrar(slug,q,rolar){ q=q||""; atual=slug; atualQ=q; const n=NICHOS.find(x=>x.s===slug), f=document.getElementById("demo"), ld=document.getElementById("ld"), url=`${ZIVOOP.app}/modelos/${slug}/${q}`;
+  ld.classList.remove("off"); ld.textContent=q?"Abrindo a conversa…":`Abrindo ${n.n.toLowerCase()}…`; f.onload=()=>ld.classList.add("off"); f.src=url+(q?"&":"?")+"embed=1";
+  document.getElementById("now").innerHTML=`Você está vendo <b>${esc(n.ex)}</b>${q?", agendando conversando":", exemplo de "+esc(n.n.toLowerCase())}. <a href="${url}" target="_blank" rel="noopener">Abrir em tela cheia</a>`;
+  document.querySelectorAll("#switch button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===slug&&b.dataset.q===q));
+  document.querySelectorAll(".pd").forEach(c=>c.classList.toggle("on",c.id===slug));
   if(rolar) document.getElementById("phone").scrollIntoView({behavior:"smooth",block:"center"}); }
-function ver(slug){ if(grande()) mostrar(slug,true); else window.open(`${ZIVOOP.app}/modelos/${slug}/`,"_blank","noopener"); }
+function ver(slug,q){ if(grande()) mostrar(slug,q,true); else window.open(`${ZIVOOP.app}/modelos/${slug}/${q||""}`,"_blank","noopener"); }
 function quero(slug){ document.getElementById("fNicho").value=slug; document.getElementById("quero").scrollIntoView({behavior:"smooth"}); setTimeout(()=>document.querySelector('#form [name="nome"]').focus({preventScroll:true}),500); }
-function renderCats(){ document.getElementById("cats").innerHTML=CATS.map(([k,l])=>`<button aria-pressed="${cat===k}" onclick="cat='${k}';renderCats();renderGrid()">${l}</button>`).join(""); }
-function renderGrid(){ let L=NICHOS.filter(n=>cat==="todos"||n.c===cat); const corta=cat==="todos"&&!todos; if(corta) L=PRIMEIROS.map(k=>NICHOS.find(n=>n.s===k)).filter(Boolean);
-  const mb=document.getElementById("maisMod"); mb.hidden=!corta; mb.textContent=`Ver todos os ${NICHOS.length} modelos`;
-  document.getElementById("grid").innerHTML=L.map(n=>`<article class="ni ${n.s===atual?"on":""}" data-s="${n.s}">
-  <div class="hd"><span class="em" aria-hidden="true">${n.e}</span><div><h3>${esc(n.n)}</h3><span class="md">${esc(n.m)}</span></div></div>
-  <p>${esc(n.t)}</p><div class="ac"><button class="ver" onclick="ver('${n.s}')">Ver ao vivo</button><button class="qb" onclick="quero('${n.s}')">Quero esse</button></div></article>`).join(""); }
 function renderPainel(k,foco){ const L=ZIVOOP.painel, a=L.find(x=>x.k===k)||L[0];
   document.getElementById("tabs").innerHTML=L.map(x=>`<button role="tab" id="tb-${x.k}" aria-selected="${x.k===a.k}" aria-controls="pnImg" tabindex="${x.k===a.k?0:-1}" onclick="renderPainel('${x.k}',true)"><b>${esc(x.t)}</b><span>${esc(x.d)}</span></button>`).join("");
   const img=document.getElementById("pnImg"), cel=a.cel&&matchMedia("(max-width:560px)").matches;
@@ -323,8 +318,6 @@ function renderPainel(k,foco){ const L=ZIVOOP.painel, a=L.find(x=>x.k===k)||L[0]
 document.getElementById("tabs").addEventListener("keydown",e=>{ if(!["ArrowRight","ArrowLeft","ArrowDown","ArrowUp"].includes(e.key)) return; e.preventDefault();
   const L=ZIVOOP.painel, i=L.findIndex(x=>document.getElementById("tb-"+x.k).getAttribute("aria-selected")==="true"), d=/Right|Down/.test(e.key)?1:-1, n=L[(i+d+L.length)%L.length].k;
   renderPainel(n,true); });
-function renderForm(){ document.getElementById("fNicho").innerHTML=`<option value="">Escolha</option>`+NICHOS.map(n=>`<option value="${n.s}">${esc(n.n)}</option>`).join("")+`<option value="outro">Outro</option>`;
-  document.getElementById("fInt").innerHTML=ZIVOOP.interesses.map(([v,l])=>`<option value="${v}">${esc(l)}</option>`).join(""); }
 const T0=Date.now();
 document.getElementById("form").addEventListener("submit",async e=>{ e.preventDefault(); const fd=new FormData(e.target), m=document.getElementById("fMsg"), b=document.getElementById("fBtn");
   if(fd.get("site")||Date.now()-T0<2500){ e.target.hidden=true; document.getElementById("ok").classList.add("on"); return; }
@@ -332,7 +325,7 @@ document.getElementById("form").addEventListener("submit",async e=>{ e.preventDe
   if(nome.length<2){ m.textContent="Escreva seu nome."; e.target.nome.focus(); return; }
   if(w.length<10||w.length>13){ m.textContent="Confira o WhatsApp: DDD e número, só com números."; e.target.whatsapp.focus(); return; }
   m.textContent=""; b.disabled=true; b.textContent="Enviando…";
-  const body={p_nome:nome,p_whatsapp:w,p_negocio:fd.get("negocio")||"",p_nicho:fd.get("nicho")||"",p_cidade:fd.get("cidade")||"",p_plano:fd.get("plano")||"",p_mensagem:fd.get("mensagem")||"",p_origem:(document.referrer||"direto").slice(0,120)};
+  const body={p_nome:nome,p_whatsapp:w,p_negocio:fd.get("negocio")||"",p_nicho:fd.get("nicho")||"",p_cidade:fd.get("cidade")||"",p_plano:fd.get("nicho")||"",p_mensagem:fd.get("mensagem")||"",p_origem:(document.referrer||"direto").slice(0,120)};
   try{ const r=await fetch(ZIVOOP.supabase.url+"/rest/v1/rpc/zivoop_novo_lead",{method:"POST",headers:{"Content-Type":"application/json",apikey:ZIVOOP.supabase.key,Authorization:"Bearer "+ZIVOOP.supabase.key},body:JSON.stringify(body)});
     if(!r.ok) throw new Error(r.status);
     e.target.hidden=true; const ok=document.getElementById("ok"); ok.classList.add("on"); document.getElementById("okP").textContent=`Obrigado, ${nome.split(" ")[0]}. A gente chama você no WhatsApp (${fd.get("whatsapp")}) em breve.`;
@@ -340,8 +333,8 @@ document.getElementById("form").addEventListener("submit",async e=>{ e.preventDe
 addEventListener("scroll",()=>document.getElementById("top").classList.toggle("sc",scrollY>8),{passive:true});
 addEventListener("resize",phoneScale);
 document.getElementById("ano").textContent="© "+new Date().getFullYear()+" Zivoop";
-document.getElementById("switch").innerHTML=DESTAQUE.map(s=>{ const n=NICHOS.find(x=>x.s===s); return `<button data-s="${s}" onclick="mostrar('${s}')">${n.e} ${esc(n.n)}</button>`; }).join("");
-renderCats(); renderGrid(); renderPainel("pedidos"); renderForm(); phoneScale(); mostrar("pizzaria");
+document.getElementById("switch").innerHTML=DESTAQUE.map(([s,q,l])=>`<button data-s="${s}" data-q="${q}" onclick="mostrar('${s}','${q}')">${esc(l)}</button>`).join("");
+renderPainel("bb-hoje"); phoneScale(); mostrar("barbearia","");
 if(ZIVOOP.whatsapp){ const w=document.getElementById("wa"); w.href="https://wa.me/"+ZIVOOP.whatsapp+"?text="+encodeURIComponent("Olá! Vi o site da Zivoop e quero saber mais."); w.hidden=false; }
 </script>
 </body>

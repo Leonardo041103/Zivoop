@@ -1,14 +1,23 @@
 // Monta o site de um negócio da plataforma: modelo do nicho + dados do dono (banco) + ganchos que gravam pedidos e agendamentos.
 // zivoop.com/<slug>  →  /api/site?slug=<slug>
 const fs = require("fs"), path = require("path");
-const SB = process.env.ZV_SB_URL || "https://phswqjkytnkukqpbtoqd.supabase.co";
-const KEY = process.env.ZV_SB_KEY || "sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8";
+// cada software tem o próprio banco: o site do negócio é procurado em um e depois no outro
+const BANCOS = [
+  { url: process.env.ZV_SB_URL || "https://phswqjkytnkukqpbtoqd.supabase.co", key: process.env.ZV_SB_KEY || "sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8" },   // lanchonete e modelos antigos (zivoop-pedidos)
+  { url: process.env.ZV_BARB_SB_URL || "https://yqpaqwwdfeyesxvbbcwy.supabase.co", key: process.env.ZV_BARB_SB_KEY || "sb_publishable_yFqNbiwT-PEvOI1RVDXhIw_vNgMjB-H" }   // barbearia
+];
 const RAIZ = path.join(process.cwd(), "public", "modelos");
 const cache = {};
 const ler = (nicho, f) => { const k = nicho + "/" + f; if (!cache[k]) cache[k] = fs.readFileSync(path.join(RAIZ, nicho, f), "utf8"); return cache[k]; };
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
-const rpc = (fn, body) => fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) })
+const rpcEm = (b, fn, body) => fetch(`${b.url}/rest/v1/rpc/${fn}`, { method: "POST", headers: { apikey: b.key, Authorization: "Bearer " + b.key, "Content-Type": "application/json" }, body: JSON.stringify(body) })
   .then(r => r.ok ? r.json() : null);
+// procura o endereço em todos os bancos ao mesmo tempo; vale o primeiro da lista que tiver. Se algum banco falhar e nenhum achar, avisa "voltamos já".
+async function acharSite(slug) {
+  const r = await Promise.all(BANCOS.map(b => rpcEm(b, "zv_site", { p_slug: slug }).then(site => ({ b, site }), () => ({ b, site: undefined }))));
+  const achou = r.find(x => x.site); if (achou) return achou;
+  return { b: null, site: r.some(x => x.site === undefined) ? undefined : null };
+}
 const hojeSP = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
 function pagina(res, cod, tit, txt) {
   res.statusCode = cod; res.setHeader("Content-Type", "text/html; charset=utf-8"); res.setHeader("Cache-Control", "public, s-maxage=30");
@@ -31,9 +40,10 @@ function trocarTextos(html, pad, meus) {
 module.exports = async (req, res) => {
   const slug = String((req.query && req.query.slug) || "").toLowerCase();
   if (!/^[a-z0-9][a-z0-9-]{2,39}$/.test(slug)) return pagina(res, 404, "Página não encontrada", "Confira o endereço.");
-  let site; try { site = await rpc("zv_site", { p_slug: slug }); } catch (e) { site = undefined; }
+  let site, banco; try { ({ site, b: banco } = await acharSite(slug)); } catch (e) { site = undefined; }
   if (site === undefined) return pagina(res, 503, "Voltamos já", "Não deu para abrir o site agora. Tente de novo em instantes.");
   if (!site) return pagina(res, 404, "Site não encontrado", "Esse endereço ainda não tem um site na Zivoop.");
+  const rpc = (fn, body) => rpcEm(banco, fn, body);
   if (site.status !== "ativo") return pagina(res, 200, site.nome, "Este site está pausado no momento.");
   let html, pad;
   try { html = ler(site.nicho, "index.html"); pad = JSON.parse(ler(site.nicho, "padrao.json")); }
@@ -48,7 +58,7 @@ module.exports = async (req, res) => {
   // o que mais sai junto em cada item, aprendido com os pedidos deste negócio (vazio até ter vendas suficientes)
   let combos = {};
   if (site.tipo !== "reserva") { const c = await rpc("zv_combos_site", { p_slug: slug }).catch(() => null); combos = (c && (c.zv_combos_site || c)) || {}; if (typeof combos !== "object" || Array.isArray(combos)) combos = {}; }
-  const zv = { slug, id: site.id, tipo: site.tipo, nicho: site.nicho, api: SB, key: KEY, ocupados, ocupReserva, combos, espera: site.nicho === "barbearia" };
+  const zv = { slug, id: site.id, tipo: site.tipo, nicho: site.nicho, api: banco.url, key: banco.key, ocupados, ocupReserva, combos, espera: site.nicho === "barbearia" };
   const seguro = o => JSON.stringify(o).replace(/</g, "\\u003c");
   html = trocarTextos(html, pad.textos || {}, textos)
     .replace(/<script src="\/demo\.js"><\/script>\s*/g, "")

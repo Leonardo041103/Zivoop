@@ -297,7 +297,7 @@ let modoA = "entrar";
 function modoAuth(m) { modoA = m; $("aEntrar").setAttribute("aria-pressed", m === "entrar"); $("aCriar").setAttribute("aria-pressed", m === "criar"); $("aBtn").textContent = m === "entrar" ? "Entrar" : "Criar conta"; $("aSenha").autocomplete = m === "entrar" ? "current-password" : "new-password"; $("aReset").hidden = m !== "entrar"; $("aErr").textContent = ""; }
 $("fAuth").addEventListener("submit", async e => { e.preventDefault(); const b = $("aBtn"); b.disabled = true; $("aErr").textContent = "";
   const email = $("aEmail").value.trim(), password = $("aSenha").value;
-  try { const r = modoA === "entrar" ? await sb.auth.signInWithPassword({ email, password }) : await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + "/painel/" } });
+  try { const r = modoA === "entrar" ? await sb.auth.signInWithPassword({ email, password }) : await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } });
     if (r.error) throw r.error;
     if (modoA === "criar" && !r.data.session) { $("aErr").style.color = "var(--mint)"; $("aErr").textContent = "Conta criada. Abra o link que mandamos para " + email + " e depois entre aqui."; b.disabled = false; return; }
     U = r.data.user; await carregar(); } catch (er) { $("aErr").style.color = ""; $("aErr").textContent = erro(er); }

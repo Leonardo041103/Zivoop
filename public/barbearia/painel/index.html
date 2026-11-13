@@ -303,7 +303,7 @@ async function apagarConta(id) { if (!confirm("Apagar esta conta?")) return; con
    Lista de espera (um por vez, por ordem de chegada), Hora de voltar, Sinal por Pix e Recibo do mês.
    Banco próprio: projeto Supabase só da barbearia. */
 window.ZV_PRODUTO = "barbearia";
-(() => { const B = { url: "{{BARB_SB_URL}}", key: "{{BARB_SB_KEY}}" };   // o publicar troca pelos dados do banco da barbearia
+(() => { const B = { url: "https://yqpaqwwdfeyesxvbbcwy.supabase.co", key: "sb_publishable_yFqNbiwT-PEvOI1RVDXhIw_vNgMjB-H" };   // banco próprio da barbearia (projeto zivoop-site no Supabase)
   if (!window.ZV_SB_URL && B.url.indexOf("{{") < 0) { window.ZV_SB_URL = B.url; window.ZV_SB_KEY = B.key; } })();
 window.ZV_ONB = { t: "Vamos colocar sua barbearia no ar", p: "Diga o nome e o WhatsApp da barbearia. Os serviços e os horários já vêm prontos. Você troca preços, barbeiros e fotos depois, aqui no painel." };
 window.ZV_CURTAS = ["inicio", "agenda", "clube", "clientes"];
@@ -674,7 +674,7 @@ let modoA = "entrar";
 function modoAuth(m) { modoA = m; $("aEntrar").setAttribute("aria-pressed", m === "entrar"); $("aCriar").setAttribute("aria-pressed", m === "criar"); $("aBtn").textContent = m === "entrar" ? "Entrar" : "Criar conta"; $("aSenha").autocomplete = m === "entrar" ? "current-password" : "new-password"; $("aReset").hidden = m !== "entrar"; $("aErr").textContent = ""; }
 $("fAuth").addEventListener("submit", async e => { e.preventDefault(); const b = $("aBtn"); b.disabled = true; $("aErr").textContent = "";
   const email = $("aEmail").value.trim(), password = $("aSenha").value;
-  try { const r = modoA === "entrar" ? await sb.auth.signInWithPassword({ email, password }) : await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + "/painel/" } });
+  try { const r = modoA === "entrar" ? await sb.auth.signInWithPassword({ email, password }) : await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } });
     if (r.error) throw r.error;
     if (modoA === "criar" && !r.data.session) { $("aErr").style.color = "var(--mint)"; $("aErr").textContent = "Conta criada. Abra o link que mandamos para " + email + " e depois entre aqui."; b.disabled = false; return; }
     U = r.data.user; await carregar(); } catch (er) { $("aErr").style.color = ""; $("aErr").textContent = erro(er); }
