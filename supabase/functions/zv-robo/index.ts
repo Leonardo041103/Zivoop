@@ -98,6 +98,16 @@ Deno.serve(async (req) => {
     return json({ ok: true });
   }
 
+  // o dono mexeu num pedido (cozinha, entregas, quadro): manda já os avisos que estão na fila, sem esperar a rotina
+  if (acao === "avisar") {
+    const b = await req.json().catch(() => ({}));
+    if (!b.negocio || !(await dono(req, b.negocio))) return json({ erro: "sem_permissao" }, 401);
+    const canal = ((await admin.sel(`zv_canais?select=*&negocio=eq.${b.negocio}&phone_id=not.is.null`).catch(() => [])) || [])[0];
+    if (!canal || !canal.token) return json({ erro: "WhatsApp não conectado" }, 400);
+    const N = await carregarNegocio(admin, b.negocio, SITE); if (!N) return json({ erro: "negocio" }, 404);
+    try { return json(await rotina({ db: admin, N, canal, enviar: (zap: string, m: any) => enviarMeta(canal, zap, m) })); } catch (e) { return json({ erro: String((e as Error).message) }, 502); }
+  }
+
   if (acao === "rotina") {
     if (!CRON || req.headers.get("x-cron-secret") !== CRON) return json({ erro: "sem_permissao" }, 401);
     const canais = (await admin.sel(`zv_canais?select=*&phone_id=not.is.null`).catch(() => [])) || [];
@@ -127,6 +137,15 @@ Deno.serve(async (req) => {
     const perfis: Record<string, string> = {}; (v.contacts || []).forEach((c: any) => perfis[c.wa_id] = c.profile && c.profile.name);
     for (const m of v.messages) {
       let texto = m.type === "text" ? m.text.body : m.type === "button" ? m.button.text : m.type === "interactive" ? (m.interactive.button_reply || m.interactive.list_reply || {}).id : null;
+      if (N.neg.nicho !== "barbearia") {   // negócio sem robô de conversa (ex.: lanchonete): só guarda a mensagem e abre a janela de 24h para os avisos do pedido
+        const novo = await admin.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: m.from, dir: "in", texto: String(texto || "[" + m.type + "]").slice(0, 2000), wa_id: m.id || null }).then(() => true, () => false);
+        if (!novo) continue;
+        const ja = ((await admin.sel(`zv_bot_contatos?select=whatsapp&negocio=eq.${N.neg.id}&whatsapp=eq.${m.from}`).catch(() => [])) || [])[0];
+        const patch = { ultima_in: new Date().toISOString(), nome: perfis[m.from] || null };
+        if (ja) await admin.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${m.from}`, patch).catch(() => {});
+        else await admin.ins("zv_bot_contatos", Object.assign({ negocio: N.neg.id, whatsapp: m.from }, patch)).catch(() => {});
+        continue;
+      }
       if (m.type === "audio" && m.audio && m.audio.id) texto = await transcrever(canal, m.audio.id).catch(() => null);   // mensagem de voz → texto
       if (!texto && m.type === "audio") { await enviarMeta(canal, m.from, { texto: "Não consegui ouvir seu áudio agora 😕. Pode escrever, por favor?" }).catch(() => {}); continue; }
       if (!texto) { await enviarMeta(canal, m.from, { texto: "Por enquanto eu entendo só mensagens de texto. Escreva o que você precisa 🙂" }).catch(() => {}); continue; }

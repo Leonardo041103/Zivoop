@@ -21,6 +21,9 @@ const isoDe = (dia, min) => new Date(Date.parse(dia + "T00:00:00Z") + (min - TZ 
 const minDe = iso => { const d = agoraSP(Date.parse(iso)); return d.getUTCHours() * 60 + d.getUTCMinutes(); };
 const diaDe = iso => agoraSP(Date.parse(iso)).toISOString().slice(0, 10);
 const primeiro = n => String(n || "").trim().split(/\s+/)[0] || "";
+// o mesmo celular brasileiro pode chegar com ou sem o 9 depois do DDD (a Meta usa os dois jeitos)
+export function variantes(z) { z = String(z || "").replace(/\D/g, ""); if (z.length === 10 || z.length === 11) z = "55" + z;
+  const v = [z]; if (/^55\d{2}9\d{8}$/.test(z)) v.push(z.slice(0, 4) + z.slice(5)); else if (/^55\d{2}\d{8}$/.test(z)) v.push(z.slice(0, 4) + "9" + z.slice(4)); return v; }
 const OPTOUT = /^(sair|parar|stop|nao quero mais (receber )?mensage(m|ns)|descadastrar|cancelar avisos)$/;
 
 /* ------------------------------------------------------------ negócio */
@@ -536,29 +539,36 @@ export async function rotina({ db, N, canal, enviar, t = Date.now() }) {
       if (r) feito.lembretes++; }
   }
   // 3) envio com limites (anti-bloqueio)
-  const hora = agora.getUTCHours();
-  if (hora < 8 || hora >= 21) return Object.assign(feito, { motivo: "fora do horário (8h às 21h)" });
-  if (canal && (canal.pausado || /RED|YELLOW|FLAGGED/i.test(canal.qualidade || ""))) return Object.assign(feito, { motivo: "envios pausados (qualidade do número)" });
+  // aviso de pedido ("saiu para entrega") é resposta a um pedido que o cliente acabou de fazer: sai a qualquer hora e não conta no limite.
+  // o resto (lembrete, vaga) só sai das 8h às 21h e para se o número estiver sendo denunciado.
+  const hora = agora.getUTCHours(), foraDaHora = hora < 8 || hora >= 21;
+  const ehPedido = f => String(f.ref || "").startsWith("ped:");
+  const pausado = canal && (canal.pausado || /RED|YELLOW|FLAGGED/i.test(canal.qualidade || ""));
   const hojeIso = hojeSP(t);
   const ja = ((await db.sel(`zv_bot_fila?select=id&negocio=eq.${N.neg.id}&status=eq.enviado&criado_em=gte.${isoDe(hojeIso, 0)}`).catch(() => [])) || []).length;
   let cota = Math.max(0, (N.robo.limiteDia || 60) - ja);
-  const fila = (await db.sel(`zv_bot_fila?select=*&negocio=eq.${N.neg.id}&status=eq.fila&enviar_apos=lte.${new Date(Math.max(t, Date.now())).toISOString()}&order=criado_em&limit=8`).catch(() => [])) || [];
+  const fila = (await db.sel(`zv_bot_fila?select=*&negocio=eq.${N.neg.id}&status=eq.fila&enviar_apos=lte.${new Date(Math.max(t, Date.now())).toISOString()}&order=criado_em&limit=40`).catch(() => [])) || [];
+  if (!fila.some(ehPedido) && foraDaHora) return Object.assign(feito, { motivo: "fora do horário (8h às 21h)" });
+  if (!fila.some(ehPedido) && pausado) return Object.assign(feito, { motivo: "envios pausados (qualidade do número)" });
   for (const f of fila) {
+    if (!ehPedido(f) && (foraDaHora || pausado)) continue;   // fica na fila para o horário certo
     const pula = async m => { feito.pulados++; await db.upd(`zv_bot_fila?id=eq.${f.id}`, { status: "pulado", motivo: m }); };
     if (f.expira && Date.parse(f.expira) < t) { await pula("expirou"); continue; }
-    if (cota <= 0) break;
-    const c = ((await db.sel(`zv_bot_contatos?select=*&negocio=eq.${N.neg.id}&whatsapp=eq.${f.whatsapp}`).catch(() => [])) || [])[0] || {};
+    if (cota <= 0 && !ehPedido(f)) continue;
+    const cs = (await db.sel(`zv_bot_contatos?select=*&negocio=eq.${N.neg.id}&whatsapp=in.(${variantes(f.whatsapp).join(",")})`).catch(() => [])) || [];
+    const c = cs.sort((x, y) => Date.parse(y.ultima_in || 0) - Date.parse(x.ultima_in || 0))[0] || {};   // com e sem o 9: vale quem escreveu por último
     if (c.optout) { await pula("pediu para sair"); continue; }
     if (c.humano_ate && Date.parse(c.humano_ate) > t) { await pula("dono atendendo"); continue; }
     const janela = c.ultima_in && Math.max(t, Date.now()) - Date.parse(c.ultima_in) < 23.5 * 3600e3;   // dentro das 24h: texto livre; fora: modelo aprovado
     // quem não conversou nas últimas 24h recebe no máximo 1 mensagem por dia do robô (vaga que abriu é a exceção: foi o cliente que pediu)
-    if (!janela && c.proativas_dia === hojeIso && c.proativas >= 1 && f.tipo !== "vaga") { await pula("já recebeu mensagem hoje"); continue; }
+    if (!janela && c.proativas_dia === hojeIso && c.proativas >= 1 && f.tipo !== "vaga" && !ehPedido(f)) { await pula("já recebeu mensagem hoje"); continue; }
     try { await enviar(f.whatsapp, janela ? { texto: f.texto } : { texto: f.texto, modelo: f.modelo });
-      await db.upd(`zv_bot_fila?id=eq.${f.id}`, { status: "enviado" }); feito.enviados++; cota--;
+      await db.upd(`zv_bot_fila?id=eq.${f.id}`, { status: "enviado" }); feito.enviados++; if (!ehPedido(f)) cota--;
       const conta = f.tipo !== "vaga" ? (c.proativas_dia === hojeIso ? (c.proativas || 0) + 1 : 1) : (c.proativas_dia === hojeIso ? c.proativas || 0 : 0);
       const patch = { ultima_out: new Date(t).toISOString(), proativas_dia: hojeIso, proativas: conta };
       if (f.tipo === "lembrete" && !(c.estado && c.estado.etapa)) patch.estado = { etapa: "lembrete", ag: String(f.ref).replace("lemb:", "") };
-      if (c.whatsapp) await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${f.whatsapp}`, patch).catch(() => {});
+      if (ehPedido(f)) delete patch.proativas_dia, delete patch.proativas;
+      if (c.whatsapp) await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${c.whatsapp}`, patch).catch(() => {});
       else await db.ins("zv_bot_contatos", Object.assign({ negocio: N.neg.id, whatsapp: f.whatsapp }, patch)).catch(() => {});
       await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: f.whatsapp, dir: "out", texto: f.texto }).catch(() => {});
     } catch (e) { await db.upd(`zv_bot_fila?id=eq.${f.id}`, { status: "erro", motivo: String(e.message || e).slice(0, 200) }); }
