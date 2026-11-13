@@ -312,16 +312,17 @@ window.ZV_IC = {
   clube: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>',
   espera: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   contas: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3"/>',
-  recibo: '<path d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h2"/>'
+  recibo: '<path d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h2"/>',
+  robo: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 16h5"/>'
 };
 window.zvAbas = a => {
   const ini = a.find(x => x[0] === "inicio"); if (ini) ini[1] = "Hoje";
   const c = a.find(x => x[0] === "catalogo"); if (c) c[1] = "Serviços";
-  const i = a.findIndex(x => x[0] === "clientes"); a.splice(i + 1, 0, ["barbeiros", "Barbeiros"], ["clube", "Clube"], ["espera", "Lista de espera"]);
+  const i = a.findIndex(x => x[0] === "clientes"); a.splice(i + 1, 0, ["robo", "Robô do WhatsApp"], ["barbeiros", "Barbeiros"], ["clube", "Clube"], ["espera", "Lista de espera"]);
   const f = a.findIndex(x => x[0] === "financeiro"); a.splice(f + 1, 0, ["contas", "Contas a pagar"], ["recibo", "Recibo do mês"]);
   return a; };
 window.ZV_TELAS = { inicio: () => telaHoje(), barbeiros: () => telaBarbeiros(), clube: () => telaClube(), espera: () => telaEspera(), contas: () => telaContas(),
-  recibo: () => telaRecibo(), clientes: () => telaClientesBarb(), site: () => telaSiteBarb() };
+  recibo: () => telaRecibo(), robo: () => telaRobo(), clientes: () => telaClientesBarb(), site: () => telaSiteBarb() };
 document.querySelectorAll(".logo").forEach(l => { if (!l.querySelector(".prod")) l.insertAdjacentHTML("beforeend", ' <span class="prod">Barbearia</span>'); });
 (() => { const s = document.createElement("style"); s.textContent = `
 .logo .prod{font-weight:600;opacity:.65}
@@ -339,6 +340,13 @@ document.querySelectorAll(".logo").forEach(l => { if (!l.querySelector(".prod"))
 .ass .r .st{font-size:12.5px}.ass .r.atr .st{color:var(--no-ink);font-weight:700}.ass .r.logo2 .st{color:var(--am-ink);font-weight:700}
 .planos{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}.plano{border:1px solid var(--line);border-radius:14px;padding:12px 14px}.plano b{display:block;font-size:17px}.plano .pr{font-size:20px;font-weight:850;margin-top:4px}
 .esp-dia{margin-bottom:12px}.esp-dia h2{display:flex;justify-content:space-between;align-items:baseline}.esp .r.prim{background:color-mix(in srgb,var(--cobalt) 7%,transparent);border-radius:10px;padding-left:8px;padding-right:8px}
+.rb-conv{display:grid;gap:12px;grid-template-columns:minmax(0,320px) minmax(0,1fr)}@media (max-width:860px){.rb-conv{grid-template-columns:minmax(0,1fr)}}
+.rb-lst .r{cursor:pointer}.rb-lst .r.on{background:color-mix(in srgb,var(--cobalt) 9%,transparent);border-radius:10px;padding-left:8px;padding-right:8px}
+.rb-lst .ult{display:block;font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.rb-chat .msgs{height:min(56vh,520px);flex:none}.msg.cli{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
+.msg.bot{align-self:flex-end;background:color-mix(in srgb,var(--cobalt) 14%,var(--card));border-bottom-right-radius:5px}.msg.eu{align-self:flex-end;background:var(--cobalt);color:#fff;border-bottom-right-radius:5px}
+.msg small{display:block;font-size:11px;opacity:.6;margin-top:3px}
+.rb-sim{background:linear-gradient(180deg,color-mix(in srgb,var(--ok) 6%,var(--card)),var(--card))}
 .rec-mes{max-width:860px}.rec-mes table{width:100%;border-collapse:collapse}.rec-mes td{padding:7px 0;border-top:1px solid var(--line)}.rec-mes td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .rec-mes .tot td{font-size:18px;font-weight:850}
 @media print{.side,.tabbar,.top .acts,.seg,.no-print,.toast{display:none!important}main{margin:0!important;padding:0!important}.card{break-inside:avoid;box-shadow:none}}
@@ -533,6 +541,83 @@ async function telaRecibo() { recMes = recMes || isoD(new Date()).slice(0, 7); c
       <div class="card"><h2>Serviços mais feitos</h2>${Object.keys(serv).length ? tabela(Object.entries(serv).sort((p, q) => q[1] - p[1]).slice(0, 8).map(([k, n]) => [k, n + "×"])) : '<p class="vazio">—</p>'}
         <p class="muted" style="font-size:13px;margin:10px 0 0">Faltas no mês: <b>${fal.length}</b>${A.length ? ` (${Math.round(fal.length / Math.max(1, at.length + fal.length) * 100)}% dos horários)` : ""}.</p></div></div>
     <p class="muted" style="font-size:12.5px;margin-top:12px">Este resumo junta o caixa, os atendimentos e as comissões do mês. Dá para mandar para o contador como PDF.</p></div>`; }
+
+
+/* ---------------- robô do WhatsApp ---------------- */
+// O robô atende no WhatsApp da barbearia: marca, remarca, cancela, mostra preços, cuida da lista de espera e oferece vaga mais cedo.
+let RB = { conv: null, contatos: [], canal: null, sim: [] };
+const robo = () => Object.assign({ ativo: true, lembrete: true, horaLembrete: "18:00", antecipar: true, limiteDia: 60, minutosOferta: 20 }, cfg().robo || {});
+async function chamarRobo(acao, corpo) { const { data: s } = await sb.auth.getSession();
+  const r = await fetch(SB_URL + "/functions/v1/zv-robo?acao=" + acao, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + s.session.access_token, apikey: SB_KEY }, body: JSON.stringify(Object.assign({ negocio: NEG.id }, corpo)) });
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.erro || "O robô não respondeu agora."); return j; }
+async function telaRobo() { const m = $("main");
+  const [c, k] = await Promise.all([sb.rpc("zv_canal_status", { p_neg: NEG.id }), sb.from("zv_bot_contatos").select("*").eq("negocio", NEG.id).not("ultima_in", "is", null).order("ultima_in", { ascending: false }).limit(60)]);
+  if (TAB !== "robo") return;
+  RB.canal = c.data || null; RB.contatos = (k.data || []).filter(x => !String(x.whatsapp).startsWith("550000")); const R = robo(), ligado = RB.canal && RB.canal.ligado;
+  const precisa = RB.contatos.filter(x => x.humano_ate && Date.parse(x.humano_ate) > Date.now());
+  m.innerHTML = topo("Robô do WhatsApp", `<button class="b sec sm" onclick="ajustesRobo()">Ajustes</button>`) +
+    `<p class="muted" style="margin:-8px 0 14px;font-size:14px">O robô responde seus clientes no WhatsApp da barbearia, de dia e de noite: marca, remarca e cancela horários, mostra os preços, coloca na lista de espera e, quando alguém desmarca, oferece a vaga ao próximo da fila, um por vez. Quem decide o horário é a sua agenda, então ele não marca dois clientes no mesmo lugar.</p>
+    <div class="kpis"><div class="card kpi"><small>WhatsApp</small><b style="font-size:20px">${ligado ? (RB.canal.pausado ? "Pausado" : "Conectado") : "Não conectado"}</b><div class="sub">${ligado ? "número final " + esc(RB.canal.final) + (RB.canal.qualidade && RB.canal.qualidade !== "GREEN" ? ` · <span style="color:var(--no-ink);font-weight:700">qualidade em alerta</span>` : " · qualidade boa") : `<a href="#" onclick="conectarWhats();return false">Conectar agora</a>`}</div></div>
+      <div class="card kpi"><small>Robô</small><b style="font-size:20px">${R.ativo ? "Ligado" : "Desligado"}</b><div class="sub">${R.lembrete ? "lembrete às " + esc(R.horaLembrete) : "sem lembrete"}${R.antecipar ? " · avisa vagas" : ""}</div></div>
+      <div class="card kpi"><small>Conversas</small><b>${RB.contatos.length}</b><div class="sub">${precisa.length ? `<span style="color:var(--am-ink);font-weight:700">${precisa.length} esperando você</span>` : "nenhuma esperando você"}</div></div>
+      <div class="card kpi"><small>Proteção</small><b style="font-size:20px">${R.limiteDia}/dia</b><div class="sub">8h às 21h · 1 por cliente</div></div></div>
+    ${ligado ? "" : `<div class="card" style="margin-bottom:12px;border-color:var(--cobalt)"><h2>Conecte o WhatsApp da barbearia</h2><p class="muted" style="font-size:14px">É pelo WhatsApp oficial da Meta, o jeito seguro: o número não é bloqueado por usar robô. Enquanto não conecta, teste o robô aqui embaixo.</p><button class="b pri" onclick="conectarWhats()">Conectar WhatsApp</button></div>`}
+    <div class="rb-conv"><div class="card rb-lst"><h2>Conversas</h2><div class="lst">${RB.contatos.length ? RB.contatos.map(x => { const h = x.humano_ate && Date.parse(x.humano_ate) > Date.now();
+        return `<div class="r ${RB.conv === x.whatsapp ? "on" : ""}" role="button" tabindex="0" onclick="abrirConv('${x.whatsapp}')"><span style="min-width:0"><b>${esc(x.nome || fmtZap(x.whatsapp))}</b><span class="ult">${x.optout ? "pediu para não receber mensagens" : x.etapa === "oferta" ? "recebeu oferta de vaga" : desde(x.ultima_in)}</span></span>${h ? '<span class="pill am">Você</span>' : '<span class="pill ok">Robô</span>'}</div>`; }).join("")
+        : '<p class="vazio">As conversas do WhatsApp aparecem aqui.</p>'}</div></div>
+      <div class="card rb-chat ${RB.conv ? "" : "rb-sim"}" id="rbChat">${RB.conv ? "" : htmlSim()}</div></div>`;
+  if (RB.conv) abrirConv(RB.conv); else ligarSim(); }
+const fmtZap = z => { z = String(z).replace(/^55/, ""); return z.length >= 10 ? `(${z.slice(0, 2)}) ${z.slice(2, -4)}-${z.slice(-4)}` : z; };
+function htmlSim() { return `<div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2 style="margin:0">Testar o robô</h2><button class="b sec sm" onclick="recomecarSim()">Recomeçar</button></div>
+  <p class="muted" style="font-size:13.5px;margin:4px 0 0">Escreva como um cliente escreveria. Os horários marcados no teste entram na agenda como “Teste do robô” e saem quando você toca em Recomeçar.</p>
+  <div class="msgs" id="simMsgs">${RB.sim.map(x => `<div class="msg ${x[0] === "c" ? "eu" : "cli"}">${esc(x[1])}</div>`).join("") || '<div class="msg cli">Oi! Mande uma mensagem como se fosse um cliente. Ex.: “quero cortar amanhã depois das 5”.</div>'}</div>
+  <div class="sug">${["oi", "quero cortar amanhã depois das 5", "quanto custa a barba?", "qual é meu horário?", "preciso remarcar", "quero cancelar", "atendente"].map(s => `<button onclick="simEnviar('${s}')">${s}</button>`).join("")}</div>
+  <form class="envio" onsubmit="event.preventDefault();simEnviar($('simTxt').value)"><input class="t" id="simTxt" autocomplete="off" placeholder="Escreva como cliente…" aria-label="Mensagem de teste"><button class="b pri">Enviar</button></form></div>`; }
+function ligarSim() { const b = $("simMsgs"); if (b) b.scrollTop = b.scrollHeight; }
+async function simEnviar(txt) { txt = String(txt || "").trim(); if (!txt) return; const box = $("simMsgs"); if (!box) return; $("simTxt").value = "";
+  if (!RB.sim.length) box.innerHTML = ""; RB.sim.push(["c", txt]); box.insertAdjacentHTML("beforeend", `<div class="msg eu">${esc(txt)}</div><div class="msg cli pensando" id="simPens">digitando…</div>`); box.scrollTop = box.scrollHeight;
+  try { const r = await chamarRobo("simular", { texto: txt }); $("simPens").remove();
+    (r.respostas.length ? r.respostas : [r.humano ? "(o robô ficou quieto: a conversa passou para você)" : "(sem resposta)"]).forEach(x => { RB.sim.push(["r", x]); box.insertAdjacentHTML("beforeend", `<div class="msg cli">${esc(x)}</div>`); }); }
+  catch (e) { const p = $("simPens"); if (p) p.textContent = e.message; } box.scrollTop = box.scrollHeight; }
+async function recomecarSim() { try { await chamarRobo("simular", { recomecar: true }); } catch (e) {} RB.sim = []; RB.conv = null; telaRobo(); }
+async function abrirConv(z) { RB.conv = z; document.querySelectorAll(".rb-lst .r").forEach(r => r.classList.toggle("on", r.getAttribute("onclick").includes(z)));
+  const box = $("rbChat"); if (!box) return; const c = RB.contatos.find(x => x.whatsapp === z) || {}, h = c.humano_ate && Date.parse(c.humano_ate) > Date.now();
+  const { data } = await sb.from("zv_bot_msgs").select("id,dir,texto,criado_em").eq("negocio", NEG.id).eq("whatsapp", z).order("criado_em", { ascending: false }).order("id", { ascending: false }).limit(80);
+  const L = (data || []).reverse(), janela = c.ultima_in && Date.now() - Date.parse(c.ultima_in) < 23.5 * 3600e3;
+  box.innerHTML = `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">${esc(c.nome || fmtZap(z))}</h2><span style="display:flex;gap:6px">
+      ${h ? `<button class="b sec sm" onclick="devolverRobo('${z}')">Devolver para o robô</button>` : `<button class="b sec sm" onclick="assumirConv('${z}')">Assumir a conversa</button>`}<button class="b sec sm" onclick="RB.conv=null;telaRobo()">Testar o robô</button></span></div>
+    <p class="muted" style="font-size:13px;margin:4px 0 0">${h ? "Você está atendendo: o robô fica quieto até você devolver (ou por 2 horas)." : "O robô está atendendo. Se precisar, assuma a conversa."}</p>
+    <div class="msgs" id="convMsgs">${L.map(x => `<div class="msg ${x.dir === "in" ? "cli" : x.dir === "dono" ? "eu" : "bot"}">${esc(x.texto)}<small>${x.dir === "out" ? "robô · " : x.dir === "dono" ? "você · " : ""}${new Date(x.criado_em).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</small></div>`).join("") || '<p class="vazio">Sem mensagens.</p>'}</div>
+    ${janela ? `<form class="envio" onsubmit="event.preventDefault();responderConv('${z}')"><input class="t" id="convTxt" autocomplete="off" placeholder="Responder como a barbearia…" aria-label="Sua resposta"><button class="b pri">Enviar</button></form>`
+      : `<p class="muted" style="font-size:13px;margin:8px 0 0">Faz mais de 24 horas que o cliente não escreve. Pelas regras do WhatsApp, só dá para responder quando ele mandar mensagem de novo. ${c.whatsapp ? `<a href="${zapLink(c.whatsapp, "")}" target="_blank" rel="noopener">Abrir no seu WhatsApp</a>` : ""}</p>`}`;
+  const mm = $("convMsgs"); if (mm) mm.scrollTop = mm.scrollHeight; }
+async function responderConv(z) { const t = $("convTxt").value.trim(); if (!t) return; $("convTxt").disabled = true;
+  try { await chamarRobo("enviar", { whatsapp: z, texto: t }); toast("Enviado."); await telaRobo(); } catch (e) { toast(e.message); $("convTxt").disabled = false; } }
+async function assumirConv(z) { const { error } = await sb.from("zv_bot_contatos").update({ humano_ate: new Date(Date.now() + 2 * 3600e3).toISOString() }).eq("negocio", NEG.id).eq("whatsapp", z); if (error) return toast(erro(error)); telaRobo(); }
+async function devolverRobo(z) { const { error } = await sb.from("zv_bot_contatos").update({ humano_ate: null, estado: {} }).eq("negocio", NEG.id).eq("whatsapp", z); if (error) return toast(erro(error)); toast("O robô voltou a atender."); telaRobo(); }
+function ajustesRobo() { const R = robo();
+  abrirSheet(`<h2>Ajustes do robô</h2><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-weight:650"><input type="checkbox" id="rbA" ${R.ativo ? "checked" : ""}> Robô ligado</label>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-weight:650"><input type="checkbox" id="rbL" ${R.lembrete ? "checked" : ""}> Mandar lembrete na véspera</label>
+    <div class="grid2" style="margin-top:8px"><label class="f">Horário do lembrete<input class="t" type="time" id="rbH" value="${esc(R.horaLembrete)}"></label><label class="f">Tempo para responder uma vaga (min)<input class="t" inputmode="numeric" id="rbM" value="${R.minutosOferta}"></label></div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-weight:650"><input type="checkbox" id="rbV" ${R.antecipar ? "checked" : ""}> Oferecer vaga que abriu (lista de espera e quem quer adiantar)</label>
+    <label class="f" style="margin-top:10px">Máximo de mensagens por iniciativa do robô, por dia<input class="t" inputmode="numeric" id="rbD" value="${R.limiteDia}"></label>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">Para o número não ser bloqueado, o robô só manda mensagem primeiro entre 8h e 21h, no máximo 1 por dia para cada cliente, nunca para quem escreveu SAIR, e para sozinho se a Meta avisar que o número está sendo denunciado.</p>
+    ${RB.canal && RB.canal.ligado ? `<button class="b sec wide" style="margin-top:12px" onclick="pausarCanal(${!RB.canal.pausado})">${RB.canal.pausado ? "Retomar os envios" : "Pausar os envios por iniciativa"}</button>` : ""}
+    <button class="b pri wide" style="margin-top:8px" onclick="salvarRobo()">Salvar</button>`); }
+async function salvarRobo() { const r = { ativo: $("rbA").checked, lembrete: $("rbL").checked, horaLembrete: $("rbH").value || "18:00", antecipar: $("rbV").checked,
+    minutosOferta: Math.min(120, Math.max(5, parseInt($("rbM").value) || 20)), limiteDia: Math.min(250, Math.max(5, parseInt($("rbD").value) || 60)) };
+  const ok = await salvarDados(d => { d.config = d.config || {}; d.config.robo = r; }, "Ajustes do robô salvos."); if (ok) { fecharSheet(); telaRobo(); } }
+async function pausarCanal(p) { const { error } = await sb.rpc("zv_canal_pausar", { p_neg: NEG.id, p_pausado: p }); if (error) return toast(erro(error)); fecharSheet(); telaRobo(); }
+function conectarWhats() { abrirSheet(`<h2>Conectar o WhatsApp</h2><p class="muted" style="font-size:14px;margin:6px 0 10px">Use um número que ainda não está no aplicativo do WhatsApp (ou migre o da barbearia). A Zivoop te ajuda na primeira vez.</p>
+  <ol style="margin:0 0 10px;padding-left:20px;display:grid;gap:6px;font-size:14.5px"><li>Entre em business.facebook.com com a conta da barbearia e crie o app do WhatsApp (tipo “Empresa”).</li><li>Em WhatsApp &gt; Configuração da API, adicione o número e confirme o código por SMS.</li><li>Copie a <b>Identificação do número de telefone</b> e gere um <b>token permanente</b> (usuário do sistema).</li><li>Cole os dois aqui.</li></ol>
+  <label class="f">Identificação do número de telefone<input class="t" id="cwP" inputmode="numeric" autocomplete="off"></label>
+  <label class="f" style="margin-top:8px">Token permanente<input class="t" id="cwT" type="password" autocomplete="off"></label>
+  <label class="f" style="margin-top:8px">Número com DDD<input class="t" id="cwN" inputmode="tel" placeholder="(11) 99999-9999"></label>
+  <p class="err" id="cwE" role="alert"></p><button class="b pri wide" style="margin-top:6px" onclick="salvarCanal()">Conectar</button>
+  <p class="muted" style="font-size:12.5px;margin:8px 0 0">O token fica guardado só no servidor. Nem o painel consegue ler de volta.</p>`); }
+async function salvarCanal() { const { error } = await sb.rpc("zv_canal_salvar", { p_neg: NEG.id, p_phone_id: $("cwP").value.trim(), p_token: $("cwT").value.trim(), p_numero: $("cwN").value });
+  if (error) return $("cwE").textContent = /phone_id/.test(error.message) ? "A identificação do número tem só números (copie da Meta)." : /token/.test(error.message) ? "O token parece incompleto." : erro(error);
+  fecharSheet(); toast("WhatsApp conectado."); telaRobo(); }
 
 </script>
 <script>
