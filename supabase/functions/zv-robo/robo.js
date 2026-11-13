@@ -32,7 +32,7 @@ export async function carregarNegocio(db, negId, siteUrl) {
   const cfg = Object.assign({}, pad.config || {}, (neg.dados || {}).config || {}), menu = (neg.dados || {}).menu || pad.menu || [];
   const servicos = []; menu.forEach(c => (c.items || []).forEach(i => { if (!i.oculto && i.dur) servicos.push({ id: i.id, n: i.n, p: Number(i.p || 0), dur: Number(i.dur), cat: c.cat }); }));
   const profs = (cfg.profissionais || []).map(p => typeof p === "string" ? p : p && p.nome).filter(Boolean);
-  const robo = Object.assign({ ativo: true, lembrete: true, horaLembrete: "18:00", antecipar: true, limiteDia: 60, minutosOferta: 20 }, cfg.robo || {});
+  const robo = Object.assign({ ativo: true, lembrete: true, horaLembrete: "18:00", antecipar: true, limiteDia: 60, minutosOferta: 20, nome: "", tom: "leve", faq: [] }, cfg.robo || {});
   return { neg, cfg, servicos, profs, robo, site: `${siteUrl}/${neg.slug}` };
 }
 
@@ -82,49 +82,97 @@ const uniq = L => { const s = new Set(); return L.filter(x => { const k = x.dia 
 
 /* ------------------------------------------------------------ entender a mensagem */
 // sem IA: palavras-chave, datas ("amanhã", "sexta", "15/11", "dia 15") e horas ("17h", "depois das 5")
+// apelidos que o cliente usa para cada serviço (barbearia); o dono pode somar os dele em config.robo.apelidos
+const APELIDOS = {
+  "corte": ["cabelo", "cortar", "corte", "degrade", "social", "americano", "navalhado", "tapa no visual", "aparar", "disfarcado", "maquina"],
+  "corte-infantil": ["infantil", "crianca", "filho", "filhinho", "menino", "kids", "sobrinho"],
+  "barba": ["barba", "barbear", "barbinha"],
+  "corte-barba": ["completo", "combo", "corte e barba", "cabelo e barba", "barba e cabelo", "barba e corte", "cabelo mais barba", "corte mais barba"],
+  "platinado": ["platin", "nevou", "nevado", "luzes", "descolor"],
+  "hidratacao": ["hidrat", "relaxa"],
+  "pezinho": ["pezinho", "acabamento", "contorno"],
+  "sobrancelha": ["sobrancelha"],
+};
+const ABREV = [[/\bhj\b/g, "hoje"], [/\b(amnh|amnha|amn|amh|amanh)\b/g, "amanha"], [/\bdps\b/g, "depois"], [/\b(qro|qr|kero|quero)\b/g, "quero"], [/\bvcs?\b/g, "voces"],
+  [/\bvoce\b/g, "voces"], [/\b(obg|obgd|obgda|brigado|brigada)\b/g, "obrigado"], [/\bvlw+\b/g, "valeu"], [/\btb\b/g, "tambem"], [/\bcorta\b/g, "cortar"],
+  [/\bsab\b/g, "sabado"], [/\bhrs?\b/g, "h"], [/\bp\/? /g, "pra "], [/\bpara\b/g, "pra"], [/\bmto\b/g, "muito"], [/\bq\b/g, "que"], [/\beh\b/g, "e"], [/\bnum\b/g, "nao"]];
+const EMOJI = [[/[👍👌✅🤝🙌]/gu, " sim "], [/[👎❌🚫]/gu, " nao "], [/1️⃣/gu, " 1 "], [/2️⃣/gu, " 2 "], [/3️⃣/gu, " 3 "], [/4️⃣/gu, " 4 "], [/5️⃣/gu, " 5 "]];
 export function entenderSemIA(N, texto, t = Date.now()) {
-  const s = sem(texto), r = { intencao: null, servicos: [], profissional: null, dia: null, faixa: null, escolha: null, nome: null };
-  if (/^[1-9]$/.test(s)) r.escolha = Number(s);
-  if (OPTOUT.test(s)) r.intencao = "sair";
-  else if (/\b(atendente|humano|pessoa|falar com (o |a )?(dono|barbeiro|alguem|voce))\b/.test(s)) r.intencao = "humano";
-  else if (/\b(remarc|mudar (o )?horario|trocar (o )?horario|adiar|outro horario|passar pra)/.test(s)) r.intencao = "remarcar";
-  else if (/\b(cancel|desmarc|nao vou (poder )?(ir|conseguir)|nao posso ir)/.test(s)) r.intencao = "cancelar";
-  else if (/\b(meu horario|meus horarios|que horas (e|eh) (o )?meu|quando (e|eh) (o )?meu|tenho horario)/.test(s)) r.intencao = "meus";
-  else if (/\b(lista de espera|me avis|quando abrir|se abrir)/.test(s)) r.intencao = "espera";
-  else if (/\b(preco|precos|valor|valores|quanto (custa|e|eh|fica|ta)|tabela)\b/.test(s)) r.intencao = "precos";
-  else if (/\b(endereco|onde fica|localizacao|como chego|abre|fecha|funciona|horario de funcionamento)\b/.test(s) && !/\b(marcar|agendar)\b/.test(s)) r.intencao = "info";
-  else if (/\b(clube|assinatura|plano mensal|mensalidade)\b/.test(s)) r.intencao = "clube";
-  else if (/^(sim|s|isso|pode|pode ser|ok|okay|beleza|blz|fechado|confirmo|confirmar|bora|claro|perfeito|show|top|quero sim|sim quero|pode sim)( (sim|pode|obrigad[oa]|valeu))?$/.test(s) || s === "quero") r.intencao = "sim";
-  else if (/^(nao|n|nao quero|deixa|esquece|agora nao|nenhum)\b/.test(s)) r.intencao = "nao";
-  else if (/\b(marcar|agendar|horario|vaga|corte|cortar|barba|disponivel|tem hora|encaixe)\b/.test(s)) r.intencao = "marcar";
-  else if (/^(oi|ola|bom dia|boa tarde|boa noite|eai|e ai|opa|salve|fala)\b/.test(s)) r.intencao = "oi";
-  // serviços citados
-  const sb = s.replace(/\bbarbearia\b/g, " ");
-  N.servicos.forEach(x => { const n = sem(x.n); if (!n) return;
-    const raiz = n.split(" ").length === 1 && n.length >= 5 ? n.slice(0, n.length - 1) : null;   // "corte" pega "cortar", "barba" pega "barbinha"
-    if (sb.includes(n) || (raiz && new RegExp("\\b" + raiz).test(sb))) r.servicos.push(x.id); });
-  if (r.servicos.includes("corte-infantil")) r.servicos = r.servicos.filter(i => i !== "corte");
+  let bruto = String(texto || ""); EMOJI.forEach(([a, b]) => bruto = bruto.replace(a, b));
+  let s = sem(bruto); ABREV.forEach(([a, b]) => s = s.replace(a, b)); s = s.replace(/\s+/g, " ").trim();
+  const r = { intencao: null, servicos: [], profissional: null, dia: null, faixa: null, escolha: null, nome: null, saudacao: false };
+  // saudação no começo ("boa tarde! tem horário amanhã?") não atrapalha o resto
+  const sd = s.match(/^(oi+|ola|opa|eae|eai|e ai|salve|fala|bom dia|boa tarde|boa noite|tudo bem|tudo bom|td bem)( (tudo bem|tudo bom|pessoal|galera|mano|amigo))?\b ?/);
+  if (sd) { r.saudacao = true; s = s.slice(sd[0].length).trim(); const s2 = s.match(/^(tudo bem|tudo bom|td bem|beleza|blz|como vai|tranquilo)\b ?/); if (s2) s = s.slice(s2[0].length).trim(); }
+  if (r.saudacao && !s) { r.intencao = "oi"; return r; }
+  // nome ("meu nome é Carlos", "sou o João Pedro")
+  const nm = String(texto).match(/(?:meu nome (?:é|e|eh)|me chamo|aqui (?:é|e) (?:o|a)|sou (?:o|a))\s+([A-Za-zÀ-ÿ']+(?:\s+[A-Za-zÀ-ÿ']+){0,2})/i);
+  if (nm) r.nome = nm[1].split(/\s+/).filter(w => !/^(e|de|da|do|aqui|quero|queria)$/i.test(w) || nm[1].split(/\s+/).length < 2).map(w => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+  // escolha de opção ("2", "a 2", "opção 3", "o primeiro", "a segunda opção")
+  let m = s.match(/^(?:a|o|opcao|numero|n|quero a|quero o|pode ser a|pode ser o|vou de|fico com a|fico com o)? ?([1-9])$/) || s.match(/\bopcao ([1-9])\b/);
+  if (m) r.escolha = Number(m[1]);
+  else if (/^(o|a) (primeir[oa])\b|^primeir[oa]\b|\bprimeira opcao\b/.test(s)) r.escolha = 1;
+  else if (/\bsegunda opcao\b|^(o )?segundo\b/.test(s)) r.escolha = 2;
+  else if (/\bterceira opcao\b|^(o|a) terceir[oa]\b|^terceir[oa]\b/.test(s)) r.escolha = 3;
+  // intenção (a ordem importa)
+  const tem = re => re.test(s);
+  if (tem(/^(sair|parar|stop|pare|descadastrar|cancelar avisos)$|nao quero (mais )?receber/)) r.intencao = "sair";
+  else if (tem(/\b(atendente|humano|falar com (o |a |um |uma )?(dono|barbeiro|alguem|pessoa|atendente|gente)|uma pessoa de verdade)\b/)) r.intencao = "humano";
+  else if (tem(/\b(e|isso e|voces sao|to falando com (um )?) ?(um )?robo\b|\bbot\b/)) r.intencao = "ehrobo";
+  else if (tem(/^(muito )?(obrigad[oa]|valeu|agradeco|tmj|brigadao)\b/)) r.intencao = "obrigado";
+  else if (tem(/\b(desmarc|cancel)|\bnao (vou|vai) (poder|conseguir|dar)( ir)?\b|\bnao (consigo|posso|vou) ir\b|\bimprevisto\b/)) r.intencao = "cancelar";
+  else if (tem(/\b(remarc|mudar|trocar|adiar|adiantar|antecipar|passar (pra|o horario)|outro horario|vou me atrasar|me atrasar|atrasad)/)) r.intencao = "remarcar";
+  else if (tem(/\b(meu horario|meus horarios|tenho horario( marcado)?|(que|qual) (horas|dia|horario) (e|eu) (o )?(meu|marquei)|eu marquei|quando e (o )?meu|ja (to|estou) marcado)\b/)) r.intencao = "meus";
+  else if (tem(/\b(lista de espera|me avis|se abrir|quando abrir|fila de espera)/)) r.intencao = "espera";
+  else if (tem(/\b(clube|plano mensal|planos|assinatura|assinar|mensalidade)\b/)) r.intencao = "clube";
+  else if (tem(/\b(preco|precos|valor|valores|quanto (custa|e|fica|ta|sai|cobra|cobram)|tabela|quanto)\b/) && !tem(/\b(quanto tempo|demora)\b/)) r.intencao = "precos";
+  else if (tem(/\b(endereco|onde (fica|e|voces ficam)|localiza|como (eu )?chego|abre|abrem|fecha|fecham|funcionam|horario de funcionamento|ate que horas|que horas (voces )?(abre|fecha|atende)|atendem (no |de )?(domingo|sabado|feriado))\b/)) r.intencao = "info";
+  else if (tem(/^(sim|s|ss|isso|isso mesmo|isso ai|exato|pode|pode ser|pode sim|pode marcar|ok|okay|beleza|blz|fechado|confirmo|confirmar|confirmado|bora|claro|perfeito|show|top|quero|quero sim|sim quero|uhum|aham|positivo|certo|combinado|demorou|fechou|sim sim)( (sim|pode|obrigad[oa]|valeu|por favor|pf|mano|irmao))?$/)) r.intencao = "sim";
+  else if (tem(/^(nao|n|nn|nao obrigad[oa]|agora nao|deixa|deixa pra la|esquece|nenhum|nenhuma|nenhum desses|nenhuma dessas|nao quero|negativo|prefiro outro( horario| dia)?)\b/)) r.intencao = "nao";
+  // serviços citados (apelidos do nicho + nome do serviço + apelidos que o dono cadastrou)
+  const ap = Object.assign({}, APELIDOS, (N.robo && N.robo.apelidos) || {}); const sb = " " + s.replace(/\bbarbearia\b/g, " ") + " ";
+  N.servicos.forEach(x => { const partes = sem(x.n).split(/ ?[\/+] ?| e /).filter(p => p.length >= 4); const lista = [...(ap[x.id] || []), ...partes];
+    if (lista.some(a => new RegExp("\\b" + a.replace(/ /g, "\\s+")).test(sb))) r.servicos.push(x.id); });
   if (r.servicos.includes("corte-barba")) r.servicos = r.servicos.filter(i => i !== "corte" && i !== "barba");
-  else if (/\bcorte\b.*\bbarba\b|\bbarba\b.*\bcorte\b/.test(s)) { const cb = N.servicos.find(x => /corte.*barba/.test(sem(x.n))); if (cb) r.servicos = [cb.id]; }
+  else if (r.servicos.includes("corte") && r.servicos.includes("barba") && N.servicos.some(x => x.id === "corte-barba")) r.servicos = r.servicos.filter(i => i !== "corte" && i !== "barba").concat("corte-barba");
+  if (r.servicos.includes("corte-infantil")) r.servicos = r.servicos.filter(i => i !== "corte");
   N.profs.forEach(p => { if (new RegExp("\\b" + sem(p) + "\\b").test(s)) r.profissional = p; });
   // dia
-  const hoje = hojeSP(t);
-  if (/\bhoje\b/.test(s)) r.dia = hoje; else if (/\bdepois de amanha\b/.test(s)) r.dia = addDias(hoje, 2); else if (/\bamanha\b/.test(s)) r.dia = addDias(hoje, 1);
-  else { const dm = s.match(/\b(\d{1,2})\/(\d{1,2})\b/) || s.match(/\bdia (\d{1,2})\b/);
-    if (dm) { const d = Number(dm[1]), mo = dm[2] ? Number(dm[2]) : Number(hoje.slice(5, 7)); let y = Number(hoje.slice(0, 4)); let iso = `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-      if (iso < hoje) { if (dm[2]) iso = `${y + 1}${iso.slice(4)}`; else { const nx = new Date(Date.UTC(y, mo, d)); iso = nx.toISOString().slice(0, 10); } } if (!isNaN(Date.parse(iso))) r.dia = iso; }
-    else { const nomes = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"]; const i = nomes.findIndex(n => new RegExp("\\b" + n).test(s));
-      if (i >= 0) { let k = (i - diaSemana(hoje) + 7) % 7; if (k === 0 && !/\bhoje\b/.test(s)) k = 7; if (/\bque vem|proxima\b/.test(s) && k < 7) k += 0; r.dia = addDias(hoje, k); } } }
+  const hoje = hojeSP(t), nomes = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
+  if (/\b(hoje|agora|agorinha|ainda hoje)\b/.test(s)) r.dia = hoje;
+  else if (/\bdepois de amanha\b/.test(s)) r.dia = addDias(hoje, 2);
+  else if (/\bamanha\b/.test(s)) r.dia = addDias(hoje, 1);
+  else if ((m = s.match(/\bdaqui (?:a )?(\d{1,2}) dias?\b/))) r.dia = addDias(hoje, Number(m[1]));
+  else if ((m = s.match(/\b(\d{1,2})\/(\d{1,2})\b/) || s.match(/\bdia (\d{1,2})\b/))) {
+    const d = Number(m[1]), mo = m[2] ? Number(m[2]) : Number(hoje.slice(5, 7)), y = Number(hoje.slice(0, 4));
+    let iso = `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    if (iso < hoje) iso = m[2] ? `${y + 1}${iso.slice(4)}` : new Date(Date.UTC(y, mo, d)).toISOString().slice(0, 10);
+    if (!isNaN(Date.parse(iso)) && d >= 1 && d <= 31) r.dia = iso;
+  } else { const i = nomes.findIndex(n => new RegExp("\\b" + n + "\\b").test(s) && !(n === "segunda" && /\bsegunda opcao\b/.test(s)));
+    if (i >= 0) { let k = (i - diaSemana(hoje) + 7) % 7; if (k === 0) k = /\b(hoje|agora)\b/.test(s) ? 0 : 7; r.dia = addDias(hoje, k); } }
   // hora
-  const ex = s.match(/\b(?:as|às|a)?\s*(\d{1,2})(?:h|:)(\d{2})?\b/) || s.match(/\b(\d{1,2}) ?(?:horas|hrs|hr)\b/);
-  const depois = s.match(/\b(depois|apos|a partir) d?as? (\d{1,2})/), antes = s.match(/\b(antes) d?as? (\d{1,2})/);
-  const ajusta = h => { h = Number(h); if (h >= 1 && h <= 8) h += 12; return String(h).padStart(2, "0") + ":00"; };   // "depois das 5" = 17h
-  if (depois) r.faixa = { de: ajusta(depois[2]) }; else if (antes) r.faixa = { ate: ajusta(antes[2]) };
-  else if (/\bmanha\b/.test(s) && !/\bamanha\b/.test(s.replace(/\bde manha\b/, ""))) r.faixa = { ate: "12:00" };
-  else if (/\bde manha\b|\bpela manha\b/.test(s)) r.faixa = { ate: "12:00" };
-  else if (/\btarde\b/.test(s)) r.faixa = { de: "12:00", ate: "18:00" }; else if (/\bnoite\b/.test(s)) r.faixa = { de: "18:00" };
-  else if (ex && !r.escolha) { let h = Number(ex[1]); if (h >= 1 && h <= 8) h += 12; if (h <= 23) r.faixa = { exato: String(h).padStart(2, "0") + ":" + (ex[2] || "00") }; }
-  if (!r.intencao && (r.dia || r.faixa || r.servicos.length) ) r.intencao = "marcar";
+  const hora = (h, per) => { h = Number(h); if (per === "tarde" || per === "noite") { if (h < 12) h += 12; } else if (!per && h >= 1 && h <= 7) h += 12; return h; };
+  const fmt = (h, mi) => String(h).padStart(2, "0") + ":" + String(mi || 0).padStart(2, "0");
+  if ((m = s.match(/\b(depois|apos|a partir) (?:d[aoe]s? |das |as )?(\d{1,2})(?:h|:)?(\d{2})?\b/))) r.faixa = { de: fmt(hora(m[2]), m[3]) };
+  else if ((m = s.match(/\b(antes|ate) (?:d[aoe]s? |das |as )?(\d{1,2})(?:h|:)?(\d{2})?\b/)) && r.intencao !== "info") r.faixa = { ate: fmt(hora(m[2]), m[3]) };
+  else if (/\bmeio ?dia\b/.test(s)) r.faixa = { exato: "12:00" };
+  else if ((m = s.match(/\b(\d{1,2})(?:h| ?horas?)? ?(?:e )?(meia|\d{2})? (da|de) (manha|tarde|noite)\b/))) r.faixa = { exato: fmt(hora(m[1], m[4]), m[2] === "meia" ? 30 : m[2]) };
+  else if ((m = s.match(/\b(\d{1,2})(?:h|:)(\d{2})?\b/) || s.match(/\b(?:as|a|das|pras|pra) (\d{1,2})(?: e (meia))?\b(?!\/)/))) { const mi = m[2] === "meia" ? 30 : m[2]; if (Number(m[1]) <= 23) r.faixa = { exato: fmt(hora(m[1]), mi) }; }
+  else if (/\bdepois do almoco\b/.test(s)) r.faixa = { de: "13:00" };
+  else if (/\b(fim|final) da tarde\b/.test(s)) r.faixa = { de: "16:00", ate: "19:00" };
+  else if (/\b(comeco|inicio) da tarde\b/.test(s)) r.faixa = { de: "12:00", ate: "15:00" };
+  else if (/\b(mais cedo|cedinho|logo cedo|cedo)\b/.test(s)) r.faixa = { ate: "12:00" };
+  else if (/\b(de manha|pela manha|manha|manhazinha)\b/.test(s.replace(/\b(depois de )?amanha\b/g, ""))) r.faixa = { ate: "12:00" };
+  else if (/\b(tarde|tardezinha)\b/.test(s) && !/\b(mais tarde)\b/.test(s)) r.faixa = { de: "12:00", ate: "18:00" };
+  else if (/\b(noite|noitinha)\b/.test(s)) r.faixa = { de: "18:00" };
+  if (/\b(agora|agorinha|ja)\b/.test(s) && r.dia === hoje && !r.faixa) { const a = agoraSP(t); r.faixa = { de: fmt(a.getUTCHours(), a.getUTCMinutes()) }; }
+  // pergunta solta (não é marcar nem outra intenção): responder com os dados do negócio ou passar para o dono
+  const querMarcar = /\b(marcar|agendar|agenda|horario|vaga|encaixe|encaixar|cortar|disponivel|tem hora|qualquer barbeiro|atendimento)\b/.test(s);
+  if (!r.intencao && /\?|^(aceita|aceitam|tem|voces (tem|fazem|aceitam|atendem|vendem)|faz|fazem|pode|da pra (levar|ir|pagar)|precisa)\b/.test(String(texto).toLowerCase().trim() + (s.match(/^(aceita|aceitam|voces|faz|fazem|precisa)\b/) ? "?" : ""))
+      && !querMarcar && !r.dia && !r.faixa && !r.escolha) r.intencao = "pergunta";
+  if (!r.intencao && (querMarcar || r.dia || r.faixa || r.servicos.length || r.profissional || /\b(quero|queria|gostaria|preciso|bora|marca)\b/.test(s)) && !r.escolha && !r.nome) r.intencao = "marcar";
+  if (!r.intencao && r.saudacao && !s) r.intencao = "oi";
+  if (!r.intencao && r.saudacao) r.intencao = "oi";
   return r;
 }
 // com IA (Gemini grátis por padrão): devolve o mesmo formato; qualquer falha cai no entendimento sem IA
@@ -135,7 +183,7 @@ export async function entenderComIA(N, texto, estado, ia, t = Date.now()) {
   const prompt = `Você lê mensagens de clientes de uma barbearia no WhatsApp e responde SÓ com JSON.
 Hoje é ${DIAS[diaSemana(hoje)]}, ${hoje}. Serviços (id: nome): ${N.servicos.map(x => x.id + ": " + x.n).join("; ")}. Barbeiros: ${N.profs.join(", ") || "nenhum"}.
 A conversa estava em: ${estado && estado.etapa ? estado.etapa : "início"}${estado && estado.opcoes ? " (o robô ofereceu " + estado.opcoes.length + " opções numeradas)" : ""}.
-Campos: intencao (marcar|remarcar|cancelar|meus|precos|info|clube|espera|humano|sair|sim|nao|oi|outro), servicos (lista de ids), profissional (nome ou null),
+Campos: intencao (marcar|remarcar|cancelar|meus|precos|info|clube|espera|humano|ehrobo|obrigado|pergunta|sair|sim|nao|oi|outro; pergunta = dúvida sobre a barbearia que não é marcar), servicos (lista de ids), profissional (nome ou null),
 dia (AAAA-MM-DD ou null), faixa ({de:"HH:MM",ate:"HH:MM"} ou {exato:"HH:MM"} ou null), escolha (número da opção ou null), nome (nome da pessoa se ela disse, ou null).
 "depois das 5" = {de:"17:00"}. "sexta" = a próxima sexta. Não invente: se não sabe, use null.
 Mensagem: """${String(texto).slice(0, 500)}"""`;
@@ -158,7 +206,11 @@ Mensagem: """${String(texto).slice(0, 500)}"""`;
 }
 
 /* ------------------------------------------------------------ conversa */
-const MENU = N => `Posso te ajudar com:\n1 - Marcar horário\n2 - Ver ou mudar meu horário\n3 - Preços\n4 - Endereço e horário de funcionamento${N.cfg.clube && N.cfg.clube.ativo ? "\n5 - Clube de assinatura" : ""}\n\nOu escreva do seu jeito, ex.: "corte amanhã depois das 5". Para falar com o barbeiro, escreva "atendente".`;
+const MENU_OPS = N => ["Marcar horário", "Ver ou mudar meu horário", "Preços", "Endereço e horário", ...(N.cfg.clube && N.cfg.clube.ativo ? ["Clube de assinatura"] : [])];
+const MENU = N => `Posso te ajudar com:\n${MENU_OPS(N).map((o, i) => `${i + 1} - ${o}`).join("\n")}\n\nOu escreva do seu jeito, ex.: "corte amanhã depois das 5". Para falar com o barbeiro, escreva "atendente".`;
+// uma resposta pode levar opções para tocar (no WhatsApp viram botões ou lista); quem não tem botão responde o número
+const comOpcoes = (texto, opcoes) => ({ texto, opcoes });
+const SIMNAO = ["Sim", "Não"];
 const listaOpcoes = (ops, t) => ops.map((o, i) => `${i + 1} - ${diaTxt(o.dia, t)} às ${hhmm(o.m)}${o.prof ? " com " + o.prof : ""}`).join("\n");
 const nomeServ = (N, ids) => ids.map(id => (N.servicos.find(x => x.id === id) || {}).n).filter(Boolean).join(" + ");
 const durServ = (N, ids) => ids.reduce((s, id) => s + ((N.servicos.find(x => x.id === id) || {}).dur || 0), 0);
@@ -179,6 +231,34 @@ async function buscar(db, N, est, t) {
   return { ops: sugerir(L, est.faixa), dia, cheio: false, outroDia: false };
 }
 
+// jeito de falar escolhido pelo dono: "leve" (padrão, com emoji) ou "formal" (sem emoji, mais polido)
+function tom(N, x) { if (N.robo.tom !== "formal") return x; const f = s => s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]\uFE0F?/gu, "").replace(/\bOi\b/g, "Olá").replace(/\bTranquilo!/g, "Sem problemas.").replace(/\bBeleza,/g, "Certo,").replace(/ +\n/g, "\n").replace(/^ +/gm, "").replace(/ {2,}/g, " ").trim();
+  return typeof x === "string" ? f(x) : Object.assign({}, x, { texto: f(x.texto) }); }
+const quem = N => N.robo.nome ? `Aqui é ${/a$/i.test(N.robo.nome) ? "a" : "o"} ${N.robo.nome}, do atendimento da ${N.neg.nome}` : `Aqui é o atendimento automático da ${N.neg.nome}`;
+
+/* perguntas soltas: responde só com o que o dono cadastrou (perguntas frequentes) ou com os dados do site; sem inventar */
+const palavras = s => sem(s).split(" ").filter(w => w.length >= 4 && !/^(voces|voce|quero|queria|gostaria|aqui|isso|esse|essa|para|pra|tem|como|qual|quais|onde|quando|porque|sobre|fazer|fazem|aceita|aceitam)$/.test(w)).map(w => w.slice(0, 6));
+export async function responderPergunta(N, texto, u, ia) {
+  const s = sem(texto);
+  if (u.servicos && u.servicos.length) { const x = N.servicos.find(y => y.id === u.servicos[0]); return `Fazemos sim! ${x.n}: ${brl(x.p)} (${x.dur} min). Quer marcar? Me diz o dia.`; }
+  const faq = (N.robo.faq || []).filter(f => f && f.p && f.r);
+  const q = palavras(texto); let best = null, nota = 0;
+  faq.forEach(f => { const w = palavras(f.p); const n = q.filter(x => w.includes(x)).length / Math.max(1, Math.min(q.length, w.length)); if (n > nota) { nota = n; best = f; } });
+  if (best && nota >= 0.5) return best.r;
+  if (/(pix)/.test(s) && N.cfg.pix && N.cfg.pix.chave) return "Aceitamos Pix sim! A chave é " + N.cfg.pix.chave + ".";
+  if (ia && ia.chave) {   // IA responde só com os fatos abaixo; se não estiver ali, diz que não sabe
+    const fatos = [`Nome: ${N.neg.nome}`, N.cfg.endereco && `Endereço: ${N.cfg.endereco}`, N.cfg.horarioLabel && `Horário: ${N.cfg.horarioLabel}`,
+      `Serviços: ${N.servicos.map(x => x.n + " " + brl(x.p)).join("; ")}`, N.profs.length && `Barbeiros: ${N.profs.join(", ")}`, N.cfg.sinal && `Sinal: ${N.cfg.sinal}`,
+      ...faq.map(f => `P: ${f.p} R: ${f.r}`), ...((N.cfg.sobre || []).map(x => String(x).replace(/<[^>]+>/g, "")))].filter(Boolean).join("\n");
+    try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${ia.modelo || "gemini-3.5-flash-lite"}:generateContent?key=${ia.chave}`, { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: `Você é o atendente de WhatsApp de uma barbearia. Responda em português do Brasil, curto e simpático, USANDO SÓ os fatos abaixo. Se a resposta não estiver nos fatos, responda exatamente NAO_SEI. Nunca invente preço, horário ou serviço.\nFATOS:\n${fatos}\n\nPergunta do cliente: """${String(texto).slice(0, 400)}"""` }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 200 } }) });
+      clearTimeout(to); if (r.ok) { const j = await r.json(), x = (j.candidates && j.candidates[0] && j.candidates[0].content.parts.map(p => p.text).join("") || "").trim();
+        if (x && !/NAO_SEI/.test(x) && x.length < 600) return x; } } catch (e) {}
+  }
+  return null;   // não sabe: passa para o dono
+}
+
 /* o coração: recebe uma mensagem e devolve as respostas (e já faz as mudanças no banco) */
 export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.now() }) {
   zap = String(zap).replace(/\D/g, "");
@@ -193,13 +273,21 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   const recentes = await db.sel(`zv_bot_msgs?select=id&negocio=eq.${N.neg.id}&whatsapp=eq.${zap}&dir=eq.in&criado_em=gte.${new Date(t - 10 * 60e3).toISOString()}`).catch(() => []);
   if ((recentes || []).length > 25) { await salvar({ humano_ate: new Date(t + 6 * 3600e3).toISOString() }); return { respostas: [], humano: true, motivo: "excesso" }; }
 
-  const est = Object.assign({}, cont.estado || {}), R = [], fim = async (novo, aviso) => { await salvar({ estado: novo || {} }); return { respostas: R, aviso }; };
+  const est = Object.assign({}, cont.estado || {}), R = [], fim = async (novo, aviso) => { await salvar({ estado: novo || {} }); return { respostas: R.map(x => tom(N, x)), aviso }; };
   const u = await entenderComIA(N, texto, est, ia, t);
   if (u.nome && !cont.nome) await salvar({ nome: u.nome });
   const nome = cont.nome;
 
   if (u.intencao === "sair") { await salvar({ optout: true, estado: {} }); R.push("Pronto, você não vai mais receber mensagens automáticas da " + N.neg.nome + ". Se quiser marcar horário, é só mandar mensagem."); return { respostas: R }; }
   if (cont.optout && u.intencao && u.intencao !== "sair") await salvar({ optout: false });   // voltou a conversar
+  if (u.intencao === "ehrobo") { R.push(`Sou o atendente automático da ${N.neg.nome} 🤖. Consigo marcar, remarcar e cancelar horários, mostrar preços e te colocar na lista de espera. Se preferir falar com uma pessoa, é só escrever *atendente*.`); return fim(est); }
+  if (u.intencao === "obrigado" && !["escolher", "cancelar", "nome", "oferta"].includes(est.etapa)) { R.push("Por nada! Qualquer coisa é só chamar. 💈"); return fim({}); }
+  if (u.intencao === "pergunta" && !["escolher", "cancelar", "nome", "oferta", "lembrete"].includes(est.etapa)) {
+    const resp = await responderPergunta(N, texto, u, ia);
+    if (resp) { R.push(resp); return fim(u.servicos.length ? { etapa: "marcar", servicos: u.servicos } : est); }
+    await salvar({ humano_ate: new Date(t + 2 * 3600e3).toISOString() });
+    R.push("Boa pergunta! Vou confirmar com o pessoal da barbearia e já te respondem por aqui."); return fim({}, "humano");
+  }
   if (u.intencao === "humano") { await salvar({ humano_ate: new Date(t + 2 * 3600e3).toISOString(), estado: {} }); R.push("Certo! Vou chamar o pessoal da barbearia, já já alguém te responde por aqui."); return { respostas: R, aviso: "humano" }; }
 
   /* --- respostas a uma oferta de vaga mais cedo --- */
@@ -224,7 +312,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
     const op = u.escolha || (u.intencao === "sim" ? 1 : u.intencao === "remarcar" ? 2 : u.intencao === "cancelar" ? 3 : null);
     const ag = ((await db.sel(`zv_agendamentos?select=id,inicio,fim,profissional,servicos,status&id=eq.${est.ag}&whatsapp=eq.${zap}`).catch(() => [])) || [])[0];
     if (ag && op === 1) { await db.upd(`zv_agendamentos?id=eq.${ag.id}`, { status: "confirmado" }); R.push(`Confirmado! Te esperamos amanhã às ${hhmm(minDe(ag.inicio))}. 💈`); return fim({}, "confirmou"); }
-    if (ag && op === 3) { R.push(`Quer mesmo cancelar amanhã às ${hhmm(minDe(ag.inicio))}? Responda SIM ou NÃO.`); return fim({ etapa: "cancelar", ags: [{ id: ag.id, inicio: ag.inicio, fim: ag.fim, profissional: ag.profissional }] }); }
+    if (ag && op === 3) { R.push(comOpcoes(`Quer mesmo cancelar amanhã às ${hhmm(minDe(ag.inicio))}? Responda SIM ou NÃO.`, SIMNAO)); return fim({ etapa: "cancelar", ags: [{ id: ag.id, inicio: ag.inicio, fim: ag.fim, profissional: ag.profissional }] }); }
     if (ag && op === 2) { u.intencao = "remarcar"; Object.assign(est, { etapa: null }); }
   }
   if (est.etapa === "oferta_espera" && u.intencao === "sim") return await entrarEspera(est.dia || hojeSP(t));
@@ -232,7 +320,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   /* --- confirmação de cancelamento --- */
   if (est.etapa === "cancelar" && (u.intencao === "sim" || u.escolha)) {
     const ag = est.ags[(u.escolha || 1) - 1] || est.ags[0];
-    if (est.ags.length > 1 && !u.escolha) { R.push("Qual deles você quer cancelar?\n" + est.ags.map((a, i) => `${i + 1} - ${diaTxt(diaDe(a.inicio), t)} às ${hhmm(minDe(a.inicio))}`).join("\n")); return fim(est); }
+    if (est.ags.length > 1 && !u.escolha) { const ops = est.ags.map(a => `${diaTxt(diaDe(a.inicio), t)} às ${hhmm(minDe(a.inicio))}`); R.push(comOpcoes("Qual deles você quer cancelar?\n" + ops.map((o, i) => `${i + 1} - ${o}`).join("\n"), ops)); return fim(est); }
     await db.upd(`zv_agendamentos?id=eq.${ag.id}&whatsapp=eq.${zap}`, { status: "cancelado", obs: "Cancelado pelo cliente no WhatsApp" });
     R.push(`Cancelado. Seu horário de ${diaTxt(diaDe(ag.inicio), t)} às ${hhmm(minDe(ag.inicio))} foi liberado. Quando quiser marcar de novo, é só chamar!`);
     return fim({}, "cancelou");
@@ -262,6 +350,8 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   /* --- intenções --- */
   const intencao = u.intencao || (est.etapa === "marcar" && (u.dia || u.faixa || u.servicos.length || u.profissional) ? "marcar" : null)
     || ({ 1: "marcar", 2: "meus", 3: "precos", 4: "info", 5: "clube" })[!est.etapa && u.escolha] || null;
+  if (intencao === "precos" && u.servicos.length) { const L = u.servicos.map(id => N.servicos.find(x => x.id === id));
+    R.push(L.map(x => `${x.n}: ${brl(x.p)} (${x.dur} min)`).join("\n") + "\n\nQuer marcar? Me diz o dia."); return fim({ etapa: "marcar", servicos: u.servicos }); }
   if (intencao === "precos") { R.push("Nossos preços:\n" + N.servicos.map(x => `• ${x.n}: ${brl(x.p)} (${x.dur} min)`).join("\n") + "\n\nQuer marcar? Me diz o serviço e o dia."); return fim({ etapa: "marcar" }); }
   if (intencao === "info") { const H = N.cfg.horario || {}; R.push(`📍 ${N.cfg.endereco || N.neg.nome}\n🕐 ${N.cfg.horarioLabel || Object.keys(H).filter(k => H[k]).map(k => DIAS[k] + " " + H[k][0] + "–" + H[k][1]).join(", ")}\n\nPara marcar, me diz o serviço e o dia. Ou pelo site: ${N.site}`); return fim({}); }
   if (intencao === "clube") { const C = N.cfg.clube || {}; R.push(C.ativo && (C.planos || []).length ? "Clube " + N.neg.nome + ":\n" + C.planos.map(p => `• ${p.nome}: ${brl(p.preco)}/mês (${p.inclui})`).join("\n") + "\n\nQuer assinar? Escreva \"atendente\" que o barbeiro fala com você." : "Ainda não temos clube de assinatura. Quer marcar um horário?"); return fim({}); }
@@ -270,7 +360,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
     if (!ags.length) { R.push(intencao === "meus" ? "Não achei nenhum horário marcado com este número. Quer marcar um?" : "Não achei horário marcado com este número para " + (intencao === "cancelar" ? "cancelar" : "mudar") + ". Quer marcar um novo?"); return fim({ etapa: "marcar" }); }
     const txt = ags.map((a, i) => `${ags.length > 1 ? i + 1 + " - " : ""}${diaTxt(diaDe(a.inicio), t)} às ${hhmm(minDe(a.inicio))}${a.profissional ? " com " + a.profissional : ""} (${(a.servicos || []).map(x => x.nome).join(" + ")})`).join("\n");
     if (intencao === "meus") { R.push((ags.length > 1 ? "Seus horários:\n" : "Seu horário: ") + txt + "\n\nPara mudar, escreva \"remarcar\". Para cancelar, \"cancelar\"."); return fim({}); }
-    if (intencao === "cancelar") { R.push((ags.length > 1 ? "Você tem estes horários:\n" + txt + "\n\nQual quer cancelar? Mande o número." : "Quer mesmo cancelar " + txt + "? Responda SIM ou NÃO.")); return fim({ etapa: "cancelar", ags: ags.map(a => ({ id: a.id, inicio: a.inicio, fim: a.fim, profissional: a.profissional })) }); }
+    if (intencao === "cancelar") { R.push(ags.length > 1 ? comOpcoes("Você tem estes horários:\n" + txt + "\n\nQual quer cancelar? Mande o número.", ags.map(a => `${diaTxt(diaDe(a.inicio), t)} ${hhmm(minDe(a.inicio))}`)) : comOpcoes("Quer mesmo cancelar " + txt + "? Responda SIM ou NÃO.", SIMNAO)); return fim({ etapa: "cancelar", ags: ags.map(a => ({ id: a.id, inicio: a.inicio, fim: a.fim, profissional: a.profissional })) }); }
     // remarcar: busca novas opções com o mesmo serviço e barbeiro
     const a = ags[0], ids = N.servicos.filter(x => (a.servicos || []).some(y => y.nome === x.n)).map(x => x.id);
     const novo = { etapa: "marcar", servicos: ids.length ? ids : (u.servicos.length ? u.servicos : []), prof: u.profissional || a.profissional || null, dia: u.dia, faixa: u.faixa, remarcar: a.id };
@@ -288,15 +378,16 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   }
   if (est.etapa === "escolher" && u.intencao === "nao") { R.push("Sem problema. Me diz outro dia ou horário que eu procuro."); return fim(Object.assign(est, { etapa: "marcar" })); }
   // não entendeu
-  R.push(intencao === "oi" || !est.etapa ? `Oi${nome ? ", " + primeiro(nome) : ""}! Aqui é o atendimento automático da ${N.neg.nome}. 💈\n\n` + MENU(N) : "Não entendi muito bem. " + MENU(N));
+  R.push(comOpcoes(intencao === "oi" || !est.etapa ? `Oi${nome ? ", " + primeiro(nome) : ""}! ${quem(N)}. 💈\n\n` + MENU(N) : "Não entendi muito bem. " + MENU(N), MENU_OPS(N)));
   return fim(intencao === "oi" ? {} : est);
 
   async function oferecer(novo) {
     const b = await buscar(db, N, novo, t);
-    if (!b.ops.length) { R.push(`Não achei horário livre${novo.dia ? " para " + diaTxt(novo.dia, t) : " nos próximos dias"}. Quer que eu te coloque na lista de espera? Se alguém desmarcar, você é avisado por ordem de chegada. Responda SIM.`);
+    if (!b.ops.length) { R.push(`Não achei horário livre${novo.dia ? " para " + diaTxt(novo.dia, t) : " nos próximos dias"}. Quer que eu te coloque na lista de espera? Se alguém desmarcar, você é avisado por ordem de chegada. Responda SIM.`); R[R.length - 1] = comOpcoes(R[R.length - 1], SIMNAO);
       return fim(Object.assign(novo, { etapa: "oferta_espera" })); }
     const sv = nomeServ(N, novo.servicos), pr = precoServ(N, novo.servicos);
-    R.push(`${b.cheio ? `${diaTxt(novo.dia, t)} está cheio${novo.faixa ? " nesse horário" : ""}. ` : ""}Para ${sv} (${brl(pr)}), tenho:\n${listaOpcoes(b.ops, t)}\n\nResponda o número. Se quiser outro dia ou horário, é só dizer.${b.cheio ? "\nSe preferir esperar vaga em " + diaTxt(novo.dia, t) + ", escreva \"lista de espera\"." : ""}`);
+    const fechado = novo.dia && !(N.cfg.horario || {})[diaSemana(novo.dia)];
+    R.push(comOpcoes(`${b.cheio ? (fechado ? `Não abrimos ${DIAS[diaSemana(novo.dia)]}. ` : `${diaTxt(novo.dia, t)} está cheio${novo.faixa ? " nesse horário" : ""}. `) : ""}Para ${sv} (${brl(pr)}), tenho:\n${listaOpcoes(b.ops, t)}\n\nResponda o número. Se quiser outro dia ou horário, é só dizer.${b.cheio && !fechado ? "\nSe preferir esperar vaga em " + diaTxt(novo.dia, t) + ", escreva \"lista de espera\"." : ""}`, b.ops.map(o => `${diaTxt(o.dia, t)} ${hhmm(o.m)}${o.prof ? " · " + o.prof : ""}`)));
     return fim(Object.assign(novo, { etapa: "escolher", opcoes: b.ops.map(o => ({ dia: o.dia, m: o.m, prof: o.prof })) }));
   }
   async function reservar(op, n) {
@@ -311,7 +402,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
     if (N.cfg.sinal) txt += `\n\n${N.cfg.sinal}${N.cfg.pix && N.cfg.pix.chave ? "\nPix: " + N.cfg.pix.chave : ""}`;
     R.push(txt);
     const ag = ((await db.sel(`zv_agendamentos?select=id&negocio=eq.${N.neg.id}&numero=eq.${r.numero}`).catch(() => [])) || [])[0];
-    if (N.robo.antecipar && ag && !(op.dia === hojeSP(t))) { R.push("Se abrir uma vaga antes desse horário, quer que eu te avise? Responda SIM ou NÃO."); return fim({ etapa: "antecipar", ag: ag.id }, "marcou"); }
+    if (N.robo.antecipar && ag && !(op.dia === hojeSP(t))) { R.push(comOpcoes("Se abrir uma vaga antes desse horário, quer que eu te avise? Responda SIM ou NÃO.", SIMNAO)); return fim({ etapa: "antecipar", ag: ag.id }, "marcou"); }
     return fim({}, "marcou");
   }
   async function entrarEspera(dia) {
@@ -429,7 +520,7 @@ export async function atender({ db, N, zap, texto, waId, nomePerfil, ia, t = Dat
   catch (e) { if (/duplicate|unique|23505/i.test(e.message || "")) return { respostas: [], repetida: true }; throw e; }
   if (!N.robo.ativo) return { respostas: [], desligado: true };
   const r = await processar({ db, N, zap, texto: String(texto || ""), nomePerfil, ia, t });
-  for (const x of r.respostas) await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: zap, dir: "out", texto: x }).catch(() => {});
+  for (const x of r.respostas) await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: zap, dir: "out", texto: typeof x === "string" ? x : x.texto }).catch(() => {});
   if (r.respostas.length) await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${zap}`, { ultima_out: new Date(t).toISOString() }).catch(() => {});
   return r;
 }

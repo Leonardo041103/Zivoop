@@ -46,6 +46,7 @@ document.querySelectorAll(".logo").forEach(l => { if (!l.querySelector(".prod"))
 .rb-chat .msgs{height:min(56vh,520px);flex:none}.msg.cli{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
 .msg.bot{align-self:flex-end;background:color-mix(in srgb,var(--cobalt) 14%,var(--card));border-bottom-right-radius:5px}.msg.eu{align-self:flex-end;background:var(--cobalt);color:#fff;border-bottom-right-radius:5px}
 .msg small{display:block;font-size:11px;opacity:.6;margin-top:3px}
+.simops{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:86%}.simops button{border:1px solid var(--cobalt);color:var(--cobalt);background:var(--card);border-radius:999px;padding:7px 12px;font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
 .rb-sim{background:linear-gradient(180deg,color-mix(in srgb,var(--ok) 6%,var(--card)),var(--card))}
 .rec-mes{max-width:860px}.rec-mes table{width:100%;border-collapse:collapse}.rec-mes td{padding:7px 0;border-top:1px solid var(--line)}.rec-mes td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .rec-mes .tot td{font-size:18px;font-weight:850}
@@ -246,7 +247,7 @@ async function telaRecibo() { recMes = recMes || isoD(new Date()).slice(0, 7); c
 /* ---------------- robô do WhatsApp ---------------- */
 // O robô atende no WhatsApp da barbearia: marca, remarca, cancela, mostra preços, cuida da lista de espera e oferece vaga mais cedo.
 let RB = { conv: null, contatos: [], canal: null, sim: [] };
-const robo = () => Object.assign({ ativo: true, lembrete: true, horaLembrete: "18:00", antecipar: true, limiteDia: 60, minutosOferta: 20 }, cfg().robo || {});
+const robo = () => Object.assign({ ativo: true, lembrete: true, horaLembrete: "18:00", antecipar: true, limiteDia: 60, minutosOferta: 20, nome: "", tom: "leve", faq: [] }, cfg().robo || {});
 async function chamarRobo(acao, corpo) { const { data: s } = await sb.auth.getSession();
   const r = await fetch(SB_URL + "/functions/v1/zv-robo?acao=" + acao, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + s.session.access_token, apikey: SB_KEY }, body: JSON.stringify(Object.assign({ negocio: NEG.id }, corpo)) });
   const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.erro || "O robô não respondeu agora."); return j; }
@@ -277,7 +278,11 @@ function ligarSim() { const b = $("simMsgs"); if (b) b.scrollTop = b.scrollHeigh
 async function simEnviar(txt) { txt = String(txt || "").trim(); if (!txt) return; const box = $("simMsgs"); if (!box) return; $("simTxt").value = "";
   if (!RB.sim.length) box.innerHTML = ""; RB.sim.push(["c", txt]); box.insertAdjacentHTML("beforeend", `<div class="msg eu">${esc(txt)}</div><div class="msg cli pensando" id="simPens">digitando…</div>`); box.scrollTop = box.scrollHeight;
   try { const r = await chamarRobo("simular", { texto: txt }); $("simPens").remove();
-    (r.respostas.length ? r.respostas : [r.humano ? "(o robô ficou quieto: a conversa passou para você)" : "(sem resposta)"]).forEach(x => { RB.sim.push(["r", x]); box.insertAdjacentHTML("beforeend", `<div class="msg cli">${esc(x)}</div>`); }); }
+    document.querySelectorAll("#simMsgs .simops").forEach(e => e.remove());
+    (r.respostas.length ? r.respostas : [r.humano ? "(o robô ficou quieto: a conversa passou para você)" : "(sem resposta)"]).forEach(x => { const tx = typeof x === "string" ? x : x.texto; RB.sim.push(["r", tx]);
+      box.insertAdjacentHTML("beforeend", `<div class="msg cli">${esc(tx)}</div>`);
+      if (x.opcoes && x.opcoes.length) { const ids = x.opcoes.length === 2 && /^sim$/i.test(x.opcoes[0]) ? ["sim", "nao"] : x.opcoes.map((_, i) => String(i + 1));
+        box.insertAdjacentHTML("beforeend", `<div class="simops" role="group" aria-label="Opções do robô">${x.opcoes.map((o, i) => `<button onclick="simEnviar('${ids[i]}')">${esc(o)}</button>`).join("")}</div>`); } }); }
   catch (e) { const p = $("simPens"); if (p) p.textContent = e.message; } box.scrollTop = box.scrollHeight; }
 async function recomecarSim() { try { await chamarRobo("simular", { recomecar: true }); } catch (e) {} RB.sim = []; RB.conv = null; telaRobo(); }
 async function abrirConv(z) { RB.conv = z; document.querySelectorAll(".rb-lst .r").forEach(r => r.classList.toggle("on", r.getAttribute("onclick").includes(z)));
@@ -295,17 +300,29 @@ async function responderConv(z) { const t = $("convTxt").value.trim(); if (!t) r
   try { await chamarRobo("enviar", { whatsapp: z, texto: t }); toast("Enviado."); await telaRobo(); } catch (e) { toast(e.message); $("convTxt").disabled = false; } }
 async function assumirConv(z) { const { error } = await sb.from("zv_bot_contatos").update({ humano_ate: new Date(Date.now() + 2 * 3600e3).toISOString() }).eq("negocio", NEG.id).eq("whatsapp", z); if (error) return toast(erro(error)); telaRobo(); }
 async function devolverRobo(z) { const { error } = await sb.from("zv_bot_contatos").update({ humano_ate: null, estado: {} }).eq("negocio", NEG.id).eq("whatsapp", z); if (error) return toast(erro(error)); toast("O robô voltou a atender."); telaRobo(); }
-function ajustesRobo() { const R = robo();
+let FAQ = [];
+const FAQ_SUG = ["Aceitam cartão?", "Tem estacionamento?", "Atendem criança?", "Precisa marcar ou pode chegar?", "Fazem pigmentação de barba?", "Vendem produtos (pomada, óleo)?"];
+function linhasFaq() { return FAQ.map((f, i) => `<div class="card" style="padding:10px;margin-top:8px"><input class="t" id="fqP${i}" placeholder="Pergunta" value="${esc(f.p || "")}" maxlength="120" aria-label="Pergunta ${i + 1}">
+  <textarea class="t" id="fqR${i}" rows="2" style="margin-top:6px" placeholder="Resposta do robô (deixe em branco para tirar)" maxlength="500" aria-label="Resposta ${i + 1}">${esc(f.r || "")}</textarea></div>`).join(""); }
+function lerFaq() { FAQ.forEach((f, i) => { const a = $("fqP" + i), b = $("fqR" + i); if (a) { f.p = a.value.trim(); f.r = b.value.trim(); } }); }
+function maisFaq(sug) { lerFaq(); (sug ? FAQ_SUG.filter(q => !FAQ.some(f => f.p === q)).map(p => ({ p, r: "" })) : [{ p: "", r: "" }]).forEach(f => FAQ.push(f)); $("fqL").innerHTML = linhasFaq(); }
+function ajustesRobo() { const R = robo(); FAQ = clone(R.faq || []);
   abrirSheet(`<h2>Ajustes do robô</h2><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-weight:650"><input type="checkbox" id="rbA" ${R.ativo ? "checked" : ""}> Robô ligado</label>
+    <div class="grid2" style="margin-top:10px"><label class="f">Nome do atendente (opcional)<input class="t" id="rbNm" maxlength="20" placeholder="Ex.: Bia" value="${esc(R.nome || "")}"></label>
+      <label class="f">Jeito de falar<select class="t" id="rbTm"><option value="leve" ${R.tom !== "formal" ? "selected" : ""}>Descontraído, com emoji</option><option value="formal" ${R.tom === "formal" ? "selected" : ""}>Formal, sem emoji</option></select></label></div>
     <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-weight:650"><input type="checkbox" id="rbL" ${R.lembrete ? "checked" : ""}> Mandar lembrete na véspera</label>
     <div class="grid2" style="margin-top:8px"><label class="f">Horário do lembrete<input class="t" type="time" id="rbH" value="${esc(R.horaLembrete)}"></label><label class="f">Tempo para responder uma vaga (min)<input class="t" inputmode="numeric" id="rbM" value="${R.minutosOferta}"></label></div>
     <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-weight:650"><input type="checkbox" id="rbV" ${R.antecipar ? "checked" : ""}> Oferecer vaga que abriu (lista de espera e quem quer adiantar)</label>
     <label class="f" style="margin-top:10px">Máximo de mensagens por iniciativa do robô, por dia<input class="t" inputmode="numeric" id="rbD" value="${R.limiteDia}"></label>
     <p class="muted" style="font-size:13px;margin:10px 0 0">Para o número não ser bloqueado, o robô só manda mensagem primeiro entre 8h e 21h, no máximo 1 por dia para cada cliente, nunca para quem escreveu SAIR, e para sozinho se a Meta avisar que o número está sendo denunciado.</p>
     ${RB.canal && RB.canal.ligado ? `<button class="b sec wide" style="margin-top:12px" onclick="pausarCanal(${!RB.canal.pausado})">${RB.canal.pausado ? "Retomar os envios" : "Pausar os envios por iniciativa"}</button>` : ""}
-    <button class="b pri wide" style="margin-top:8px" onclick="salvarRobo()">Salvar</button>`); }
+    <h3 style="margin:16px 0 0;font-size:16px">Perguntas frequentes</h3><p class="muted" style="font-size:13px;margin:4px 0 0">O robô responde só o que estiver aqui ou no seu site. O que ele não souber, passa para você, sem inventar.</p>
+    <div id="fqL">${linhasFaq()}</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="b sec sm" onclick="maisFaq()">+ Pergunta</button><button class="b sec sm" onclick="maisFaq(true)">Sugerir perguntas comuns</button></div>
+    <button class="b pri wide" style="margin-top:12px" onclick="salvarRobo()">Salvar</button>`); }
 async function salvarRobo() { const r = { ativo: $("rbA").checked, lembrete: $("rbL").checked, horaLembrete: $("rbH").value || "18:00", antecipar: $("rbV").checked,
-    minutosOferta: Math.min(120, Math.max(5, parseInt($("rbM").value) || 20)), limiteDia: Math.min(250, Math.max(5, parseInt($("rbD").value) || 60)) };
+    minutosOferta: Math.min(120, Math.max(5, parseInt($("rbM").value) || 20)), limiteDia: Math.min(250, Math.max(5, parseInt($("rbD").value) || 60)),
+    nome: $("rbNm").value.trim().slice(0, 20), tom: $("rbTm").value };
+  lerFaq(); r.faq = FAQ.filter(f => f.p && f.r).slice(0, 40);
   const ok = await salvarDados(d => { d.config = d.config || {}; d.config.robo = r; }, "Ajustes do robô salvos."); if (ok) { fecharSheet(); telaRobo(); } }
 async function pausarCanal(p) { const { error } = await sb.rpc("zv_canal_pausar", { p_neg: NEG.id, p_pausado: p }); if (error) return toast(erro(error)); fecharSheet(); telaRobo(); }
 function conectarWhats() { abrirSheet(`<h2>Conectar o WhatsApp</h2><p class="muted" style="font-size:14px;margin:6px 0 10px">Use um número que ainda não está no aplicativo do WhatsApp (ou migre o da barbearia). A Zivoop te ajuda na primeira vez.</p>

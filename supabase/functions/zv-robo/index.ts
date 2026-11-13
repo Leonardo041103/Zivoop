@@ -26,12 +26,32 @@ const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { ...CORS, "Content-Type": "application/json" } });
 
 // envia pelo WhatsApp do próprio negócio; fora da janela de 24h usa o modelo aprovado na Meta
-async function enviarMeta(canal: any, para: string, m: { texto: string; modelo?: { nome: string; params: string[] } }) {
-  const corpo = m.modelo
+// opções viram botões (até 3) ou lista (até 10); o id volta como a resposta do cliente ("1", "2"… ou "sim"/"nao")
+const idsDe = (ops: string[]) => ops.length === 2 && /^sim$/i.test(ops[0]) ? ["sim", "nao"] : ops.map((_, i) => String(i + 1));
+function interativo(texto: string, ops: string[]) {
+  const ids = idsDe(ops), corpo = texto.slice(0, 1024);
+  if (ops.length <= 3 && ops.every(o => o.length <= 20)) return { type: "button", body: { text: corpo }, action: { buttons: ops.map((o, i) => ({ type: "reply", reply: { id: ids[i], title: o.slice(0, 20) } })) } };
+  return { type: "list", body: { text: corpo }, action: { button: "Escolher", sections: [{ title: "Opções", rows: ops.slice(0, 10).map((o, i) => ({ id: ids[i], title: o.slice(0, 24) })) }] } };
+}
+async function enviarMeta(canal: any, para: string, m: { texto: string; opcoes?: string[]; modelo?: { nome: string; params: string[] } }) {
+  const corpo = m.opcoes && m.opcoes.length && !m.modelo ? { messaging_product: "whatsapp", to: para, type: "interactive", interactive: interativo(m.texto, m.opcoes) } : m.modelo
     ? { messaging_product: "whatsapp", to: para, type: "template", template: { name: m.modelo.nome, language: { code: "pt_BR" }, components: [{ type: "body", parameters: m.modelo.params.map(t => ({ type: "text", text: String(t).slice(0, 60) })) }] } }
     : { messaging_product: "whatsapp", to: para, type: "text", text: { body: m.texto.slice(0, 4000) } };
   const r = await fetch(`https://graph.facebook.com/v21.0/${canal.phone_id}/messages`, { method: "POST", headers: { Authorization: "Bearer " + canal.token, "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
   if (!r.ok) { const e = await r.text(); throw new Error("Meta " + r.status + ": " + e.slice(0, 200)); }
+}
+// áudio do cliente: baixa da Meta e pede a transcrição para a IA (Gemini, grátis); sem chave, pede para escrever
+async function transcrever(canal: any, mediaId: string) {
+  if (!ia.chave) return null;
+  const meta = await (await fetch(`https://graph.facebook.com/v21.0/${mediaId}`, { headers: { Authorization: "Bearer " + canal.token } })).json();
+  if (!meta.url || (meta.file_size && meta.file_size > 8e6)) return null;
+  const bin = new Uint8Array(await (await fetch(meta.url, { headers: { Authorization: "Bearer " + canal.token } })).arrayBuffer());
+  let b64 = ""; for (let i = 0; i < bin.length; i += 0x8000) b64 += String.fromCharCode(...bin.subarray(i, i + 0x8000)); b64 = btoa(b64);
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${ia.modelo}:generateContent?key=${ia.chave}`, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Transcreva este áudio de WhatsApp em português do Brasil, exatamente como foi dito, sem comentários." }, { inline_data: { mime_type: (meta.mime_type || "audio/ogg").split(";")[0], data: b64 } }] }], generationConfig: { temperature: 0 } }) });
+  if (!r.ok) return null; const j = await r.json();
+  const txt = (j.candidates && j.candidates[0] && j.candidates[0].content.parts.map((p: any) => p.text).join("") || "").trim();
+  return txt ? txt.slice(0, 1000) : null;
 }
 async function dono(req: Request, negocio: string) {   // confere que quem chamou é o dono do negócio
   const r = await fetch(SB + "/auth/v1/user", { headers: { apikey: ANON, Authorization: req.headers.get("authorization") || "" } });
@@ -105,11 +125,13 @@ Deno.serve(async (req) => {
     const N = await carregarNegocio(admin, canal.negocio, SITE); if (!N) continue;
     const perfis: Record<string, string> = {}; (v.contacts || []).forEach((c: any) => perfis[c.wa_id] = c.profile && c.profile.name);
     for (const m of v.messages) {
-      const texto = m.type === "text" ? m.text.body : m.type === "button" ? m.button.text : m.type === "interactive" ? (m.interactive.button_reply || m.interactive.list_reply || {}).title : null;
+      let texto = m.type === "text" ? m.text.body : m.type === "button" ? m.button.text : m.type === "interactive" ? (m.interactive.button_reply || m.interactive.list_reply || {}).id : null;
+      if (m.type === "audio" && m.audio && m.audio.id) texto = await transcrever(canal, m.audio.id).catch(() => null);   // mensagem de voz → texto
+      if (!texto && m.type === "audio") { await enviarMeta(canal, m.from, { texto: "Não consegui ouvir seu áudio agora 😕. Pode escrever, por favor?" }).catch(() => {}); continue; }
       if (!texto) { await enviarMeta(canal, m.from, { texto: "Por enquanto eu entendo só mensagens de texto. Escreva o que você precisa 🙂" }).catch(() => {}); continue; }
       try {
         const r = await atender({ db: admin, N, zap: m.from, texto, waId: m.id, nomePerfil: perfis[m.from], ia });
-        for (const x of r.respostas) await enviarMeta(canal, m.from, { texto: x });
+        for (const x of r.respostas) await enviarMeta(canal, m.from, typeof x === "string" ? { texto: x } : x);
       } catch (_) { await enviarMeta(canal, m.from, { texto: "Tive um problema aqui. Escreva \"atendente\" que o pessoal da barbearia te responde." }).catch(() => {}); }
     }
   }
