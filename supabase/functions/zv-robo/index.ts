@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
       if (b.recomecar) { await admin.upd(`zv_agendamentos?negocio=eq.${b.negocio}&whatsapp=eq.${zap}&status=in.(pendente,confirmado)`, { status: "cancelado", obs: "Teste do robô" }).catch(() => {});
         await admin.del(`zv_bot_contatos?negocio=eq.${b.negocio}&whatsapp=eq.${zap}`).catch(() => {}); await admin.del(`zv_bot_msgs?negocio=eq.${b.negocio}&whatsapp=eq.${zap}`).catch(() => {}); return json({ ok: true }); }
       N.robo.ativo = true;
-      const r = await atender({ db: admin, N, zap, texto: String(b.texto || "").slice(0, 1000), nomePerfil: "Teste do robô", ia });
+      const r = await atender({ db: admin, N, zap, texto: String(b.texto || "").slice(0, 1000), nomePerfil: null, ia });
       return json({ respostas: r.respostas, humano: !!r.humano });
     }
     // o dono responde um cliente (só dentro da janela de 24h do WhatsApp)
