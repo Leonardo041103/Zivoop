@@ -563,6 +563,9 @@ async function telaRobo() { const m = $("main");
       <div class="card kpi"><small>Conversas</small><b>${RB.contatos.length}</b><div class="sub">${precisa.length ? `<span style="color:var(--am-ink);font-weight:700">${precisa.length} esperando você</span>` : "nenhuma esperando você"}</div></div>
       <div class="card kpi"><small>Proteção</small><b style="font-size:20px">${R.limiteDia}/dia</b><div class="sub">8h às 21h · 1 por cliente</div></div></div>
     ${ligado ? "" : `<div class="card" style="margin-bottom:12px;border-color:var(--cobalt)"><h2>Conecte o WhatsApp da barbearia</h2><p class="muted" style="font-size:14px">É pelo WhatsApp oficial da Meta, o jeito seguro: o número não é bloqueado por usar robô. Enquanto não conecta, teste o robô aqui embaixo.</p><button class="b pri" onclick="conectarWhats()">Conectar WhatsApp</button></div>`}
+    <div class="card" style="margin-bottom:12px"><h2>Link para a bio do Instagram</h2><p class="muted" style="font-size:14px;margin:-4px 0 10px">Quem toca agenda conversando: escolhe o serviço pela foto, o barbeiro, o dia e o horário, em menos de 1 minuto. O robô do WhatsApp também manda esse link.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><code style="padding:9px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line);font-size:14px;overflow-wrap:anywhere">${esc(siteURL() + "?chat")}</code>
+      <button class="b pri sm" onclick="navigator.clipboard.writeText('${esc(siteURL() + "?chat")}').then(()=>toast('Link copiado. Cole na bio do Instagram.'))">Copiar link</button><a class="b sec sm" href="${esc(siteURL() + "?chat")}" target="_blank" rel="noopener">Ver como fica</a></div></div>
     <div class="rb-conv"><div class="card rb-lst"><h2>Conversas</h2><div class="lst">${RB.contatos.length ? RB.contatos.map(x => { const h = x.humano_ate && Date.parse(x.humano_ate) > Date.now();
         return `<div class="r ${RB.conv === x.whatsapp ? "on" : ""}" role="button" tabindex="0" onclick="abrirConv('${x.whatsapp}')"><span style="min-width:0"><b>${esc(x.nome || fmtZap(x.whatsapp))}</b><span class="ult">${x.optout ? "pediu para não receber mensagens" : x.etapa === "oferta" ? "recebeu oferta de vaga" : desde(x.ultima_in)}</span></span>${h ? '<span class="pill am">Você</span>' : '<span class="pill ok">Robô</span>'}</div>`; }).join("")
         : '<p class="vazio">As conversas do WhatsApp aparecem aqui.</p>'}</div></div>
@@ -580,7 +583,7 @@ async function simEnviar(txt) { txt = String(txt || "").trim(); if (!txt) return
   try { const r = await chamarRobo("simular", { texto: txt }); $("simPens").remove();
     document.querySelectorAll("#simMsgs .simops").forEach(e => e.remove());
     (r.respostas.length ? r.respostas : [r.humano ? "(o robô ficou quieto: a conversa passou para você)" : "(sem resposta)"]).forEach(x => { const tx = typeof x === "string" ? x : x.texto; RB.sim.push(["r", tx]);
-      box.insertAdjacentHTML("beforeend", `<div class="msg cli">${esc(tx)}</div>`);
+      box.insertAdjacentHTML("beforeend", `<div class="msg cli">${esc(tx)}${x.link ? `<a class="b sec sm" style="display:flex;margin-top:8px;justify-content:center" href="${esc(x.link.url)}" target="_blank" rel="noopener">${esc(x.link.botao)}</a>` : ""}</div>`);
       if (x.opcoes && x.opcoes.length) { const ids = x.opcoes.length === 2 && /^sim$/i.test(x.opcoes[0]) ? ["sim", "nao"] : x.opcoes.map((_, i) => String(i + 1));
         box.insertAdjacentHTML("beforeend", `<div class="simops" role="group" aria-label="Opções do robô">${x.opcoes.map((o, i) => `<button onclick="simEnviar('${ids[i]}')">${esc(o)}</button>`).join("")}</div>`); } }); }
   catch (e) { const p = $("simPens"); if (p) p.textContent = e.message; } box.scrollTop = box.scrollHeight; }

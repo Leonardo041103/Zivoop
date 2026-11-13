@@ -378,7 +378,9 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   }
   if (est.etapa === "escolher" && u.intencao === "nao") { R.push("Sem problema. Me diz outro dia ou horário que eu procuro."); return fim(Object.assign(est, { etapa: "marcar" })); }
   // não entendeu
+  const linkAg = intencao === "oi" || !est.etapa ? { texto: "Se preferir, toque abaixo e escolha serviço, dia e horário com fotos, em menos de 1 minuto:", link: { url: N.site + "?chat", botao: "Agendar agora" } } : null;
   R.push(comOpcoes(intencao === "oi" || !est.etapa ? `Oi${nome ? ", " + primeiro(nome) : ""}! ${quem(N)}. 💈\n\n` + MENU(N) : "Não entendi muito bem. " + MENU(N), MENU_OPS(N)));
+  if (linkAg) R.push(linkAg);
   return fim(intencao === "oi" ? {} : est);
 
   async function oferecer(novo) {

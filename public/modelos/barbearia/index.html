@@ -693,6 +693,56 @@ html,body{overflow-x:clip}
 [data-estilo=nobre] footer{background:#090807;border-top:1px solid var(--line);color:var(--ink-soft)}
 [data-estilo=nobre] footer .fb{color:var(--latao)}
 
+/* agendar conversando */
+.cag-hero{display:inline-flex;align-items:center;gap:9px;margin:12px 0 4px;padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:#fff;font-weight:700;font-size:15px;backdrop-filter:blur(6px)}
+.cag-hero:hover{background:rgba(255,255,255,.2)}.cag-hero:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+.cag{position:fixed;inset:0;z-index:130;display:none;flex-direction:column;background:var(--bg);color:var(--ink)}
+.cag.on{display:flex;animation:cagIn .22s ease-out}@keyframes cagIn{from{opacity:0;transform:translateY(12px)}}
+.cag-top{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--c1);color:var(--c1ink,#fff);box-shadow:0 2px 14px rgba(0,0,0,.18)}
+.cag-av{position:relative;width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--c2);color:var(--c2ink);display:grid;place-items:center;flex:none}
+.cag-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cag-av b{font-size:18px}
+.cag-tt{flex:1;min-width:0;line-height:1.2}.cag-tt b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cag-tt small{font-size:12.5px;opacity:.8;display:flex;align-items:center;gap:6px}.cag-tt small i{width:8px;height:8px;border-radius:50%;background:#3DDC84;display:inline-block}
+.cag-x{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.14);color:inherit;font-size:24px;line-height:1}
+.cag-corpo{flex:1;overflow-y:auto;padding:16px 14px 20px;display:flex;flex-direction:column;gap:10px;max-width:640px;width:100%;margin:0 auto;-webkit-overflow-scrolling:touch}
+.cag-m{max-width:84%;padding:11px 14px;border-radius:18px;font-size:15.5px;line-height:1.42;animation:cagM .2s ease-out}@keyframes cagM{from{opacity:0;transform:translateY(6px)}}
+.cag-m.bot{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:6px}
+.cag-m.eu{align-self:flex-end;background:var(--c2);color:var(--c2ink);border-bottom-right-radius:6px;font-weight:600}
+.cag-dig{display:inline-flex;gap:4px;padding:4px 2px}.cag-dig i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.35;animation:cagD 1s infinite}
+.cag-dig i:nth-child(2){animation-delay:.15s}.cag-dig i:nth-child(3){animation-delay:.3s}@keyframes cagD{50%{opacity:.9;transform:translateY(-3px)}}
+.cag-bl{align-self:flex-start;max-width:100%}.cag-bl.largo{align-self:stretch}
+.cag-bl.feito{opacity:.55;pointer-events:none}.cag-bl.feito .cag-ops,.cag-bl.feito .cag-car,.cag-bl.feito .cag-dias,.cag-bl.feito .cag-per,.cag-bl.feito .cag-lk,.cag-bl.feito .cag-dica,.cag-bl.feito form{display:none}
+.cag-bl.feito:empty,.cag-bl.feito:has(> :only-child){display:none}
+.cag-ops{display:flex;flex-wrap:wrap;gap:8px}.cag-op{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;border:1.5px solid var(--c2);color:var(--ink);background:transparent;font-weight:650;font-size:14.5px;text-align:left}
+.cag-op.pri{background:var(--c2);color:var(--c2ink)}.cag-ini{width:26px;height:26px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:800;font-size:13px}
+.cag-car{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;margin:0 -14px;padding-left:14px;padding-right:14px;scrollbar-width:none}.cag-car::-webkit-scrollbar{display:none}
+.cag-sv{position:relative;flex:0 0 150px;scroll-snap-align:start;border-radius:16px;overflow:hidden;background:var(--paper);border:2px solid var(--line);text-align:left;display:flex;flex-direction:column;transition:border-color .15s,transform .15s}
+.cag-sv img,.cag-em{width:100%;height:120px;object-fit:cover;display:grid;place-items:center;font-size:42px;background:var(--soft)}
+.cag-sv-t{padding:9px 11px 11px;display:grid;gap:2px}.cag-sv-t b{font-size:14.5px;line-height:1.2}.cag-sv-t span{font-size:12.5px;color:var(--ink-soft)}
+.cag-sv.on{border-color:var(--c2);transform:translateY(-2px)}.cag-ck{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.45);border:2px solid #fff}
+.cag-sv.on .cag-ck{background:var(--c2);border-color:var(--c2)}.cag-sv.on .cag-ck::after{content:"";position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid var(--c2ink);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.cag-dias{display:flex;gap:8px;overflow-x:auto;margin:0 -14px;padding:2px 14px 8px;scrollbar-width:none}.cag-dias::-webkit-scrollbar{display:none}
+.cag-dia{flex:0 0 62px;border-radius:14px;border:1.5px solid var(--line);background:var(--paper);padding:8px 0;display:grid;justify-items:center;gap:1px}
+.cag-dia b{font-size:21px;font-family:var(--fd,inherit)}.cag-dia small{font-size:11px;color:var(--ink-soft);text-transform:lowercase}
+.cag-dia.lot{border-style:dashed}.cag-dia.lot small:last-child{color:#E07A2E;font-weight:700}.cag-dia.fech{opacity:.38}
+.cag-dia:not(:disabled):hover{border-color:var(--c2)}
+.cag-dica{font-size:13.5px;color:var(--ink-soft);margin:6px 0 0}.cag-lk{color:var(--c2d,var(--c2));font-weight:700;text-decoration:underline;font-size:14px;padding:4px 0;background:none}
+.cag-per{margin-bottom:10px}.cag-per small{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;letter-spacing:.02em}
+.cag-hs{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.cag-h{padding:12px 0;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}.cag-h:hover{border-color:var(--c2)}
+.cag-form{display:grid;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px}.cag-form label{display:grid;gap:5px;font-size:13px;font-weight:650;color:var(--ink-soft)}
+.cag-form input{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:13px 14px;font:inherit;font-size:16px}.cag-form input:focus{outline:none;border-color:var(--c2)}
+.cag-err{color:#D9443A;font-size:13px;min-height:0;margin:0}.cag-err:empty{display:none}
+.cag-cta{width:100%;padding:15px;border-radius:999px;background:var(--c2);color:var(--c2ink);font-weight:800;font-size:16px}
+.cag-res{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:12px}
+.cag-res>div{display:grid;gap:2px}.cag-res small{font-size:12px;color:var(--ink-soft);font-weight:650}.cag-res b{font-size:16px}.cag-res b span{font-weight:500;color:var(--ink-soft)}
+.cag-sinal{margin:0;font-size:13.5px;background:var(--soft);border-radius:12px;padding:10px 12px}
+.cag-pe{padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}.cag-pe[hidden]{display:none}
+.cag-tot{display:flex;align-items:center;gap:12px;max-width:640px;margin:0 auto}.cag-tot span{flex:1;min-width:0}.cag-tot b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cag-tot small{font-size:13px;color:var(--ink-soft)}.cag-tot .cag-cta{width:auto;padding:13px 22px}
+.cag button:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.cag.on,.cag-m,.cag-dig i{animation:none}}
+
 </style>
 </head>
 <body>
@@ -1297,6 +1347,174 @@ function renderClube(){ const C=CONFIG.clube, el=document.getElementById("clube"
   el.innerHTML=`<h2>Clube ${esc(CONFIG.nome||"")}</h2><p>Pague por mês e corte sem se preocupar. Garanta seu horário todo mês.</p><div class="clube-g">${C.planos.map(p=>`<div class="clube-p"><b>${esc(p.nome)}</b><span>${esc(p.inclui||"")}</span><div class="v">${brl(p.preco)}<small>/mês</small></div>
     <a href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(`Olá! Quero assinar o plano *${p.nome}* do clube (${brl(p.preco)}/mês).`)}" target="_blank" rel="noopener">Quero assinar</a></div>`).join("")}</div>`; el.hidden=false; }
 renderMeta(); render(); renderClube(); initSpy(); initRepeat(); initDeepLink(); setInterval(renderMeta,60000);
+/* ===== Agendar conversando (link da bio do Instagram e botão do WhatsApp) =====
+   Uma conversa guiada, com cartões para tocar: serviço com foto, barbeiro, dia, horário, nome e confirmação.
+   Usa o mesmo carrinho, os mesmos horários livres e o mesmo envio do site (nada de regra duplicada).
+   Abre com ?chat no endereço, ou pelo botão "Agendar conversando". */
+(function () {
+  if (typeof CONFIG === "undefined" || typeof slotsDisponiveis !== "function") return;
+  const C = Object.assign({ nome: "", ativo: true }, CONFIG.chatAgenda || {});
+  const CH = {}; let el, corpo, rodape, passo = "";
+  const h = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const profs = () => (CONFIG.profissionais || []).map(p => typeof p === "string" ? p : p && p.nome).filter(Boolean);
+  const nomeCurto = () => (order.nome || "").trim().split(/\s+/)[0];
+  const espera = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms));
+  const DSEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"], MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+  function montar() {
+    if (el) return;
+    el = document.createElement("div"); el.className = "cag"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Agendar conversando");
+    const ini = (CONFIG.nome || "?").replace(/^(barbearia|studio|salão)\s+/i, "").trim()[0] || "?";
+    el.innerHTML = `<header class="cag-top"><span class="cag-av"><img src="apple-touch-icon.png" alt="" onerror="this.remove()"><b>${h(ini)}</b></span>
+        <span class="cag-tt"><b>${h(CONFIG.nome)}</b><small><i></i>${C.nome ? h(C.nome) + " · " : ""}responde na hora</small></span>
+        <button class="cag-x" aria-label="Fechar" onclick="fecharChatAgenda()">×</button></header>
+      <div class="cag-corpo" id="cagCorpo" aria-live="polite"></div><footer class="cag-pe" id="cagPe"></footer>`;
+    document.body.appendChild(el); corpo = el.querySelector("#cagCorpo"); rodape = el.querySelector("#cagPe");
+    el.addEventListener("keydown", e => { if (e.key === "Escape") fecharChatAgenda(); });
+  }
+  const rolar = () => requestAnimationFrame(() => corpo.scrollTo({ top: corpo.scrollHeight, behavior: "smooth" }));
+  async function bot(html, ms = 550) {
+    const d = document.createElement("div"); d.className = "cag-m bot"; d.innerHTML = `<span class="cag-dig"><i></i><i></i><i></i></span>`; corpo.appendChild(d); rolar();
+    await espera(ms); d.innerHTML = html; rolar(); return d; }
+  function eu(txt) { const d = document.createElement("div"); d.className = "cag-m eu"; d.textContent = txt; corpo.appendChild(d); rolar(); }
+  function bloco(html, cls = "") { const d = document.createElement("div"); d.className = "cag-bl " + cls; d.innerHTML = html; corpo.appendChild(d); rolar(); return d; }
+  const pe = html => { rodape.innerHTML = html || ""; rodape.hidden = !html; };
+  const travar = d => { if (d) d.classList.add("feito"); };
+
+  /* ---------- passos ---------- */
+  async function inicio() {
+    corpo.innerHTML = ""; pe("");
+    const volta = order.nome && order.tel;
+    await bot(`${volta ? `Oi de novo, <b>${h(nomeCurto())}</b>! 👋` : "Oi! 👋"} ${C.nome ? `Aqui é ${/a$/i.test(C.nome) ? "a" : "o"} ${h(C.nome)}, da ${h(CONFIG.nome)}.` : `Bem-vindo à ${h(CONFIG.nome)}.`} Vamos marcar seu horário? Leva menos de 1 minuto.`, 400);
+    let ult = null; try { ult = JSON.parse(store.get("last") || "null"); } catch (e) {}
+    if (ult && ult.cart && ult.cart.some(l => ALL[l.id])) {
+      const q = ult.cart.filter(l => ALL[l.id]);
+      const d = bloco(`<div class="cag-ops"><button class="cag-op pri" data-a="rep">Repetir: ${h(q.map(l => l.nome).join(" + "))}${ult.order && ult.order.prof ? " com " + h(ult.order.prof) : ""}</button><button class="cag-op" data-a="novo">Escolher outro</button></div>`);
+      d.onclick = e => { const b = e.target.closest("button"); if (!b) return; travar(d);
+        if (b.dataset.a === "rep") { eu("Quero repetir"); cart = q.map(l => ({ ...l, qty: l.qty || 1 })); if (ult.order && ult.order.prof && profs().includes(ult.order.prof)) order.prof = ult.order.prof; onCartChange(); passoDia(); }
+        else { eu("Quero escolher outro"); passoServico(); } };
+    } else passoServico();
+  }
+  async function passoServico() {
+    passo = "servico"; await bot("Qual serviço você quer? Pode escolher mais de um.");
+    const its = Object.values(ALL).filter(i => !i.oculto && !i.semHorario);
+    const d = bloco(`<div class="cag-car" role="group" aria-label="Serviços">${its.map(i => `<button class="cag-sv ${cart.some(l => l.id === i.id) ? "on" : ""}" data-id="${h(i.id)}" aria-pressed="${cart.some(l => l.id === i.id)}">
+        ${i.img ? `<img src="${h(imgUrl(i.img))}" alt="" loading="lazy">` : `<span class="cag-em">${h(i.e || CONFIG.emoji || "✂️")}</span>`}
+        <span class="cag-sv-t"><b>${h(i.n)}</b><span>${h(precoTxt(i))}${i.dur ? " · " + h(durTxt(i.dur)) : ""}</span></span><i class="cag-ck" aria-hidden="true"></i></button>`).join("")}</div>`, "largo");
+    const resumo = () => { const n = cart.length; pe(n ? `<div class="cag-tot"><span><b>${h(cart.map(l => l.nome).join(" + "))}</b><small>${h(brl(total()))}${duracaoTotal() ? " · " + h(durTxt(duracaoTotal())) : ""}</small></span><button class="cag-cta" id="cagOk">Continuar</button></div>` : "");
+      const b = document.getElementById("cagOk"); if (b) b.onclick = () => { pe(""); travar(d); eu(cart.map(l => l.nome).join(" + ")); combo(); }; };
+    // escolheu separado o que existe em combo mais barato: oferece trocar
+    const seguir = () => profs().length > 1 ? passoProf() : passoDia();
+    const sm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    async function combo() {
+      if (cart.length < 2) return seguir();
+      const nomes = cart.map(l => sm(l.nome)), soma = cart.reduce((s, l) => s + (Number(ALL[l.id].p) || 0), 0);
+      const c = Object.values(ALL).find(i => !cart.some(l => l.id === i.id) && nomes.every(n => sm(i.n).includes(n)) && Number(i.p) && Number(i.p) < soma);
+      if (!c) return seguir();
+      await bot(`Dica: o <b>${h(c.n)}</b> sai por ${h(brl(c.p))}, ${h(brl(soma - c.p))} a menos que separado. Quer trocar?`);
+      const d2 = bloco(`<div class="cag-ops"><button class="cag-op pri" data-a="s">Trocar pelo ${h(c.n)}</button><button class="cag-op" data-a="n">Manter como está</button></div>`);
+      d2.onclick = e => { const x = e.target.closest("button"); if (!x) return; travar(d2);
+        if (x.dataset.a === "s") { eu("Quero o " + c.n); cart = [{ id: c.id, nome: c.n, qty: 1, dur: c.dur || 0, catKey: c.catKey }]; onCartChange(); } else eu("Manter");
+        seguir(); };
+    }
+    d.onclick = e => { const b = e.target.closest(".cag-sv"); if (!b || d.classList.contains("feito")) return; const id = b.dataset.id, i = cart.findIndex(l => l.id === id);
+      if (i >= 0) cart.splice(i, 1); else { const it = ALL[id]; if (CONFIG.unico) cart = []; cart.push({ id: it.id, nome: it.n, qty: 1, dur: it.dur || 0, catKey: it.catKey }); }
+      onCartChange(); d.querySelectorAll(".cag-sv").forEach(x => { const on = cart.some(l => l.id === x.dataset.id); x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); }); resumo(); };
+    resumo();
+  }
+  async function passoProf() {
+    passo = "prof"; const ps = profs(); await bot("Tem preferência de barbeiro?");
+    const d = bloco(`<div class="cag-ops">${["", ...ps].map(p => `<button class="cag-op ${order.prof === p ? "pri" : ""}" data-p="${h(p)}">${p ? `<span class="cag-ini">${h(p[0])}</span>${h(p)}` : "Qualquer um (o primeiro livre)"}</button>`).join("")}</div>`);
+    d.onclick = e => { const b = e.target.closest("button"); if (!b) return; travar(d); order.prof = b.dataset.p; eu(order.prof || "Qualquer um"); passoDia(); };
+  }
+  function dias() { const out = [], now = new Date(); now.setHours(0, 0, 0, 0);
+    for (let i = CONFIG.antecedenciaDias || 0; out.length < (CONFIG.diasVisiveis || 14) + 4 && i < 60; i++) { const d = new Date(now); d.setDate(now.getDate() + i); const k = key(d);
+      const aberto = !!CONFIG.horario[d.getDay()]; out.push({ k, d, aberto, livres: aberto ? slotsDisponiveis(k).length : 0, hoje: i === 0 }); }
+    return out; }
+  async function passoDia() {
+    passo = "dia"; await bot("Qual dia fica melhor pra você?");
+    const L = dias(), prim = L.find(x => x.livres);
+    const d = bloco(`<div class="cag-dias" role="group" aria-label="Dias">${L.map(x => `<button class="cag-dia ${!x.aberto ? "fech" : !x.livres ? "lot" : ""}" data-k="${x.k}" ${!x.aberto ? "disabled" : ""}
+        aria-label="${x.hoje ? "Hoje" : DSEM[x.d.getDay()]} ${x.d.getDate()} de ${MES[x.d.getMonth()]}${!x.aberto ? ", fechado" : !x.livres ? ", lotado" : ""}">
+        <small>${x.hoje ? "hoje" : DSEM[x.d.getDay()]}</small><b>${x.d.getDate()}</b><small>${!x.aberto ? "fechado" : !x.livres ? "lotado" : MES[x.d.getMonth()]}</small></button>`).join("")}</div>
+      ${prim ? `<p class="cag-dica">Primeiro horário livre: <button class="cag-lk" data-k="${prim.k}">${prim.hoje ? "hoje" : DSEM[prim.d.getDay()] + " " + prim.d.getDate()}</button></p>` : ""}`, "largo");
+    d.onclick = e => { const b = e.target.closest("[data-k]"); if (!b || b.disabled || d.classList.contains("feito")) return; const x = L.find(y => y.k === b.dataset.k); travar(d);
+      eu(x.hoje ? "Hoje" : dataLonga(x.k).split(",")[0] + ", " + x.d.getDate() + "/" + (x.d.getMonth() + 1)); setData(x.k); x.livres ? passoHora() : lotado(x); };
+  }
+  async function lotado(x) {
+    await bot(`Esse dia já está lotado${order.prof ? " com o " + h(order.prof) : ""} 😕. Posso te colocar na <b>lista de espera</b>: se alguém desmarcar, você é avisado primeiro, por ordem de chegada.`);
+    const d = bloco(`<div class="cag-ops">${window.ZV && ZV.espera ? `<button class="cag-op pri" data-a="esp">Entrar na lista de espera</button>` : ""}<button class="cag-op" data-a="outro">Escolher outro dia</button></div>`);
+    d.onclick = async e => { const b = e.target.closest("button"); if (!b) return; travar(d);
+      if (b.dataset.a === "outro") { eu("Outro dia"); return passoDia(); }
+      eu("Quero entrar na lista"); if (!order.nome || !order.tel) await pedirContato(true);
+      try { const pos = await ZV.rpc("zv_entrar_espera", { p_slug: ZV.slug, p_nome: order.nome, p_whatsapp: order.tel, p_dia: x.k, p_prof: order.prof || "" });
+        await bot(`Prontinho! Você é o <b>${(pos && pos.zv_entrar_espera) || pos}º</b> da fila para ${h(dataLonga(x.k).split(",")[0])}. Se abrir vaga, a ${h(CONFIG.nome)} te chama no WhatsApp. Quer marcar outro dia enquanto isso?`);
+        const d2 = bloco(`<div class="cag-ops"><button class="cag-op pri">Ver outro dia</button></div>`); d2.onclick = () => { travar(d2); passoDia(); };
+      } catch (er) { await bot(h(ZV.erro ? ZV.erro(er) : "Não deu para entrar na lista agora.")); } };
+  }
+  async function passoHora() {
+    passo = "hora"; const hs = slotsDisponiveis(order.data);
+    await bot(`Esses são os horários livres${order.prof ? " com o " + h(order.prof) : ""}:`);
+    const per = { "Manhã": hs.filter(x => toMin(x) < 720), "Tarde": hs.filter(x => toMin(x) >= 720 && toMin(x) < 1080), "Noite": hs.filter(x => toMin(x) >= 1080) };
+    const d = bloco(Object.entries(per).filter(([, l]) => l.length).map(([p, l]) => `<div class="cag-per"><small>${p}</small><div class="cag-hs">${l.map(x => `<button class="cag-h" data-h="${x}">${x}</button>`).join("")}</div></div>`).join("")
+      + `<button class="cag-lk" data-a="dia">Trocar o dia</button>`, "largo");
+    d.onclick = e => { const b = e.target.closest("button"); if (!b || d.classList.contains("feito")) return; travar(d);
+      if (b.dataset.a === "dia") { eu("Quero outro dia"); return passoDia(); }
+      setHora(b.dataset.h); eu(b.dataset.h); (order.nome && order.tel) ? resumo() : pedirContato(); };
+  }
+  async function pedirContato(soContato) {
+    await bot(soContato ? "Me passa seu nome e WhatsApp?" : "Quase lá! Qual é o seu nome e o seu WhatsApp? É por lá que a barbearia confirma.");
+    return new Promise(ok => {
+      const d = bloco(`<form class="cag-form" novalidate><label>Nome<input id="cagN" autocomplete="name" value="${h(order.nome || "")}" required></label>
+        <label>WhatsApp com DDD<input id="cagZ" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" value="${h(order.tel || "")}" required></label>
+        <p class="cag-err" role="alert"></p><button class="cag-cta">Continuar</button></form>`, "largo");
+      const f = d.querySelector("form"); setTimeout(() => d.querySelector(order.nome ? "#cagZ" : "#cagN").focus(), 50);
+      f.onsubmit = e => { e.preventDefault(); const n = f.cagN.value.trim(), z = f.cagZ.value.trim();
+        if (n.length < 2) return f.querySelector(".cag-err").textContent = "Escreva seu nome.";
+        if (z.replace(/\D/g, "").length < 10) return f.querySelector(".cag-err").textContent = "Escreva o WhatsApp com DDD.";
+        order.nome = n; order.tel = z; try { store.set("nome", n); store.set("tel", z); } catch (er) {}
+        travar(d); eu(n + " · " + z); if (soContato) ok(); else resumo(); };
+    });
+  }
+  async function resumo() {
+    passo = "resumo"; await bot("Confere se está tudo certo:");
+    const sinal = CONFIG.sinal && typeof valorSinal === "function" ? valorSinal(total()) : 0;
+    const d = bloco(`<div class="cag-res"><div><small>Serviço</small><b>${h(cart.map(l => l.nome).join(" + "))}</b></div>
+        ${profs().length ? `<div><small>Barbeiro</small><b>${h(order.prof || "Qualquer um")}</b></div>` : ""}
+        <div><small>Quando</small><b>${h(dataLonga(order.data).replace(/\/\d{4}$/, ""))} às ${h(order.hora)}</b></div>
+        <div><small>Total</small><b>${h(brl(total()))}${duracaoTotal() ? ` <span>· ${h(durTxt(duracaoTotal()))}</span>` : ""}</b></div>
+        ${CONFIG.endereco ? `<div><small>Onde</small><b>${h(CONFIG.endereco)}</b></div>` : ""}
+        ${sinal ? `<p class="cag-sinal">${h(CONFIG.sinal)} Valor do sinal: <b>${h(brl(sinal))}</b>. O Pix aparece depois de confirmar.</p>` : ""}
+        <button class="cag-cta" data-a="ok">Confirmar agendamento</button><button class="cag-lk" data-a="mudar">Mudar alguma coisa</button></div>`, "largo");
+    d.onclick = e => { const b = e.target.closest("button"); if (!b || d.classList.contains("feito")) return;
+      if (b.dataset.a === "mudar") { travar(d); eu("Quero mudar"); return mudar(); }
+      const f = faltando(); if (f) { bot(h(f)); return; }
+      travar(d); eu("Confirmar"); b.disabled = true; confirmar(); };
+  }
+  async function mudar() {
+    await bot("O que você quer mudar?");
+    const d = bloco(`<div class="cag-ops"><button class="cag-op" data-a="s">Serviço</button>${profs().length > 1 ? `<button class="cag-op" data-a="p">Barbeiro</button>` : ""}<button class="cag-op" data-a="d">Dia e horário</button><button class="cag-op" data-a="c">Nome ou WhatsApp</button></div>`);
+    d.onclick = e => { const b = e.target.closest("button"); if (!b) return; travar(d); eu(b.textContent);
+      ({ s: passoServico, p: passoProf, d: passoDia, c: () => pedirContato(true).then(resumo) })[b.dataset.a](); };
+  }
+  async function confirmar() {
+    await bot("Reservando seu horário…", 300);
+    const antes = document.querySelector("#conf.on");
+    try { enviar(); } catch (e) { await bot("Não deu para reservar agora. Tente de novo em instantes."); return; }
+    // o envio do site mostra a confirmação (com o Pix do sinal, quando tem); o chat dá lugar a ela
+    setTimeout(() => { if (document.querySelector("#conf.on") || !antes) fecharChatAgenda(true); }, 900);
+  }
+  /* ---------- abrir e fechar ---------- */
+  window.abrirChatAgenda = function () { montar(); el.classList.add("on"); document.documentElement.style.overflow = "hidden"; try { closeAll(); } catch (e) {}
+    if (!corpo.childElementCount) inicio(); setTimeout(() => el.querySelector(".cag-x").focus(), 30); };
+  window.fecharChatAgenda = function (fim) { if (!el) return; el.classList.remove("on"); document.documentElement.style.overflow = ""; if (fim) { corpo.innerHTML = ""; } };
+  CH.botao = () => { if (document.getElementById("cagBtn") || C.ativo === false) return; const b = document.createElement("button"); b.id = "cagBtn"; b.className = "cag-hero";
+    b.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>Agendar conversando`;
+    b.onclick = () => abrirChatAgenda(); const alvo = document.querySelector(".hero-in .perks"); if (alvo) alvo.before(b); else document.body.appendChild(b); };
+  document.addEventListener("DOMContentLoaded", () => { CH.botao(); if (/[?&]chat\b/.test(location.search) || location.hash === "#chat") setTimeout(abrirChatAgenda, 250); });
+  if (document.readyState !== "loading") { CH.botao(); if (/[?&]chat\b/.test(location.search) || location.hash === "#chat") setTimeout(abrirChatAgenda, 250); }
+})();
+
 
 /* ===== Confirmação depois de enviar + Pix copia e cola (BR Code) ===== */
 function nPedido(){ const d=new Date(); return String((d.getDate()-1)*1440+d.getHours()*60+d.getMinutes()).padStart(5,"0"); }

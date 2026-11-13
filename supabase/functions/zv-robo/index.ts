@@ -33,8 +33,9 @@ function interativo(texto: string, ops: string[]) {
   if (ops.length <= 3 && ops.every(o => o.length <= 20)) return { type: "button", body: { text: corpo }, action: { buttons: ops.map((o, i) => ({ type: "reply", reply: { id: ids[i], title: o.slice(0, 20) } })) } };
   return { type: "list", body: { text: corpo }, action: { button: "Escolher", sections: [{ title: "Opções", rows: ops.slice(0, 10).map((o, i) => ({ id: ids[i], title: o.slice(0, 24) })) }] } };
 }
-async function enviarMeta(canal: any, para: string, m: { texto: string; opcoes?: string[]; modelo?: { nome: string; params: string[] } }) {
-  const corpo = m.opcoes && m.opcoes.length && !m.modelo ? { messaging_product: "whatsapp", to: para, type: "interactive", interactive: interativo(m.texto, m.opcoes) } : m.modelo
+async function enviarMeta(canal: any, para: string, m: { texto: string; opcoes?: string[]; link?: { url: string; botao: string }; modelo?: { nome: string; params: string[] } }) {
+  const corpo = m.link && !m.modelo ? { messaging_product: "whatsapp", to: para, type: "interactive", interactive: { type: "cta_url", body: { text: m.texto.slice(0, 1024) }, action: { name: "cta_url", parameters: { display_text: m.link.botao.slice(0, 20), url: m.link.url } } } }
+    : m.opcoes && m.opcoes.length && !m.modelo ? { messaging_product: "whatsapp", to: para, type: "interactive", interactive: interativo(m.texto, m.opcoes) } : m.modelo
     ? { messaging_product: "whatsapp", to: para, type: "template", template: { name: m.modelo.nome, language: { code: "pt_BR" }, components: [{ type: "body", parameters: m.modelo.params.map(t => ({ type: "text", text: String(t).slice(0, 60) })) }] } }
     : { messaging_product: "whatsapp", to: para, type: "text", text: { body: m.texto.slice(0, 4000) } };
   const r = await fetch(`https://graph.facebook.com/v21.0/${canal.phone_id}/messages`, { method: "POST", headers: { Authorization: "Bearer " + canal.token, "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
