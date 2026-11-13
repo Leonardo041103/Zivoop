@@ -7,12 +7,12 @@
 <meta name="description" content="Site pronto para 41 tipos de negócio, com painel para pedidos, agenda, clientes e caixa, mesas com QR para restaurantes e assistente que muda o site por mensagem. Sem comissão por venda.">
 <meta property="og:title" content="Zivoop: os sistemas do seu negócio, prontos para usar">
 <meta property="og:description" content="Escolha o modelo do seu negócio, teste ao vivo e receba o site pronto com seus produtos, fotos e WhatsApp.">
-<meta property="og:image" content="/og.png"><meta property="og:type" content="website"><meta name="theme-color" content="#14162B">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:image" content="/og.png"><meta property="og:type" content="website"><meta name="theme-color" content="#0E5E5A">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
 <style>
-:root{--ink:#14162B;--ink-2:#4A4E6A;--paper:#F5F6FA;--card:#FFFFFF;--cobalt:#2E4BFF;--cobalt-d:#1F36D6;--tang:#FF7A1A;--mint:#19B37A;--cobalt-l:#8FA2FF;--line:rgba(20,22,43,.1);
+:root{--ink:#12211F;--ink-2:#4A5A57;--paper:#F4F6F5;--card:#FFFFFF;--cobalt:#0E5E5A;--cobalt-d:#0A4542;--tang:#FFB21A;--mint:#19B37A;--cobalt-l:#8CC7C0;--line:rgba(18,33,31,.1);
   --wide:'Archivo',system-ui,sans-serif;--r:22px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}[hidden]{display:none!important}section[id]{scroll-margin-top:84px}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--wide);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -26,16 +26,15 @@ h1,h2,h3{font-stretch:125%;font-weight:850;letter-spacing:-.025em;line-height:1;
 .top.sc{border-color:var(--line)}
 .top .in{display:flex;align-items:center;gap:22px;min-height:68px}
 .logo{font-stretch:125%;font-weight:900;font-size:25px;letter-spacing:-.04em;text-decoration:none;display:flex;align-items:center;gap:8px}
-.logo i{width:26px;height:26px;border-radius:8px 8px 8px 2px;background:var(--cobalt);position:relative}
-.logo i::after{content:"";position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:50%;background:var(--tang);border:3px solid var(--paper)}
+.logo svg{width:30px;height:30px;flex:none}
 .nav{display:flex;gap:4px;margin-left:auto}
 .nav a{text-decoration:none;font-weight:600;font-size:15px;padding:10px 12px;border-radius:999px;color:var(--ink-2)}
-.nav a:hover{background:rgba(20,22,43,.06);color:var(--ink)}
+.nav a:hover{background:rgba(18,33,31,.06);color:var(--ink)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border-radius:999px;border:0;background:var(--cobalt);color:#fff;font-weight:750;font-size:16px;text-decoration:none;cursor:pointer;transition:background .15s,transform .15s}
 .btn:hover{background:var(--cobalt-d)}.btn:active{transform:scale(.98)}
 .btn.sm{min-height:44px;padding:0 18px;font-size:15px}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
-.btn.ghost:hover{background:rgba(20,22,43,.05)}
+.btn.ghost:hover{background:rgba(18,33,31,.05)}
 @media (max-width:820px){.nav{display:none}.top .btn.sm{margin-left:auto}}
 /* hero */
 .hero{padding:44px 0 30px;overflow:hidden}
@@ -49,7 +48,7 @@ h1,h2,h3{font-stretch:125%;font-weight:850;letter-spacing:-.025em;line-height:1;
 @media (max-width:560px){.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.proof div{font-size:12.5px}.proof b{font-size:24px}}.proof b{display:block;font-stretch:125%;font-size:30px;color:var(--ink);font-weight:850;letter-spacing:-.02em;line-height:1.1}
 /* celular */
 .stagewrap{display:flex;flex-direction:column;align-items:center;gap:16px}
-.phone{--w:300px;width:var(--w);height:calc(var(--w)*2.06);border-radius:calc(var(--w)*.15);background:#0D0E1A;padding:11px;box-shadow:0 40px 80px -30px rgba(20,22,43,.55),0 0 0 1.5px rgba(255,255,255,.05) inset;position:relative}
+.phone{--w:300px;width:var(--w);height:calc(var(--w)*2.06);border-radius:calc(var(--w)*.15);background:#0D0E1A;padding:11px;box-shadow:0 40px 80px -30px rgba(18,33,31,.55),0 0 0 1.5px rgba(255,255,255,.05) inset;position:relative}
 .phone::before{content:"";position:absolute;left:50%;top:18px;width:30%;height:22px;border-radius:999px;background:#0D0E1A;transform:translateX(-50%);z-index:2}
 .screen{width:100%;height:100%;border-radius:calc(var(--w)*.12);overflow:hidden;position:relative;background:#fff}
 .screen iframe{position:absolute;left:0;top:0;width:390px;border:0;transform-origin:0 0}
@@ -79,7 +78,7 @@ section.blk{padding:84px 0 20px}
 .ni p{margin:0;font-size:14.5px;color:var(--ink-2);flex:1}
 .ni .ac{display:flex;gap:8px}
 .ni .ac a,.ni .ac button{flex:1;min-height:42px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;border:0}
-.ni .ac .ver{background:var(--paper)}.ni .ac .ver:hover{background:#E9EBF3}
+.ni .ac .ver{background:var(--paper)}.ni .ac .ver:hover{background:#E6ECEA}
 .ni .ac .qb{background:var(--ink);color:#fff}
 .ni.on{border-color:var(--cobalt)}
 /* como funciona */
@@ -119,7 +118,7 @@ form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .faq details[open] summary::after{content:"−"}
 .faq details p{margin:0 0 18px;color:var(--ink-2)}
 /* telas do painel */
-.shot{background:var(--ink);border-radius:18px;padding:10px 10px 0;box-shadow:0 40px 80px -40px rgba(20,22,43,.5)}
+.shot{background:var(--ink);border-radius:18px;padding:10px 10px 0;box-shadow:0 40px 80px -40px rgba(18,33,31,.5)}
 .shot .bar{display:flex;gap:6px;padding:2px 4px 10px}.shot .bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18)}
 .shot img{display:block;width:100%;height:auto;border-radius:10px 10px 0 0}
 .pn{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:start}
@@ -128,7 +127,7 @@ form.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tabs button{text-align:left;border:0;background:transparent;border-radius:16px;padding:14px 16px;cursor:pointer;display:grid;gap:3px}
 .tabs button b{font-size:17px}.tabs button span{font-size:14.5px;color:var(--ink-2);display:none}
 .tabs button[aria-selected="true"]{background:var(--card);box-shadow:inset 3px 0 0 var(--cobalt)}.tabs button[aria-selected="true"] span{display:block}
-.tabs button:hover{background:rgba(20,22,43,.04)}
+.tabs button:hover{background:rgba(18,33,31,.04)}
 @media (max-width:900px){.tabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:6px}.tabs::-webkit-scrollbar{display:none}
   .tabs button{flex:none;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line)}.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:none;border-color:var(--ink)}
   .tabs button[aria-selected="true"] span{display:none}}
@@ -159,7 +158,7 @@ footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 </head>
 <body>
 <header class="top" id="top"><div class="in">
-  <a class="logo" href="/" aria-label="Zivoop, início"><i></i>zivoop</a>
+  <a class="logo" href="/" aria-label="Zivoop, início"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M28 8H72A22 22 0 0 1 94 30V56A22 22 0 0 1 72 78H40L12 96L22 76A22 22 0 0 1 6 56V30A22 22 0 0 1 28 8Z" fill="var(--cobalt)"/><path d="M31 42L44 55L68 28" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="55" r="6.5" fill="var(--tang)"/></svg>zivoop</a>
   <nav class="nav" aria-label="Seções"><a href="#modelos">Modelos</a><a href="#painel">Painel</a><a href="#restaurantes">Restaurantes</a><a href="#como">Como funciona</a><a href="#duvidas">Dúvidas</a></nav>
   <a class="btn sm" href="#quero">Fale com a gente</a>
 </div></header>
