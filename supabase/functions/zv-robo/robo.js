@@ -137,6 +137,12 @@ export function entenderSemIA(N, texto, t = Date.now()) {
   else if (r.servicos.includes("corte") && r.servicos.includes("barba") && N.servicos.some(x => x.id === "corte-barba")) r.servicos = r.servicos.filter(i => i !== "corte" && i !== "barba").concat("corte-barba");
   if (r.servicos.includes("corte-infantil")) r.servicos = r.servicos.filter(i => i !== "corte");
   N.profs.forEach(p => { if (new RegExp("\\b" + sem(p) + "\\b").test(s)) r.profissional = p; });
+  // somar ou tirar serviço do que já foi escolhido (ou do horário marcado): "mais sobrancelha", "coloca uma barba também", "tira a barba"
+  if (r.servicos.length) {
+    const sAdd = s.replace(/\bmais (cedo|tarde|barato|rapido|perto|longe|tempo|um horario|horarios?|opcoes|opcao|vez|uma vez|alguma coisa)\b|\balgo mais\b|\b(nada|ninguem) mais\b/g, " ");
+    if (/\b(sem|tira|tirar|tire|tirem|remove|remover|retira|retirar|exclui|excluir|desiste|desisti|cancela (a|o)|nao (quero|vou fazer|precisa) (mais )?(a |o |de )?)\b/.test(s)) r.acao = "tirar";
+    else if (/(^|\s)\+\s?\w/.test(String(texto)) || /\b(mais|tambem|junto|adiciona|adicionar|adicione|acrescenta|acrescentar|acrescente|inclui|incluir|inclua|aproveita|aproveitar|alem d[aoe]s?|soma|somar|bota|botar|coloca|colocar|coloque|poe|por uma|por um)\b/.test(sAdd)) r.acao = "adicionar";
+  }
   // dia
   const hoje = hojeSP(t), nomes = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
   if (/\b(hoje|agora|agorinha|ainda hoje)\b/.test(s)) r.dia = hoje;
@@ -184,7 +190,8 @@ export async function entenderComIA(N, texto, estado, ia, t = Date.now()) {
 Hoje é ${DIAS[diaSemana(hoje)]}, ${hoje}. Serviços (id: nome): ${N.servicos.map(x => x.id + ": " + x.n).join("; ")}. Barbeiros: ${N.profs.join(", ") || "nenhum"}.
 A conversa estava em: ${estado && estado.etapa ? estado.etapa : "início"}${estado && estado.opcoes ? " (o robô ofereceu " + estado.opcoes.length + " opções numeradas)" : ""}.
 Campos: intencao (marcar|remarcar|cancelar|meus|precos|info|clube|espera|humano|ehrobo|obrigado|pergunta|sair|sim|nao|oi|outro; pergunta = dúvida sobre a barbearia que não é marcar), servicos (lista de ids), profissional (nome ou null),
-dia (AAAA-MM-DD ou null), faixa ({de:"HH:MM",ate:"HH:MM"} ou {exato:"HH:MM"} ou null), escolha (número da opção ou null), nome (nome da pessoa se ela disse, ou null).
+dia (AAAA-MM-DD ou null), faixa ({de:"HH:MM",ate:"HH:MM"} ou {exato:"HH:MM"} ou null), escolha (número da opção ou null), nome (nome da pessoa se ela disse, ou null),
+acao ("adicionar" se a pessoa quer somar serviço ao que já escolheu ou ao horário marcado, ex. "mais sobrancelha", "coloca uma barba também"; "tirar" se quer tirar um serviço, ex. "tira a barba"; senão null).
 "depois das 5" = {de:"17:00"}. "sexta" = a próxima sexta. Não invente: se não sabe, use null.
 Mensagem: """${String(texto).slice(0, 500)}"""`;
   try {
@@ -193,7 +200,8 @@ Mensagem: """${String(texto).slice(0, 500)}"""`;
       headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0, responseMimeType: "application/json", maxOutputTokens: 300 } }) });
     clearTimeout(to); if (!r.ok) return base;
     const j = await r.json(), txt = j.candidates && j.candidates[0] && j.candidates[0].content.parts.map(p => p.text).join("");
-    const o = JSON.parse(txt || "{}"), ok = { intencao: base.intencao, servicos: base.servicos, profissional: base.profissional, dia: base.dia, faixa: base.faixa, escolha: base.escolha, nome: null };
+    const o = JSON.parse(txt || "{}"), ok = { intencao: base.intencao, servicos: base.servicos, profissional: base.profissional, dia: base.dia, faixa: base.faixa, escolha: base.escolha, nome: null, acao: base.acao || null };
+    if (o.acao === "adicionar" || o.acao === "tirar") ok.acao = o.acao;
     if (typeof o.intencao === "string" && o.intencao !== "outro") ok.intencao = o.intencao;
     if (Array.isArray(o.servicos)) { const v = o.servicos.filter(id => N.servicos.some(x => x.id === id)); if (v.length) ok.servicos = v; }
     if (o.profissional && N.profs.includes(o.profissional)) ok.profissional = o.profissional;
@@ -214,6 +222,16 @@ const SIMNAO = ["Sim", "Não"];
 const listaOpcoes = (ops, t) => ops.map((o, i) => `${i + 1} - ${diaTxt(o.dia, t)} às ${hhmm(o.m)}${o.prof ? " com " + o.prof : ""}`).join("\n");
 const nomeServ = (N, ids) => ids.map(id => (N.servicos.find(x => x.id === id) || {}).n).filter(Boolean).join(" + ");
 const durServ = (N, ids) => ids.reduce((s, id) => s + ((N.servicos.find(x => x.id === id) || {}).dur || 0), 0);
+// soma ou tira serviços: o combo "corte + barba" vira corte e barba para a conta, e volta a ser combo se os dois ficarem
+const temCombo = N => ["corte-barba", "corte", "barba"].every(id => N.servicos.some(x => x.id === id));
+const abreCombo = (N, l) => l.flatMap(id => id === "corte-barba" && temCombo(N) ? ["corte", "barba"] : [id]);
+function combinar(N, atuais, ids, acao) {
+  const combo = temCombo(N), a = abreCombo(N, atuais), b = abreCombo(N, ids);
+  let r = acao === "tirar" ? a.filter(x => !b.includes(x)) : [...new Set([...a, ...b])];
+  if (combo && r.includes("corte") && r.includes("barba")) r = ["corte-barba", ...r.filter(x => x !== "corte" && x !== "barba")];
+  if (r.includes("corte-infantil")) r = r.filter(x => x !== "corte");
+  return r;
+}
 const precoServ = (N, ids) => ids.reduce((s, id) => s + ((N.servicos.find(x => x.id === id) || {}).p || 0), 0);
 
 async function proximos(db, N, zap) {
@@ -327,6 +345,23 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   }
   if (est.etapa === "cancelar" && u.intencao === "nao") { R.push("Beleza, seu horário continua marcado."); return fim({}); }
 
+  /* --- somar ou tirar serviço ("mais sobrancelha", "tira a barba") --- */
+  if (u.acao && u.servicos.length && (est.servicos || []).length && ["marcar", "escolher", "nome"].includes(est.etapa)) {
+    const ids = combinar(N, est.servicos, u.servicos, u.acao);
+    if (!ids.length) { R.push("Se tirar esse, não sobra nenhum serviço. Qual serviço você quer?\n" + N.servicos.slice(0, 8).map(x => `• ${x.n} (${brl(x.p)})`).join("\n")); return fim({ etapa: "marcar" }); }
+    const novo = Object.assign({}, est, { etapa: "marcar", servicos: ids, opcoes: null, escolhida: null });
+    if (u.dia) novo.dia = u.dia; if (u.faixa) novo.faixa = u.faixa; if (u.profissional) novo.prof = u.profissional;
+    const antes = abreCombo(N, est.servicos), mexeu = abreCombo(N, u.servicos).filter(x => u.acao === "tirar" ? antes.includes(x) : !antes.includes(x));
+    R.push(`${mexeu.length ? (u.acao === "tirar" ? "Tirei " : "Anotado, somei ") + nomeServ(N, mexeu) + ". " : "Anotado. "}Ficou: ${nomeServ(N, ids)}, ${brl(precoServ(N, ids))}, ${durServ(N, ids)} min.`);
+    return await oferecer(novo);
+  }
+  if (u.acao && u.servicos.length && !(est.servicos || []).length && !["cancelar", "oferta", "lembrete"].includes(est.etapa) && !u.dia && !u.faixa
+      && !/\b(marcar|agendar|novo horario|outro horario)\b/.test(sem(texto))
+      && (/^\s*\+/.test(texto) || /^mais\b|\b(meu horario|no horario|horario marcado|marcado|agendamento|tambem|adicion\w*|acrescent\w*|inclu\w*|coloca\w*|bota\w*|poe|aproveit\w*|junto|tira\w*|retira\w*|remov\w*|sem)\b/.test(sem(texto)))) {
+    const ags = await proximos(db, N, zap);
+    if (ags.length) return await mexerNoHorario(ags[0], u.acao, u.servicos);
+  }
+
   /* --- escolheu uma das opções oferecidas --- */
   if (est.etapa === "escolher" && est.opcoes && (u.escolha || u.intencao === "sim" || (u.faixa && u.faixa.exato))) {
     let op = u.escolha ? est.opcoes[u.escolha - 1] : u.faixa && u.faixa.exato ? est.opcoes.find(o => hhmm(o.m) === u.faixa.exato) : est.opcoes.length === 1 ? est.opcoes[0] : null;
@@ -406,6 +441,25 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
     const ag = ((await db.sel(`zv_agendamentos?select=id&negocio=eq.${N.neg.id}&numero=eq.${r.numero}`).catch(() => [])) || [])[0];
     if (N.robo.antecipar && ag && !(op.dia === hojeSP(t))) { R.push(comOpcoes("Se abrir uma vaga antes desse horário, quer que eu te avise? Responda SIM ou NÃO.", SIMNAO)); return fim({ etapa: "antecipar", ag: ag.id }, "marcou"); }
     return fim({}, "marcou");
+  }
+  async function mexerNoHorario(ag, acao, ids) {
+    const atuais = N.servicos.filter(x => (ag.servicos || []).some(y => y.id === x.id || y.nome === x.n)).map(x => x.id);
+    const novos = combinar(N, atuais, ids, acao), dia = diaDe(ag.inicio), m = minDe(ag.inicio), quando = `${diaTxt(dia, t)} às ${hhmm(m)}${ag.profissional ? " com " + ag.profissional : ""}`;
+    if (!novos.length) { R.push(comOpcoes(`Sem esse serviço, seu horário de ${quando} fica vazio. Quer cancelar o horário? Responda SIM ou NÃO.`, SIMNAO));
+      return fim({ etapa: "cancelar", ags: [{ id: ag.id, inicio: ag.inicio, fim: ag.fim, profissional: ag.profissional }] }); }
+    if (novos.length === atuais.length && novos.every(x => atuais.includes(x))) { R.push(`${acao === "tirar" ? "Esse serviço não está" : "Isso já está"} no seu horário de ${quando}: ${nomeServ(N, atuais) || "horário marcado"}.`); return fim({}); }
+    const dur = durServ(N, novos) || Math.round((Date.parse(ag.fim) - Date.parse(ag.inicio)) / 60e3);
+    let tirouProprio = false;
+    const oc = (await ocupados(db, N, dia, 1)).filter(o => { if (!tirouProprio && Date.parse(o.inicio) === Date.parse(ag.inicio) && Date.parse(o.fim) === Date.parse(ag.fim) && (o.profissional || "") === (ag.profissional || "")) { tirouProprio = true; return false; } return true; });
+    const cabe = livres(N, oc, dia, dur, ag.profissional || "", t).some(x => x.m === m && (x.prof || "") === (ag.profissional || ""));
+    if (cabe) {
+      const servs = novos.map(id => { const x = N.servicos.find(s => s.id === id); return { id, nome: x.n, preco: x.p, qty: 1 }; });
+      const ok = await db.upd(`zv_agendamentos?id=eq.${ag.id}&whatsapp=eq.${zap}`, { servicos: servs, total: precoServ(N, novos), fim: new Date(Date.parse(ag.inicio) + dur * 60e3).toISOString() }).then(() => true, () => false);
+      if (ok) { R.push(`Pronto! ${acao === "tirar" ? "Tirei " + nomeServ(N, ids) + " do" : "Coloquei " + nomeServ(N, ids) + " no"} seu horário de ${quando}.\nFicou: ${nomeServ(N, novos)}, ${brl(precoServ(N, novos))}, das ${hhmm(m)} às ${hhmm(m + dur)}.`); return fim({}, "mudou"); }
+    }
+    // não cabe no mesmo horário (tem cliente logo depois): procura outro horário com tudo junto e troca o antigo
+    R.push(`Com ${nomeServ(N, novos)} o atendimento fica com ${dur} min e não cabe no seu horário de ${quando}, porque tem cliente logo depois. Vou procurar um horário com tudo junto; o seu atual continua valendo até você escolher.`);
+    return await oferecer({ etapa: "marcar", servicos: novos, prof: ag.profissional || null, dia, remarcar: ag.id });
   }
   async function entrarEspera(dia) {
     const pos = await db.rpc("zv_entrar_espera", { p_slug: N.neg.slug, p_nome: nome || cont.nome || "Cliente", p_whatsapp: zap, p_dia: dia, p_prof: est.prof || "" }).catch(() => null);

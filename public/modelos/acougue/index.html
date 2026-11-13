@@ -1634,16 +1634,16 @@ function svgMarmita(it,partes){
 /* hambúrguer em camadas, de baixo para cima */
 const BURG=[[/p[ãa]o australiano/,"pao","#5B3A26"],[/sem gl[úu]ten/,"pao","#D9B779"],[/p[ãa]o|brioche/,"pao","#E0A04A"],
   [/barbecue/,"molho","#6B2A16"],[/maionese|molho da casa|molho leve|molho especial|mostarda/,"molho","#F2D08A"],
-  [/smash/,"smash","#5A2E1A"],[/frango/,"carne","#D79A3A"],[/gr[ãa]o|veggie|vegetal/,"carne","#A9803F"],[/costela/,"carne","#6B2F1E"],[/blend|carne|hamb/,"carne","#5A2E1A"],
+  [/smash|dois hamb|hamb[úu]rguer extra/,"smash","#5A2E1A"],[/calabresa/,"calabresa","#A8322D"],[/presunto/,"presunto","#E8A3A0"],[/milho/,"milho","#F4C430"],[/batata palha/,"palha","#F2C14E"],[/frango/,"carne","#D79A3A"],[/gr[ãa]o|veggie|vegetal/,"carne","#A9803F"],[/costela/,"carne","#6B2F1E"],[/blend|carne|hamb/,"carne","#5A2E1A"],
   [/cheddar/,"queijo","#F2A23A"],[/catupiry|cream/,"queijo","#FFF3D6"],[/queijo|prato|mu[çc]arela|duplo/,"queijo","#F6D36B"],
   [/bacon/,"bacon","#B5523B"],[/caramelizada/,"cebcar","#A0612B"],[/crispy|onion/,"crispy","#D9A441"],[/ovo/,"ovo","#FFFDF7"],
   [/picles/,"picles","#7FA43A"],[/tomate/,"tomate","#D9412B"],[/cebola/,"cebola","#9B4F96"],[/alface|salada|r[úu]cula/,"alface","#6DBE45"]];
-const ORDEM={molho:1,carne:2,smash:2,queijo:3,bacon:4,cebcar:5,crispy:5,ovo:6,picles:7,tomate:8,cebola:9,alface:10};
+const ORDEM={molho:1,carne:2,smash:2,calabresa:2,queijo:3,presunto:3.5,milho:9.5,palha:9.6,bacon:4,cebcar:5,crispy:5,ovo:6,picles:7,tomate:8,cebola:9,alface:10};
 function burgPartes(it,sel,sem){ const nomes=[]; (it.ing||[]).forEach(n=>{ if(!(sem||[]).includes(n)) nomes.push(n); });
   it.g.forEach((g,gi)=>{ if(/ponto|combo|tamanho/i.test(g.l)) return; (sel[gi]||[]).forEach(oi=>{ const o=g.ops[oi]; if(o&&!o.vazio) nomes.push(o.vis||o.l); }); });
   const out=[]; let pao=null, temCarne=false;
-  nomes.forEach(n=>{ const k=String(n).toLowerCase(), b=BURG.find(([r])=>r.test(k)); if(!b) return; if(b[1]==="pao"){ pao=b[2]; return; } if(b[1]==="carne"||b[1]==="smash") temCarne=true; out.push({n,k:b[1],c:b[2]}); });
-  if(!temCarne){ const d=(it.n+" "+(it.d||"")).toLowerCase(), b=BURG.find(([r,k])=>(k==="carne"||k==="smash")&&r.test(d))||BURG.find(([,k])=>k==="carne"&&true); out.push({n:"carne",k:/dois discos|smash/.test(d)?"smash":b[1],c:/frango/.test(d)?"#D79A3A":/gr[ãa]o/.test(d)?"#A9803F":/costela/.test(d)?"#6B2F1E":"#5A2E1A"}); }
+  nomes.forEach(n=>{ const k=String(n).toLowerCase(), b=BURG.find(([r])=>r.test(k)); if(!b) return; if(b[1]==="pao"){ pao=b[2]; return; } if(b[1]==="carne"||b[1]==="smash"||b[1]==="calabresa") temCarne=true; out.push({n,k:b[1],c:b[2]}); });
+  if(!temCarne){ const d=(it.n+" "+(it.d||"")).toLowerCase(), b=BURG.find(([r,k])=>(k==="carne"||k==="smash")&&r.test(d))||BURG.find(([,k])=>k==="carne"&&true); out.push({n:"carne",k:/dois discos|smash|dois hamb/.test(d)?"smash":b[1],c:/frango/.test(d)?"#D79A3A":/gr[ãa]o/.test(d)?"#A9803F":/costela/.test(d)?"#6B2F1E":"#5A2E1A"}); }
   return {pao:pao||"#E0A04A",camadas:out.sort((a,b)=>ORDEM[a.k]-ORDEM[b.k])}; }
 function svgBurger(it){ const {pao,camadas}=burgPartes(it,modal.sel,modal.sem); let y=206, h=`<svg viewBox="0 0 240 240" class="vis-svg" role="img" aria-label="Como fica o hambúrguer"><ellipse cx="120" cy="222" rx="96" ry="10" fill="rgba(0,0,0,.18)"/>`;
   const L=[]; const add=(alt,svg)=>{ y-=alt; L.push(svg(y)); };
@@ -1660,6 +1660,10 @@ function svgBurger(it){ const {pao,camadas}=burgPartes(it,modal.sel,modal.sem); 
     case "picles": add(6,yy=>[50,85,120,155,190].map(x=>`<ellipse cx="${x}" cy="${yy+3}" rx="14" ry="4" fill="${c.c}" stroke="#4E6E22" stroke-width="1.5"/>`).join("")); break;
     case "tomate": add(9,yy=>[58,120,182].map(x=>`<rect x="${x-30}" y="${yy}" width="60" height="9" rx="4.5" fill="${c.c}"/><rect x="${x-24}" y="${yy+2}" width="48" height="2" fill="#F07A5C"/>`).join("")); break;
     case "cebola": add(6,yy=>[50,90,130,170,200].map(x=>`<ellipse cx="${x}" cy="${yy+3}" rx="17" ry="3.6" fill="none" stroke="${c.c}" stroke-width="3"/>`).join("")); break;
+    case "calabresa": add(10,yy=>[44,78,112,146,180].map(x=>`<ellipse cx="${x+8}" cy="${yy+5}" rx="17" ry="6" fill="${c.c}"/><ellipse cx="${x+8}" cy="${yy+4}" rx="12" ry="3.4" fill="#C9564C"/>`).join("")); break;
+    case "presunto": add(7,yy=>`<path d="M26 ${yy+2} q12 -5 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 v5 h-192z" fill="${c.c}"/>`); break;
+    case "milho": add(6,yy=>Array.from({length:22},(_,i)=>`<circle cx="${38+i*7.6}" cy="${yy+2+(i%2)*2.4}" r="2.6" fill="${c.c}"/>`).join("")); break;
+    case "palha": add(7,yy=>Array.from({length:30},(_,i)=>`<rect x="${32+i*5.8}" y="${yy+(i%3)}" width="9" height="2" rx="1" fill="${c.c}" transform="rotate(${(i*47)%60-30} ${36+i*5.8} ${yy+2})"/>`).join("")); break;
     case "alface": add(10,yy=>`<path d="M20 ${yy+6} q10 -10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 v4 h-200z" fill="${c.c}"/>`); break; } });
   add(58,yy=>`<path d="M30 ${yy+58} q0 -58 90 -58 q90 0 90 58z" fill="${pao}"/><path d="M52 ${yy+28} q30 -24 70 -22" stroke="rgba(255,255,255,.25)" stroke-width="6" fill="none" stroke-linecap="round"/>${pao==="#5B3A26"?"":[[70,22],[96,12],[124,10],[150,16],[172,28],[110,30],[138,34],[84,38],[160,44]].map(([x,yy2])=>`<ellipse cx="${x}" cy="${yy+yy2}" rx="3.4" ry="2" fill="#FFF4D6"/>`).join("")}`);
   const top=Math.min(0,y-6), H=240-top; return h.replace('viewBox="0 0 240 240"',`viewBox="0 ${top} 240 ${H}"`)+L.join("")+`</svg>`; }
@@ -1932,11 +1936,18 @@ function repeatLast(){
 function initDeepLink(){ const p=new URLSearchParams(location.search).get("item"); if(p&&ALL[p]) setTimeout(()=>openItem(p),350);
   const h=()=>{ const m=/^#item-(.+)$/.exec(location.hash); if(m&&ALL[m[1]]){ openItem(m[1]); history.replaceState(null,"",location.pathname+location.search); } }; h(); addEventListener("hashchange",h); }
 function initSpy(){
-  const links=[...document.querySelectorAll(".nav a")];
-  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
-    links.forEach(l=>l.classList.toggle("active",l.dataset.cid===e.target.id));
-    const al=links.find(l=>l.dataset.cid===e.target.id); if(al)al.scrollIntoView({inline:"center",block:"nearest"}); }})},{rootMargin:"-45% 0px -50% 0px"});
-  document.querySelectorAll(".sec").forEach(s=>io.observe(s));
+  // categoria atual = a última cujo topo passou da linha a 45% da tela (funciona também dentro de iframe, onde o IntersectionObserver ignora a margem)
+  const links=[...document.querySelectorAll(".nav a")], secs=[...document.querySelectorAll(".sec")], barra=document.getElementById("nav");
+  let atual=null, pend=false, trava=0;
+  const marcar=id=>{ if(!id||id===atual)return; atual=id; links.forEach(l=>l.classList.toggle("active",l.dataset.cid===id));
+    const al=links.find(l=>l.dataset.cid===id); if(al&&barra){ const x=barra.scrollLeft+al.getBoundingClientRect().left-barra.getBoundingClientRect().left-(barra.clientWidth-al.offsetWidth)/2; barra.scrollTo({left:Math.max(0,x),behavior:"smooth"}); } };
+  const ver=()=>{ pend=false; if(Date.now()<trava||!secs.length)return; const linha=innerHeight*.45; let id=secs[0].id;
+    if(scrollY+innerHeight>=document.documentElement.scrollHeight-4) id=secs[secs.length-1].id;
+    else for(const s of secs){ if(s.getBoundingClientRect().top<=linha) id=s.id; else break; }
+    marcar(id); };
+  addEventListener("scroll",()=>{ if(!pend){ pend=true; requestAnimationFrame(ver); } },{passive:true}); addEventListener("resize",ver);
+  links.forEach(l=>l.addEventListener("click",()=>{ trava=Date.now()+900; marcar(l.dataset.cid); setTimeout(()=>{ trava=0; },950); }));
+  ver();
 }
 let deferredPrompt=null;
 const ehMobile=window.matchMedia("(max-width: 768px)").matches||window.matchMedia("(pointer: coarse)").matches;

@@ -2336,11 +2336,18 @@ function repeatLast(){
 function initDeepLink(){ const p=new URLSearchParams(location.search).get("item"); if(p&&ALL[p]) setTimeout(()=>openItem(p),350);
   const h=()=>{ const m=/^#item-(.+)$/.exec(location.hash); if(m&&ALL[m[1]]){ openItem(m[1]); history.replaceState(null,"",location.pathname+location.search); } }; h(); addEventListener("hashchange",h); }
 function initSpy(){
-  const links=[...document.querySelectorAll(".nav a")];
-  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
-    links.forEach(l=>l.classList.toggle("active",l.dataset.cid===e.target.id));
-    const al=links.find(l=>l.dataset.cid===e.target.id); if(al)al.scrollIntoView({inline:"center",block:"nearest"}); }})},{rootMargin:"-45% 0px -50% 0px"});
-  document.querySelectorAll(".sec").forEach(s=>io.observe(s));
+  // categoria atual = a última cujo topo passou da linha a 45% da tela (funciona também dentro de iframe, onde o IntersectionObserver ignora a margem)
+  const links=[...document.querySelectorAll(".nav a")], secs=[...document.querySelectorAll(".sec")], barra=document.getElementById("nav");
+  let atual=null, pend=false, trava=0;
+  const marcar=id=>{ if(!id||id===atual)return; atual=id; links.forEach(l=>l.classList.toggle("active",l.dataset.cid===id));
+    const al=links.find(l=>l.dataset.cid===id); if(al&&barra){ const x=barra.scrollLeft+al.getBoundingClientRect().left-barra.getBoundingClientRect().left-(barra.clientWidth-al.offsetWidth)/2; barra.scrollTo({left:Math.max(0,x),behavior:"smooth"}); } };
+  const ver=()=>{ pend=false; if(Date.now()<trava||!secs.length)return; const linha=innerHeight*.45; let id=secs[0].id;
+    if(scrollY+innerHeight>=document.documentElement.scrollHeight-4) id=secs[secs.length-1].id;
+    else for(const s of secs){ if(s.getBoundingClientRect().top<=linha) id=s.id; else break; }
+    marcar(id); };
+  addEventListener("scroll",()=>{ if(!pend){ pend=true; requestAnimationFrame(ver); } },{passive:true}); addEventListener("resize",ver);
+  links.forEach(l=>l.addEventListener("click",()=>{ trava=Date.now()+900; marcar(l.dataset.cid); setTimeout(()=>{ trava=0; },950); }));
+  ver();
 }
 let deferredPrompt=null;
 const ehMobile=window.matchMedia("(max-width: 768px)").matches||window.matchMedia("(pointer: coarse)").matches;
