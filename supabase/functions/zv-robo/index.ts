@@ -5,8 +5,13 @@
 //   POST ?acao=simular                  painel: "Testar o robô" (dono logado; nada vai para o WhatsApp)
 //   POST ?acao=enviar                   painel: o dono responde um cliente pela conversa
 //   POST ?acao=rotina                   agendado a cada 5 min (pg_cron): vagas, lembretes e fila com os limites anti-bloqueio
+//   POST ?acao=avisar                   painel: manda já os avisos de pedido da fila
+//   POST ?acao=conectar|desconectar     painel: liga ou desliga Instagram Direct, Messenger ou Telegram
+//   POST ?acao=telegram&n=<negócio>     webhook do Telegram (segredo conferido)
+//   POST (webhook da Meta, object "instagram" ou "page")   mensagens do Instagram Direct e do Messenger
 // Segredos: WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET, CRON_SECRET, GEMINI_API_KEY (opcional, IA grátis), GEMINI_MODEL, ZV_SITE_URL.
-import { carregarNegocio, atender, rotina } from "./robo.js";
+import { carregarNegocio, atender, atenderCanal, rotina, NOME_CANAL } from "./robo.js";
+import { GRAPH, lerMeta, corpoMeta, urlMeta, lerTelegram, corpoTelegram, urlTelegram } from "./canais.js";
 
 const SB = Deno.env.get("SUPABASE_URL")!, SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SITE = Deno.env.get("ZV_SITE_URL") || "https://zivoop.vercel.app";
@@ -54,6 +59,22 @@ async function transcrever(canal: any, mediaId: string) {
   const txt = (j.candidates && j.candidates[0] && j.candidates[0].content.parts.map((p: any) => p.text).join("") || "").trim();
   return txt ? txt.slice(0, 1000) : null;
 }
+// Instagram, Messenger e Telegram: manda uma resposta do robô no formato do canal
+async function enviarExt(conta: any, para: string, r: any) {
+  const res = conta.tipo === "telegram"
+    ? await fetch(urlTelegram(conta.token, "sendMessage"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpoTelegram(para, r)) })
+    : await fetch(urlMeta(conta) + "?access_token=" + encodeURIComponent(conta.token), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpoMeta(conta.tipo, para, r)) });
+  if (!res.ok) throw new Error((NOME_CANAL[conta.tipo] || conta.tipo) + " " + res.status + ": " + (await res.text()).slice(0, 200));
+}
+async function responderCanal(N: any, conta: any, ev: any) {
+  if (ev.anexo && !ev.texto && !ev.fone) { await enviarExt(conta, ev.ext, { texto: "Por enquanto eu entendo só mensagens de texto. Escreva o que você precisa 🙂" }).catch(() => {}); return; }
+  try {
+    const r = await atenderCanal({ db: admin, N, canal: conta.tipo, ext: ev.ext, texto: ev.texto || "", msgId: ev.msgId, nome: ev.nome || null, foneDoCanal: ev.fone || null, ia });
+    for (const x of r.respostas) await enviarExt(conta, ev.ext, x);
+  } catch (_) { await enviarExt(conta, ev.ext, { texto: "Tive um problema aqui. Escreva \"atendente\" que o pessoal da barbearia te responde." }).catch(() => {}); }
+}
+const contaExt = async (filtro: string) => ((await admin.sel(`zv_canais_ext?select=*&${filtro}`).catch(() => [])) || [])[0];
+const TIPO_CHAVE: Record<string, string> = { ig: "instagram", fb: "messenger", tg: "telegram" };
 async function dono(req: Request, negocio: string) {   // confere que quem chamou é o dono do negócio
   const r = await fetch(SB + "/auth/v1/user", { headers: { apikey: ANON, Authorization: req.headers.get("authorization") || "" } });
   if (!r.ok) return null; const u = await r.json();
@@ -86,6 +107,19 @@ Deno.serve(async (req) => {
       const r = await atender({ db: admin, N, zap, texto: String(b.texto || "").slice(0, 1000), nomePerfil: null, ia });
       return json({ respostas: r.respostas, humano: !!r.humano });
     }
+    // o dono responde um cliente que veio pelo Instagram, Messenger ou Telegram
+    const chaveExt = String(b.whatsapp || "").match(/^(ig|fb|tg):([\w-]+)$/);
+    if (chaveExt) {
+      const conta = await contaExt(`negocio=eq.${b.negocio}&tipo=eq.${TIPO_CHAVE[chaveExt[1]]}`); if (!conta) return json({ erro: "Esse canal não está mais conectado." }, 400);
+      const texto = String(b.texto || "").trim().slice(0, 4000); if (!texto) return json({ erro: "vazio" }, 400);
+      const c = ((await admin.sel(`zv_bot_contatos?select=ultima_in,ext_id&negocio=eq.${b.negocio}&whatsapp=eq.${b.whatsapp}`).catch(() => [])) || [])[0];
+      if (!c) return json({ erro: "conversa" }, 404);
+      if (conta.tipo !== "telegram" && (!c.ultima_in || Date.now() - Date.parse(c.ultima_in) > 23.5 * 3600e3)) return json({ erro: `Faz mais de 24h que o cliente não escreve. O ${NOME_CANAL[conta.tipo]} só deixa responder quando ele mandar mensagem de novo.` }, 400);
+      try { await enviarExt(conta, c.ext_id || chaveExt[2], { texto }); } catch (e) { return json({ erro: String((e as Error).message) }, 502); }
+      await admin.ins("zv_bot_msgs", { negocio: b.negocio, whatsapp: b.whatsapp, canal: conta.tipo, dir: "dono", texto });
+      await admin.upd(`zv_bot_contatos?negocio=eq.${b.negocio}&whatsapp=eq.${b.whatsapp}`, { humano_ate: new Date(Date.now() + 2 * 3600e3).toISOString(), ultima_out: new Date().toISOString() });
+      return json({ ok: true });
+    }
     // o dono responde um cliente (só dentro da janela de 24h do WhatsApp)
     const canal = ((await admin.sel(`zv_canais?select=*&negocio=eq.${b.negocio}`).catch(() => [])) || [])[0];
     if (!canal || !canal.token) return json({ erro: "WhatsApp não conectado" }, 400);
@@ -108,6 +142,52 @@ Deno.serve(async (req) => {
     try { return json(await rotina({ db: admin, N, canal, enviar: (zap: string, m: any) => enviarMeta(canal, zap, m) })); } catch (e) { return json({ erro: String((e as Error).message) }, 502); }
   }
 
+  // o dono liga ou desliga Instagram Direct, Messenger ou Telegram (a chave fica só no servidor)
+  if (acao === "conectar" || acao === "desconectar") {
+    const b = await req.json().catch(() => ({}));
+    if (!b.negocio || !(await dono(req, b.negocio))) return json({ erro: "sem_permissao" }, 401);
+    const tipo = String(b.tipo || ""); if (!["instagram", "messenger", "telegram"].includes(tipo)) return json({ erro: "canal" }, 400);
+    const atual = await contaExt(`negocio=eq.${b.negocio}&tipo=eq.${tipo}`);
+    if (acao === "desconectar") {
+      if (atual && tipo === "telegram") await fetch(urlTelegram(atual.token, "deleteWebhook"), { method: "POST" }).catch(() => {});
+      await admin.del(`zv_canais_ext?negocio=eq.${b.negocio}&tipo=eq.${tipo}`).catch(() => {}); return json({ ok: true });
+    }
+    const token = String(b.token || "").trim(); if (token.length < 20) return json({ erro: "O token parece incompleto." }, 400);
+    let linha: any;
+    if (tipo === "telegram") {
+      const me = await (await fetch(urlTelegram(token, "getMe"))).json().catch(() => ({}));
+      if (!me.ok) return json({ erro: "O Telegram não aceitou esse token. Copie de novo do @BotFather." }, 400);
+      const segredo = crypto.randomUUID().replace(/-/g, "");
+      const wh = await (await fetch(urlTelegram(token, "setWebhook"), { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: SB + "/functions/v1/zv-robo?acao=telegram&n=" + b.negocio, secret_token: segredo, allowed_updates: ["message", "callback_query"], drop_pending_updates: true }) })).json().catch(() => ({}));
+      if (!wh.ok) return json({ erro: "Não consegui ligar o robô no Telegram: " + (wh.description || "tente de novo") }, 502);
+      linha = { negocio: b.negocio, tipo, ext_id: String(me.result.id), nome: "@" + me.result.username, token, segredo, pagina: null };
+    } else {
+      const pag = String(b.pagina || "").replace(/\D/g, ""); if (!pag) return json({ erro: "Informe a identificação da página do Facebook." }, 400);
+      const info = await (await fetch(`${GRAPH}/${pag}?fields=name,instagram_business_account{id,username}&access_token=${encodeURIComponent(token)}`)).json().catch(() => ({}));
+      if (!info || info.error) return json({ erro: "A Meta não aceitou: " + String((info && info.error && info.error.message) || "confira a página e o token").slice(0, 160) }, 400);
+      let ext = pag, nome = info.name;
+      if (tipo === "instagram") { const ig = info.instagram_business_account; if (!ig) return json({ erro: "Essa página não tem uma conta profissional do Instagram ligada a ela." }, 400); ext = String(ig.id); nome = "@" + ig.username; }
+      const sub = await (await fetch(`${GRAPH}/${pag}/subscribed_apps?subscribed_fields=messages,messaging_postbacks&access_token=${encodeURIComponent(token)}`, { method: "POST" })).json().catch(() => ({}));
+      if (!sub || !sub.success) return json({ erro: "Não consegui receber as mensagens da página: " + String((sub && sub.error && sub.error.message) || "tente de novo").slice(0, 160) }, 502);
+      linha = { negocio: b.negocio, tipo, ext_id: ext, nome, token, segredo: null, pagina: pag };
+    }
+    if (atual) await admin.del(`zv_canais_ext?negocio=eq.${b.negocio}&tipo=eq.${tipo}`).catch(() => {});
+    try { await admin.ins("zv_canais_ext", linha); } catch (_) { return json({ erro: "Essa conta já está ligada em outro negócio da Zivoop." }, 409); }
+    return json({ ok: true, nome: linha.nome });
+  }
+
+  // webhook do Telegram: cada negócio tem o próprio robô e o próprio segredo
+  if (acao === "telegram") {
+    const neg = String(url.searchParams.get("n") || "").replace(/[^\w-]/g, "");
+    const conta = await contaExt(`negocio=eq.${neg}&tipo=eq.telegram`);
+    if (!conta || !conta.segredo || req.headers.get("x-telegram-bot-api-secret-token") !== conta.segredo) return new Response("forbidden", { status: 403 });
+    const u = await req.json().catch(() => null), ev = u && lerTelegram(u); if (!ev) return new Response("ok");
+    if (ev.callback) fetch(urlTelegram(conta.token, "answerCallbackQuery"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: ev.callback }) }).catch(() => {});
+    const N = await carregarNegocio(admin, conta.negocio, SITE); if (!N || N.neg.nicho !== "barbearia") return new Response("ok");
+    await responderCanal(N, conta, ev); return new Response("ok");
+  }
+
   if (acao === "rotina") {
     if (!CRON || req.headers.get("x-cron-secret") !== CRON) return json({ erro: "sem_permissao" }, 401);
     const canais = (await admin.sel(`zv_canais?select=*&phone_id=not.is.null`).catch(() => [])) || [];
@@ -123,6 +203,14 @@ Deno.serve(async (req) => {
   const bruto = await req.text();
   if (!(await assinaturaOk(bruto, req.headers.get("x-hub-signature-256") || ""))) return new Response("assinatura inválida", { status: 401 });
   let corpo: any = {}; try { corpo = JSON.parse(bruto); } catch (_) { return new Response("ok"); }
+  if (corpo.object === "instagram" || corpo.object === "page") {   // Instagram Direct e Messenger (mesmo app da Meta, mesma assinatura)
+    for (const ev of lerMeta(corpo)) {
+      const conta = await contaExt(`tipo=eq.${ev.canal}&ext_id=eq.${ev.conta}&ativo=eq.true`); if (!conta) continue;
+      const N = await carregarNegocio(admin, conta.negocio, SITE); if (!N || N.neg.nicho !== "barbearia") continue;
+      await responderCanal(N, conta, ev);
+    }
+    return new Response("ok");
+  }
   for (const e of corpo.entry || []) for (const ch of e.changes || []) {
     const v = ch.value || {};
     if (ch.field === "phone_number_quality_update") {   // a Meta avisou que o número está sendo denunciado/bloqueado: para os envios por iniciativa

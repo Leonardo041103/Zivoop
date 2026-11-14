@@ -237,8 +237,10 @@ function combinar(N, atuais, ids, acao) {
 }
 const precoServ = (N, ids) => ids.reduce((s, id) => s + ((N.servicos.find(x => x.id === id) || {}).p || 0), 0);
 
-async function proximos(db, N, zap) {
-  return await db.sel(`zv_agendamentos?select=id,numero,inicio,fim,profissional,servicos,total,status&negocio=eq.${N.neg.id}&whatsapp=eq.${zap}&status=in.(pendente,confirmado)&inicio=gte.${new Date().toISOString()}&order=inicio&limit=5`).catch(() => []) || [];
+async function proximos(db, N, zap, so) {
+  const l = await db.sel(`zv_agendamentos?select=id,numero,inicio,fim,profissional,servicos,total,status,detalhes&negocio=eq.${N.neg.id}&whatsapp=eq.${zap}&status=in.(pendente,confirmado)&inicio=gte.${new Date().toISOString()}&order=inicio&limit=10`).catch(() => []) || [];
+  // número digitado no Instagram/Messenger/Telegram (não confirmado): só os horários marcados por aquela mesma conta
+  return (so ? l.filter(a => (a.detalhes || {}).ext === so) : l).slice(0, 5);
 }
 // procura horários: no dia pedido; se não tiver, nos próximos dias
 async function buscar(db, N, est, t) {
@@ -281,17 +283,19 @@ export async function responderPergunta(N, texto, u, ia) {
 }
 
 /* o coração: recebe uma mensagem e devolve as respostas (e já faz as mudanças no banco) */
-export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.now() }) {
-  zap = String(zap).replace(/\D/g, "");
-  const cont = ((await db.sel(`zv_bot_contatos?select=*&negocio=eq.${N.neg.id}&whatsapp=eq.${zap}`).catch(() => [])) || [])[0]
-    || (await db.ins("zv_bot_contatos", { negocio: N.neg.id, whatsapp: zap, nome: nomePerfil || null }))[0];
-  const salvar = async (patch) => { Object.assign(cont, patch); await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${zap}`, patch); };
+// zap = WhatsApp do cliente (é por ele que a agenda acha os horários e manda lembrete)
+// chave = de quem é a conversa ("ig:123" no Instagram; no WhatsApp é o próprio número); so = horários que essa conversa pode ver e mexer
+export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.now(), chave, so = null, canal = "whatsapp" }) {
+  zap = String(zap).replace(/\D/g, ""); const ck = chave || zap, origem = { origem: "robo", canal, ext: so || undefined };
+  const cont = ((await db.sel(`zv_bot_contatos?select=*&negocio=eq.${N.neg.id}&whatsapp=eq.${ck}`).catch(() => [])) || [])[0]
+    || (await db.ins("zv_bot_contatos", { negocio: N.neg.id, whatsapp: ck, nome: nomePerfil || null }))[0];
+  const salvar = async (patch) => { Object.assign(cont, patch); await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${ck}`, patch); };
   await salvar({ ultima_in: new Date(t).toISOString(), nome: cont.nome || nomePerfil || null });
   const s = sem(texto);
   // proteção: o dono assumiu a conversa → robô fica quieto
   if (cont.humano_ate && Date.parse(cont.humano_ate) > t && !/^(robo|voltar pro robo|menu)$/.test(s)) return { respostas: [], humano: true };
   // proteção: alguém (ou outro robô) mandando mensagem sem parar → passa para o dono e para de responder
-  const recentes = await db.sel(`zv_bot_msgs?select=id&negocio=eq.${N.neg.id}&whatsapp=eq.${zap}&dir=eq.in&criado_em=gte.${new Date(t - 10 * 60e3).toISOString()}`).catch(() => []);
+  const recentes = await db.sel(`zv_bot_msgs?select=id&negocio=eq.${N.neg.id}&whatsapp=eq.${ck}&dir=eq.in&criado_em=gte.${new Date(t - 10 * 60e3).toISOString()}`).catch(() => []);
   if ((recentes || []).length > 25) { await salvar({ humano_ate: new Date(t + 6 * 3600e3).toISOString() }); return { respostas: [], humano: true, motivo: "excesso" }; }
 
   const est = Object.assign({}, cont.estado || {}), R = [], fim = async (novo, aviso) => { await salvar({ estado: novo || {} }); return { respostas: R.map(x => tom(N, x)), aviso }; };
@@ -317,7 +321,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
     if (Date.parse(of.expira) < t) { R.push("Essa vaga já passou para o próximo da fila, desculpe. Quer ver outros horários?"); return fim({ etapa: "marcar", servicos: of.servicos || [] }); }
     if (u.intencao === "sim" || u.escolha === 1) {
       const r = await db.rpc("zv_agendar", { p_slug: N.neg.slug, p_inicio: of.inicio, p_minutos: of.dur, p_prof: of.prof || "", p_nome: nome || "Cliente", p_whatsapp: zap,
-        p_servicos: of.servicosObj || [{ nome: "Horário", qty: 1 }], p_total: of.total || 0, p_obs: "Marcado pelo robô (vaga que abriu)", p_detalhes: { origem: "robo" } }).catch(e => ({ erro: e.message }));
+        p_servicos: of.servicosObj || [{ nome: "Horário", qty: 1 }], p_total: of.total || 0, p_obs: "Marcado pelo robô (vaga que abriu)", p_detalhes: origem }).catch(e => ({ erro: e.message }));
       if (r && r.erro) { R.push("Poxa, alguém pegou essa vaga agora há pouco. Seu horário de antes continua valendo."); await db.upd(`zv_bot_fila?negocio=eq.${N.neg.id}&ref=eq.${of.ref}&status=eq.enviado`, { motivo: "ocupado" }).catch(() => {}); return fim({}); }
       if (of.agAntigo) await db.upd(`zv_agendamentos?id=eq.${of.agAntigo}`, { status: "cancelado", obs: "Antecipou pelo robô" }).catch(() => {});
       if (of.espera) await db.upd(`zv_espera?id=eq.${of.espera}`, { status: "marcou" }).catch(() => {});
@@ -342,7 +346,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   if (est.etapa === "cancelar" && (u.intencao === "sim" || u.escolha)) {
     const ag = est.ags[(u.escolha || 1) - 1] || est.ags[0];
     if (est.ags.length > 1 && !u.escolha) { const ops = est.ags.map(a => `${diaTxt(diaDe(a.inicio), t)} às ${hhmm(minDe(a.inicio))}`); R.push(comOpcoes("Qual deles você quer cancelar?\n" + ops.map((o, i) => `${i + 1} - ${o}`).join("\n"), ops)); return fim(est); }
-    await db.upd(`zv_agendamentos?id=eq.${ag.id}&whatsapp=eq.${zap}`, { status: "cancelado", obs: "Cancelado pelo cliente no WhatsApp" });
+    await db.upd(`zv_agendamentos?id=eq.${ag.id}&whatsapp=eq.${zap}`, { status: "cancelado", obs: "Cancelado pelo cliente (" + (NOME_CANAL[canal] || "WhatsApp") + ")" });
     R.push(`Cancelado. Seu horário de ${diaTxt(diaDe(ag.inicio), t)} às ${hhmm(minDe(ag.inicio))} foi liberado. Quando quiser marcar de novo, é só chamar!`);
     return fim({}, "cancelou");
   }
@@ -361,7 +365,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   if (u.acao && u.servicos.length && !(est.servicos || []).length && !["cancelar", "oferta", "lembrete"].includes(est.etapa) && !u.dia && !u.faixa
       && !/\b(marcar|agendar|novo horario|outro horario)\b/.test(sem(texto))
       && (/^\s*\+/.test(texto) || /^mais\b|\b(meu horario|no horario|horario marcado|marcado|agendamento|tambem|adicion\w*|acrescent\w*|inclu\w*|coloca\w*|bota\w*|poe|aproveit\w*|junto|tira\w*|retira\w*|remov\w*|sem)\b/.test(sem(texto)))) {
-    const ags = await proximos(db, N, zap);
+    const ags = await proximos(db, N, zap, so);
     if (ags.length) return await mexerNoHorario(ags[0], u.acao, u.servicos);
   }
 
@@ -394,7 +398,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   if (intencao === "info") { const H = N.cfg.horario || {}; R.push(`📍 ${N.cfg.endereco || N.neg.nome}\n🕐 ${N.cfg.horarioLabel || Object.keys(H).filter(k => H[k]).map(k => DIAS[k] + " " + H[k][0] + "–" + H[k][1]).join(", ")}\n\nPara marcar, me diz o serviço e o dia. Ou pelo site: ${N.site}`); return fim({}); }
   if (intencao === "clube") { const C = N.cfg.clube || {}; R.push(C.ativo && (C.planos || []).length ? "Clube " + N.neg.nome + ":\n" + C.planos.map(p => `• ${p.nome}: ${brl(p.preco)}/mês (${p.inclui})`).join("\n") + "\n\nQuer assinar? Escreva \"atendente\" que o barbeiro fala com você." : "Ainda não temos clube de assinatura. Quer marcar um horário?"); return fim({}); }
   if (intencao === "meus" || intencao === "remarcar" || intencao === "cancelar") {
-    const ags = await proximos(db, N, zap);
+    const ags = await proximos(db, N, zap, so);
     if (!ags.length) { R.push(intencao === "meus" ? "Não achei nenhum horário marcado com este número. Quer marcar um?" : "Não achei horário marcado com este número para " + (intencao === "cancelar" ? "cancelar" : "mudar") + ". Quer marcar um novo?"); return fim({ etapa: "marcar" }); }
     const txt = ags.map((a, i) => `${ags.length > 1 ? i + 1 + " - " : ""}${diaTxt(diaDe(a.inicio), t)} às ${hhmm(minDe(a.inicio))}${a.profissional ? " com " + a.profissional : ""} (${(a.servicos || []).map(x => x.nome).join(" + ")})`).join("\n");
     if (intencao === "meus") { R.push((ags.length > 1 ? "Seus horários:\n" : "Seu horário: ") + txt + "\n\nPara mudar, escreva \"remarcar\". Para cancelar, \"cancelar\"."); return fim({}); }
@@ -433,7 +437,7 @@ export async function processar({ db, N, zap, texto, nomePerfil, ia, t = Date.no
   async function reservar(op, n) {
     const novoEst = est.etapa === "nome" ? est : est, ids = novoEst.servicos || [], dur = durServ(N, ids) || 30;
     const r = await db.rpc("zv_agendar", { p_slug: N.neg.slug, p_inicio: isoDe(op.dia, op.m), p_minutos: dur, p_prof: op.prof || "", p_nome: n || nome || "Cliente", p_whatsapp: zap,
-      p_servicos: ids.map(id => { const x = N.servicos.find(s => s.id === id); return { id, nome: x.n, preco: x.p, qty: 1 }; }), p_total: precoServ(N, ids), p_obs: "Marcado pelo robô do WhatsApp", p_detalhes: { origem: "robo" } }).catch(e => ({ erro: e.message }));
+      p_servicos: ids.map(id => { const x = N.servicos.find(s => s.id === id); return { id, nome: x.n, preco: x.p, qty: 1 }; }), p_total: precoServ(N, ids), p_obs: "Marcado pelo robô (" + (NOME_CANAL[canal] || canal) + ")", p_detalhes: origem }).catch(e => ({ erro: e.message }));
     if (r && r.erro) { if (globalThis.ZV_DEBUG) console.log("zv_agendar:", r.erro); if (/muitos_pendentes/.test(r.erro)) { R.push("Você já tem 3 horários marcados em aberto. Para marcar mais, fale com a barbearia (escreva \"atendente\")."); return fim({}); }
       R.push("Ops, esse horário acabou de ser pego por outra pessoa. Vou procurar outros pra você."); return await oferecer(Object.assign({}, novoEst, { opcoes: null })); }
     let txt = `Marcado! ✂️\n${nomeServ(N, ids)} ${diaTxt(op.dia, t)} às ${hhmm(op.m)}${r.profissional ? " com " + r.profissional : ""}.\n📍 ${N.cfg.endereco || ""}`;
@@ -580,13 +584,59 @@ export async function rotina({ db, N, canal, enviar, t = Date.now() }) {
 export function mapaLembrete(texto) { const s = sem(texto); return s === "1" ? "confirmar" : s === "2" ? "remarcar" : s === "3" ? "cancelar" : null; }
 
 /* entrada principal: grava a mensagem (ignora repetidas), responde e grava as respostas */
-export async function atender({ db, N, zap, texto, waId, nomePerfil, ia, t = Date.now() }) {
-  zap = String(zap).replace(/\D/g, "");
-  try { await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: zap, dir: "in", texto: String(texto || "").slice(0, 2000), wa_id: waId || null }); }
-  catch (e) { if (/duplicate|unique|23505/i.test(e.message || "")) return { respostas: [], repetida: true }; throw e; }
+export async function atender({ db, N, zap, texto, waId, nomePerfil, ia, t = Date.now(), chave, so = null, canal = "whatsapp", jaGravada = false }) {
+  zap = String(zap).replace(/\D/g, ""); const ck = chave || zap;
+  if (!jaGravada) { try { await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: ck, canal, dir: "in", texto: String(texto || "").slice(0, 2000), wa_id: waId || null }); }
+    catch (e) { if (/duplicate|unique|23505/i.test(e.message || "")) return { respostas: [], repetida: true }; throw e; } }
   if (!N.robo.ativo) return { respostas: [], desligado: true };
-  const r = await processar({ db, N, zap, texto: String(texto || ""), nomePerfil, ia, t });
-  for (const x of r.respostas) await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: zap, dir: "out", texto: typeof x === "string" ? x : x.texto }).catch(() => {});
-  if (r.respostas.length) await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${zap}`, { ultima_out: new Date(t).toISOString() }).catch(() => {});
+  const r = await processar({ db, N, zap, texto: String(texto || ""), nomePerfil, ia, t, chave: ck, so, canal });
+  for (const x of r.respostas) await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: ck, canal, dir: "out", texto: typeof x === "string" ? x : x.texto }).catch(() => {});
+  if (r.respostas.length) await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${ck}`, { ultima_out: new Date(t).toISOString() }).catch(() => {});
   return r;
+}
+
+/* ---------- outros canais: Instagram Direct, Messenger, Telegram ----------
+   A conversa é guardada pela conta do canal ("ig:123"). Antes de marcar, o robô pede o WhatsApp do cliente:
+   é por ele que a agenda acha os horários e manda lembrete e aviso de vaga.
+   Número compartilhado pelo próprio canal (botão do Telegram ou do Messenger) vale como confirmado.
+   Número digitado não é confirmado: a pessoa marca normalmente, mas só vê, remarca e cancela o que marcou por ali. */
+export const NOME_CANAL = { whatsapp: "WhatsApp", instagram: "Instagram", messenger: "Messenger", telegram: "Telegram" };
+const PREFIXO = { instagram: "ig", messenger: "fb", telegram: "tg" };
+export function lerTelefone(txt) {
+  const bruto = String(txt || "").trim(); if (!bruto || bruto.replace(/[\d\s()+.\-]/g, "").length > 12) return null;
+  const d = bruto.replace(/\D/g, "");
+  if (/^\s*\+/.test(bruto)) return d.length >= 11 && d.length <= 15 ? d : null;           // com o código do país (+55, +1, +54…)
+  if (d.length === 10 || d.length === 11) return /^[1-9]{2}/.test(d) ? "55" + d : null;   // Brasil, com DDD
+  if ((d.length === 12 || d.length === 13) && d.startsWith("55")) return d;
+  return null;
+}
+export async function atenderCanal({ db, N, canal, ext, texto, msgId, nome, foneDoCanal, ia, t = Date.now() }) {
+  const chave = PREFIXO[canal] + ":" + String(ext).replace(/[^\w-]/g, "").slice(0, 60);
+  let c = ((await db.sel(`zv_bot_contatos?select=*&negocio=eq.${N.neg.id}&whatsapp=eq.${chave}`).catch(() => [])) || [])[0];
+  if (!c) c = (await db.ins("zv_bot_contatos", { negocio: N.neg.id, whatsapp: chave, canal, ext_id: String(ext), nome: nome || null }))[0];
+  const salvar = async p => { Object.assign(c, p); await db.upd(`zv_bot_contatos?negocio=eq.${N.neg.id}&whatsapp=eq.${chave}`, p); };
+  const anotado = () => db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: chave, canal, dir: "out", texto: "Anotado, obrigado! 👍" }).catch(() => {});
+  const f0 = foneDoCanal ? lerTelefone(String(foneDoCanal).startsWith("+") ? foneDoCanal : "+" + String(foneDoCanal).replace(/^\+/, "")) || lerTelefone(foneDoCanal) : null;
+  if (f0 && (!c.telefone || !c.fone_ok || c.telefone !== f0)) await salvar({ telefone: f0, fone_ok: true });
+  if (!c.telefone) {   // ainda sem o WhatsApp do cliente: guarda o que ele pediu e pede o número
+    try { await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: chave, canal, dir: "in", texto: String(texto || "").slice(0, 2000), wa_id: msgId ? canal + ":" + msgId : null }); }
+    catch (e) { if (/duplicate|unique|23505/i.test(e.message || "")) return { respostas: [], repetida: true }; throw e; }
+    await salvar({ ultima_in: new Date(t).toISOString() });
+    if (!N.robo.ativo) return { respostas: [], desligado: true };
+    const f = lerTelefone(texto);
+    if (!f) { if (!c.pendente && texto) await salvar({ pendente: String(texto).slice(0, 500) });
+      const r = [{ texto: `Oi${c.nome ? ", " + String(c.nome).split(" ")[0] : ""}! Aqui é o atendimento da ${N.neg.nome} 💈\nPara eu marcar seu horário e te mandar o lembrete, me passa seu WhatsApp com DDD?${canal === "instagram" ? " (ex.: 47 99999-0000)" : ""}`, pedirFone: true }];
+      await db.ins("zv_bot_msgs", { negocio: N.neg.id, whatsapp: chave, canal, dir: "out", texto: r[0].texto }).catch(() => {}); return { respostas: r, pedirFone: true }; }
+    await salvar({ telefone: f, fone_ok: false });
+    const pend = c.pendente; await salvar({ pendente: null }); await anotado();
+    const r = await atender({ db, N, zap: f, chave, so: chave, canal, texto: pend || "oi", nomePerfil: nome, ia, t, jaGravada: true });   // o pedido já foi gravado quando chegou
+    return Object.assign({}, r, { respostas: ["Anotado, obrigado! 👍", ...r.respostas] });
+  }
+  const so = c.fone_ok ? null : chave;
+  if (f0 && !texto) {   // acabou de compartilhar o número pelo botão: continua o que tinha pedido
+    const pend = c.pendente; if (pend) await salvar({ pendente: null }); await anotado();
+    const r = await atender({ db, N, zap: c.telefone, chave, so, canal, texto: pend || "oi", nomePerfil: nome, ia, t, jaGravada: true });
+    return Object.assign({}, r, { respostas: ["Anotado, obrigado! 👍", ...r.respostas] });
+  }
+  return await atender({ db, N, zap: c.telefone, chave, so, canal, texto, waId: msgId ? canal + ":" + msgId : null, nomePerfil: nome, ia, t });
 }
