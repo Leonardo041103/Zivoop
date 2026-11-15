@@ -35,6 +35,11 @@ function trocarTextos(html, pad, meus) {
     const a = pad[k], b = meus[k];
     if (typeof a === "string" && typeof b === "string" && a && b && a !== b) pares.push([a, b]);
   }
+  // o modelo também usa o nome curto ("Ponto Certo" em vez de "Lanchonete Ponto Certo"): troca esse também
+  if (typeof pad.nome === "string" && typeof meus.nome === "string" && meus.nome) {
+    const m = pad.nome.match(/^(lanchonete|barbearia|pizzaria|hamburgueria|padaria|pastelaria|marmitaria|a[cç]ougue|adega|farm[aá]cia)\s+(.{3,})$/i);
+    if (m && m[2] !== meus.nome) pares.push([m[2], meus.nome]);
+  }
   (pad.sobre || []).forEach((a, i) => { const b = (meus.sobre || [])[i]; if (a && typeof b === "string" && a !== b) pares.push([a, b]); });
   pares.sort((x, y) => y[0].length - x[0].length);
   for (const [a, b] of pares) { html = html.split(esc(a)).join(esc(b)); if (esc(a) !== a) html = html.split(a).join(esc(b)); }
