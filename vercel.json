@@ -115,5 +115,27 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/lanchonete",
+      "destination": "/lanchonete/painel",
+      "permanent": false
+    },
+    {
+      "source": "/lanchonete/",
+      "destination": "/lanchonete/painel",
+      "permanent": false
+    },
+    {
+      "source": "/barbearia",
+      "destination": "/barbearia/painel",
+      "permanent": false
+    },
+    {
+      "source": "/barbearia/",
+      "destination": "/barbearia/painel",
+      "permanent": false
+    }
   ]
 }
