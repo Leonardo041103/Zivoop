@@ -36,7 +36,7 @@ export async function carregarNegocio(db, negId, siteUrl) {
   const servicos = []; menu.forEach(c => (c.items || []).forEach(i => { if (!i.oculto && i.dur) servicos.push({ id: i.id, n: i.n, p: Number(i.p || 0), dur: Number(i.dur), cat: c.cat }); }));
   const profs = (cfg.profissionais || []).map(p => typeof p === "string" ? p : p && p.nome).filter(Boolean);
   const robo = Object.assign({ ativo: true, lembrete: true, horaLembrete: "18:00", antecipar: true, limiteDia: 60, minutosOferta: 20, nome: "", tom: "leve", faq: [] }, cfg.robo || {});
-  return { neg, cfg, servicos, profs, robo, site: `${siteUrl}/${neg.slug}` };
+  return { neg, cfg, servicos, profs, robo, site: `${siteUrl}/${["barbearia", "lanchonete"].includes(neg.nicho) ? neg.nicho + "/" : ""}${neg.slug}` };
 }
 
 /* ------------------------------------------------------------ horários livres e encaixe estratégico */

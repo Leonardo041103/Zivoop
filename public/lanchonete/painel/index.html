@@ -637,7 +637,7 @@ const ehRes = () => NEG && NEG.tipo === "reserva";
 const cfg = () => Object.assign({}, PAD && PAD.config || {}, NEG.dados.config || {});
 const textos = () => Object.assign({}, PAD && PAD.textos || {}, NEG.dados.textos || {}, { nome: NEG.nome });
 const menu = () => clone(NEG.dados.menu || (PAD && PAD.menu) || []);
-const siteURL = () => location.origin + "/" + NEG.slug;
+const siteURL = () => location.origin + "/" + (PRODUTO ? PRODUTO + "/" : "") + NEG.slug;   // cada produto tem o próprio banco e o próprio endereço
 const W = () => ehRes() ? { itens: "Unidades e preços", item: "item", ped: "Reservas" } : ehAgenda() ? { itens: "Serviços", item: "serviço", ped: "Agenda" } : { itens: "Catálogo", item: "produto", ped: "Pedidos" };
 
 /* ---------------- entrar ---------------- */
@@ -663,9 +663,7 @@ async function onboarding() { $("vAuth").hidden = true; $("vApp").hidden = true;
   $("nichos").innerHTML = MODELOS.map(m => `<button class="nicho" aria-pressed="${m.nicho === nichoSel}" onclick="nichoSel='${m.nicho}';onboarding()"><span>${esc(m.emoji)}</span><b>${esc(m.nome)}</b><small>${tipo[m.tipo]}</small></button>`).join(""); }
 async function criarSite() { $("oErr").textContent = ""; if (!nichoSel) { $("oErr").textContent = "Escolha o tipo do negócio."; return; }
   const b = $("oBtn"); b.disabled = true; b.textContent = "Criando…";
-  // o endereço tem que estar livre nos bancos de todos os produtos (senão o site abre o negócio do outro)
-  let livre = null; try { const r = await fetch("/api/slug?nome=" + encodeURIComponent($("oNome").value) + "&nicho=" + encodeURIComponent(nichoSel)); if (r.ok) livre = (await r.json()).slug || null; } catch (_) {}
-  const { data, error } = await sb.rpc("zv_criar_negocio", { p_nicho: nichoSel, p_nome: $("oNome").value, p_whatsapp: $("oZap").value, p_slug: livre });
+  const { data, error } = await sb.rpc("zv_criar_negocio", { p_nicho: nichoSel, p_nome: $("oNome").value, p_whatsapp: $("oZap").value });
   b.disabled = false; b.textContent = "Criar meu site";
   if (error) { $("oErr").textContent = erro(error); return; }
   localStorage.setItem("zv-neg", data); await carregar(); toast("Seu site está no ar!"); }
