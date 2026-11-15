@@ -663,7 +663,9 @@ async function onboarding() { $("vAuth").hidden = true; $("vApp").hidden = true;
   $("nichos").innerHTML = MODELOS.map(m => `<button class="nicho" aria-pressed="${m.nicho === nichoSel}" onclick="nichoSel='${m.nicho}';onboarding()"><span>${esc(m.emoji)}</span><b>${esc(m.nome)}</b><small>${tipo[m.tipo]}</small></button>`).join(""); }
 async function criarSite() { $("oErr").textContent = ""; if (!nichoSel) { $("oErr").textContent = "Escolha o tipo do negócio."; return; }
   const b = $("oBtn"); b.disabled = true; b.textContent = "Criando…";
-  const { data, error } = await sb.rpc("zv_criar_negocio", { p_nicho: nichoSel, p_nome: $("oNome").value, p_whatsapp: $("oZap").value });
+  // o endereço tem que estar livre nos bancos de todos os produtos (senão o site abre o negócio do outro)
+  let livre = null; try { const r = await fetch("/api/slug?nome=" + encodeURIComponent($("oNome").value) + "&nicho=" + encodeURIComponent(nichoSel)); if (r.ok) livre = (await r.json()).slug || null; } catch (_) {}
+  const { data, error } = await sb.rpc("zv_criar_negocio", { p_nicho: nichoSel, p_nome: $("oNome").value, p_whatsapp: $("oZap").value, p_slug: livre });
   b.disabled = false; b.textContent = "Criar meu site";
   if (error) { $("oErr").textContent = erro(error); return; }
   localStorage.setItem("zv-neg", data); await carregar(); toast("Seu site está no ar!"); }
