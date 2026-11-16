@@ -1,11 +1,8 @@
 // Monta o site de um negócio da plataforma: modelo do nicho + dados do dono (banco) + ganchos que gravam pedidos e agendamentos.
-// zivoop.com/barbearia/<slug> e /lanchonete/<slug>  →  /api/site?slug=<slug>&p=<produto> (cada produto no seu banco)
-// zivoop.com/<slug> (modelos antigos)  →  /api/site?slug=<slug>
+// zivoop.com/<slug> (sites prontos)  →  /api/site?slug=<slug>
 const fs = require("fs"), path = require("path");
-// cada software tem o próprio banco: o site do negócio é procurado em um e depois no outro
 const BANCOS = [
-  { url: process.env.ZV_SB_URL || "https://phswqjkytnkukqpbtoqd.supabase.co", key: process.env.ZV_SB_KEY || "sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8" },   // lanchonete e modelos antigos (zivoop-pedidos)
-  { url: process.env.ZV_BARB_SB_URL || "https://yqpaqwwdfeyesxvbbcwy.supabase.co", key: process.env.ZV_BARB_SB_KEY || "sb_publishable_yFqNbiwT-PEvOI1RVDXhIw_vNgMjB-H" }   // barbearia
+  { url: process.env.ZV_SB_URL || "https://phswqjkytnkukqpbtoqd.supabase.co", key: process.env.ZV_SB_KEY || "sb_publishable_LUsJVly6aj88WTDxTFeT6A_VB5kqA-8" }   // modelos de sites prontos (zivoop-pedidos)
 ];
 const RAIZ = path.join(process.cwd(), "public", "modelos");
 const cache = {};
@@ -14,7 +11,7 @@ const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(
 const rpcEm = (b, fn, body) => fetch(`${b.url}/rest/v1/rpc/${fn}`, { method: "POST", headers: { apikey: b.key, Authorization: "Bearer " + b.key, "Content-Type": "application/json" }, body: JSON.stringify(body) })
   .then(r => r.ok ? r.json() : null);
 // procura o endereço em todos os bancos ao mesmo tempo; vale o primeiro da lista que tiver. Se algum banco falhar e nenhum achar, avisa "voltamos já".
-const BANCO_DO = { lanchonete: 0, barbearia: 1 };
+const BANCO_DO = {};   // Barbearia e Lanchonete agora são apps próprios (zivoop-barbearia / zivoop-lanchonete)
 async function acharSite(slug, produto) {
   const lista = produto in BANCO_DO ? [BANCOS[BANCO_DO[produto]]] : BANCOS;
   const r = await Promise.all(lista.map(b => rpcEm(b, "zv_site", { p_slug: slug }).then(site => ({ b, site }), () => ({ b, site: undefined }))));
@@ -53,6 +50,7 @@ module.exports = async (req, res) => {
   if (site === undefined) return pagina(res, 503, "Voltamos já", "Não deu para abrir o site agora. Tente de novo em instantes.");
   if (!site) return pagina(res, 404, "Site não encontrado", "Esse endereço ainda não tem um site na Zivoop.");
   const rpc = (fn, body) => rpcEm(banco, fn, body);
+  if (site.nicho === "barbearia" || site.nicho === "lanchonete") { res.statusCode = 302; res.setHeader("Location", `https://zivoop-${site.nicho}.vercel.app/${slug}`); return res.end(); }
   if (site.status !== "ativo") return pagina(res, 200, site.nome, "Este site está pausado no momento.");
   let html, pad;
   try { html = ler(site.nicho, "index.html"); pad = JSON.parse(ler(site.nicho, "padrao.json")); }

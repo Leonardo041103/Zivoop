@@ -12,14 +12,6 @@
       "destination": "/painel/index.html"
     },
     {
-      "source": "/lanchonete/painel",
-      "destination": "/lanchonete/painel/index.html"
-    },
-    {
-      "source": "/barbearia/painel",
-      "destination": "/barbearia/painel/index.html"
-    },
-    {
       "source": "/ofertas",
       "destination": "/ofertas/index.html"
     },
@@ -30,14 +22,6 @@
     {
       "source": "/termos",
       "destination": "/termos/index.html"
-    },
-    {
-      "source": "/barbearia/:slug([a-z0-9][a-z0-9-]{2,39})",
-      "destination": "/api/site?slug=:slug&p=barbearia"
-    },
-    {
-      "source": "/lanchonete/:slug([a-z0-9][a-z0-9-]{2,39})",
-      "destination": "/api/site?slug=:slug&p=lanchonete"
     },
     {
       "source": "/:slug([a-z0-9][a-z0-9-]{2,39})",
@@ -118,23 +102,53 @@
   ],
   "redirects": [
     {
-      "source": "/lanchonete",
-      "destination": "/lanchonete/painel",
-      "permanent": false
-    },
-    {
-      "source": "/lanchonete/",
-      "destination": "/lanchonete/painel",
-      "permanent": false
-    },
-    {
       "source": "/barbearia",
-      "destination": "/barbearia/painel",
+      "destination": "https://zivoop-barbearia.vercel.app/",
       "permanent": false
     },
     {
       "source": "/barbearia/",
-      "destination": "/barbearia/painel",
+      "destination": "https://zivoop-barbearia.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/barbearia/painel",
+      "destination": "https://zivoop-barbearia.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/barbearia/painel/",
+      "destination": "https://zivoop-barbearia.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/barbearia/:slug([a-z0-9][a-z0-9-]{2,39})",
+      "destination": "https://zivoop-barbearia.vercel.app/:slug",
+      "permanent": false
+    },
+    {
+      "source": "/lanchonete",
+      "destination": "https://zivoop-lanchonete.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/lanchonete/",
+      "destination": "https://zivoop-lanchonete.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/lanchonete/painel",
+      "destination": "https://zivoop-lanchonete.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/lanchonete/painel/",
+      "destination": "https://zivoop-lanchonete.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/lanchonete/:slug([a-z0-9][a-z0-9-]{2,39})",
+      "destination": "https://zivoop-lanchonete.vercel.app/:slug",
       "permanent": false
     }
   ]

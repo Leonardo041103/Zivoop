@@ -19,3 +19,12 @@ Site da Zivoop: página de vendas e demonstrações ao vivo dos 38 modelos de si
 - Pedidos do formulário "Quero meu site" ficam na tabela `zivoop_leads` do projeto Supabase `zivoop-pedidos`
   (Table Editor). O site grava só pela função `zivoop_novo_lead`, que valida os dados; ninguém de fora lê a tabela.
 - Preços dos planos e WhatsApp da Zivoop: objeto `ZIVOOP` no fim de `src/index.html`.
+
+## Barbearia e Lanchonete
+
+Os dois são apps independentes, cada um com repositório, publicação na Vercel e banco próprios:
+
+- **Zivoop Barbearia:** repositório `zivoop-barbearia`, endereço https://zivoop-barbearia.vercel.app
+- **Zivoop Lanchonete:** repositório `zivoop-lanchonete`, endereço https://zivoop-lanchonete.vercel.app
+
+Os endereços antigos daqui (`/barbearia/...` e `/lanchonete/...`) só redirecionam para eles.
